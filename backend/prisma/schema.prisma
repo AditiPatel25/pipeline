@@ -1,0 +1,93 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Status {
+  APPLIED
+  SCREENING
+  INTERVIEW
+  OFFER
+  REJECTED
+  WITHDRAWN
+  GHOSTED
+}
+
+enum OutreachSource {
+  LINKEDIN
+  REFERRAL
+  COLD_EMAIL
+  CAREER_FAIR
+  OTHER
+}
+
+model User {
+  id           Int           @id @default(autoincrement())
+  email        String        @unique
+  password     String?
+  name         String
+  username     String        @unique
+  googleId     String?       @unique
+  createdAt    DateTime      @default(now())
+  applications Application[]
+  outreaches   Outreach[]
+}
+
+model Application {
+  id            Int             @id @default(autoincrement())
+  company       String
+  position      String
+  jobUrl        String
+  description   String?
+  status        Status
+  appliedDate   DateTime?
+  source        OutreachSource?
+  notes         String?
+  userId        Int
+  user          User            @relation(fields: [userId], references: [id])
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt       
+  followUps     FollowUp[]
+  outreaches    Outreach[]
+  resumeMatches ResumeMatch[]
+}
+
+model FollowUp {
+  id            Int         @id @default(autoincrement())
+  applicationId Int
+  application   Application @relation(fields: [applicationId], references: [id])
+  dueDate       DateTime
+  notes         String?
+  completed     Boolean     @default(false)
+}
+
+model Outreach {
+  id            Int            @id @default(autoincrement())
+  userId        Int
+  user          User           @relation(fields: [userId], references: [id])
+  company       String
+  contactName   String?
+  sourceEnum    OutreachSource
+  notes         String?
+  date          DateTime
+  applicationId Int?
+  application   Application?   @relation(fields: [applicationId], references: [id])
+}
+
+model ResumeMatch {
+  id            Int         @id @default(autoincrement())
+  applicationId Int
+  application   Application @relation(fields: [applicationId], references: [id])
+  extractedGaps Json
+  matchedSkills Json
+  createdAt     DateTime    @default(now())
+}
