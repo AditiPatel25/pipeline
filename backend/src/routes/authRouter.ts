@@ -8,8 +8,6 @@ import {
 } from '../controllers/authController.js';
 import { authenticateToken } from '../middleware/auth.js';
 import passport from 'passport';
-import pkg from 'jsonwebtoken';
-const { sign } = pkg;
 const authRouter = Router();
 
 // submit sign up form

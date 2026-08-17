@@ -4,7 +4,7 @@ import type { Request, Response, NextFunction } from "express";
 import cookieParser from 'cookie-parser';
 
 import authRouter from './routes/authRouter.js';
-// import userRouter from './routes/userRouter.js';
+import applicationRouter from './routes/applicationRouter.js';
 
 const app = express();
 app.use(
@@ -21,7 +21,7 @@ app.get("/", (req, res) => {
 });
 
 app.use('/api/auth', authRouter);
-// app.use('/api/users', userRouter);
+app.use('/api/applications', applicationRouter);
 
 // no route matched
 app.use((req, res) => {
