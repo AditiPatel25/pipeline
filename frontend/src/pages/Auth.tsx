@@ -1,10 +1,136 @@
+import { useState } from 'react';
+import { useNavigate, useLocation } from 'react-router';
+import { useAuth } from '../context/AuthContext';
+import Register from '../components/Register';
+import { loginRequest, registerRequest } from '@/api/auth.js';
+import Login from '../components/Login';
+import axios from 'axios';
 
+const emptyForm = {
+    identifier: '',
+    username: '',
+    password: '',
+    email: '',
+    name: '',
+};
 
 function Auth() {
-    
+    const [formData, setFormData] = useState(emptyForm);
+    const location = useLocation();
+    const isLogin = location.pathname === '/auth/login';
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [error, setError] = useState('');
+
+    const { login } = useAuth();
+    const navigate = useNavigate();
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setError('');
+        setFormData((prev) => ({
+            ...prev,
+            [e.target.name]: e.target.value,
+        }));
+    };
+
+    function onClick() {
+        setFormData(emptyForm);
+        setConfirmPassword('');
+        setError('');
+        navigate(isLogin ? '/auth/register' : '/auth/login');
+    }
+
+    const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        // setLoading(true);
+        if (!isLogin) {
+            const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
+                formData.email
+            );
+
+            if (!isValidEmail) {
+                setError('Please enter a valid email address');
+                return;
+            }
+
+            if (formData.password !== confirmPassword) {
+                setError('Passwords do not match');
+                return;
+            }
+        }
+
+        try {
+            if (isLogin) {
+                const data = await loginRequest(formData.identifier, formData.password);
+                login(data.user);
+            } else {
+                const data = await registerRequest({
+                    username: formData.username,
+                    email: formData.email,
+                    password: formData.password,
+                    name: formData.name,
+                });
+                login(data.user);
+            }
+
+            setFormData(emptyForm);
+            setConfirmPassword('');
+            navigate('/');
+        } catch (err) {
+            if (axios.isAxiosError(err)) {
+                setError(
+                    err.response?.data?.message ||
+                        'Something went wrong. Please try again.'
+                );
+            } else {
+                setError('Something went wrong. Please try again.');
+            }
+        }
+    };
+
+    const handleConfirmPasswordChange = (
+        e: React.ChangeEvent<HTMLInputElement>
+    ) => {
+        setError('');
+        setConfirmPassword(e.target.value);
+    };
+
     return (
-        <div className="">
-            
+        <div className="flex min-h-[80vh] flex-col items-center justify-center gap-8">
+            <h3 className="text-3xl font-bold text-discord-text">
+                {isLogin ? 'Login' : 'Register'}
+            </h3>
+
+            {error && (
+                <div className="w-96 rounded-md border border-red-400/20 bg-red-400/10 px-3 py-2 text-sm text-red-300">
+                    {error}
+                </div>
+            )}
+
+            {isLogin ? (
+                <Login
+                    formData={formData}
+                    handleChange={handleChange}
+                    handleSubmit={handleSubmit}
+                />
+            ) : (
+                <Register
+                    formData={formData}
+                    confirmPassword={confirmPassword}
+                    handleChange={handleChange}
+                    handleConfirmPasswordChange={handleConfirmPasswordChange}
+                    handleSubmit={handleSubmit}
+                />
+            )}
+
+            <button
+                type="button"
+                onClick={onClick}
+                className="text-sm text-discord-text hover:underline pb-6"
+            >
+                {isLogin
+                    ? "Don't have an account? Register"
+                    : 'Already have an account? Login'}
+            </button>
         </div>
     );
 }

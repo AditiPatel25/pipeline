@@ -50,7 +50,6 @@ function AuthProvider({ children }: AuthProviderProps) {
                 const response = await getCurrentUser();
                 setUser(response.user);
             } catch (e) {
-                console.error('Error fetching current user:', e);
                 setUser(null);
             } finally {
                 setLoading(false);
