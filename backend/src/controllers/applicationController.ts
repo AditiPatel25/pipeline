@@ -13,9 +13,9 @@ async function getApplications(
 ) {
     try {
         if (!req.authPayload) {
-            return res.status(403).json({
-                status: 403,
-                error: 'Forbidden',
+            return res.status(401).json({
+                status: 401,
+                error: 'Unauthorized',
                 message: 'User is not logged in',
             });
         }
@@ -75,9 +75,9 @@ async function createApplication(
         }
 
         if (!req.authPayload) {
-            return res.status(403).json({
-                status: 403,
-                error: 'Forbidden',
+            return res.status(401).json({
+                status: 401,
+                error: 'Unauthorized',
                 message: 'User is not logged in',
             });
         }
@@ -113,9 +113,9 @@ async function deleteApplication(
 ) {
     try {
         if (!req.authPayload) {
-            return res.status(403).json({
-                status: 403,
-                error: 'Forbidden',
+            return res.status(401).json({
+                status: 401,
+                error: 'Unauthorized',
                 message: 'User is not logged in',
             });
         }
@@ -170,9 +170,9 @@ async function getApplicationById(
 ) {
     try {
         if (!req.authPayload) {
-            return res.status(403).json({
-                status: 403,
-                error: 'Forbidden',
+            return res.status(401).json({
+                status: 401,
+                error: 'Unauthorized',
                 message: 'User is not logged in',
             });
         }
@@ -256,9 +256,9 @@ async function editApplication(
         }
 
         if (!req.authPayload) {
-            return res.status(403).json({
-                status: 403,
-                error: 'Forbidden',
+            return res.status(401).json({
+                status: 401,
+                error: 'Unauthorized',
                 message: 'User is not logged in',
             });
         }

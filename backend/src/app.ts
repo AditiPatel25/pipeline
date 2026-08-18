@@ -5,6 +5,7 @@ import cookieParser from 'cookie-parser';
 
 import authRouter from './routes/authRouter.js';
 import applicationRouter from './routes/applicationRouter.js';
+import followUpRouter from './routes/followUpRouter.js';
 
 const app = express();
 app.use(
@@ -22,6 +23,7 @@ app.get("/", (req, res) => {
 
 app.use('/api/auth', authRouter);
 app.use('/api/applications', applicationRouter);
+app.use('/api/followUps', followUpRouter);
 
 // no route matched
 app.use((req, res) => {
