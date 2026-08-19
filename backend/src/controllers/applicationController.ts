@@ -1,6 +1,6 @@
 import { prisma } from '../prisma.js';
 import type { Request, Response, NextFunction } from 'express';
-import { Status } from '@prisma/client';
+import { Status, WorkArrangement, EmploymentType } from '@prisma/client';
 
 type ApplicationParams = {
     id: string;
@@ -48,6 +48,9 @@ async function createApplication(
             status,
             appliedDate,
             source,
+            location,
+            workArrangement,
+            employmentType,
             notes,
         } = req.body;
 
@@ -74,6 +77,20 @@ async function createApplication(
             });
         }
 
+        if (!Object.values(Status).includes(workArrangement)) {
+            return res.status(400).json({
+                success: false,
+                message: `Invalid work arrangement. Must be one of: ${Object.values(workArrangement).join(', ')}`,
+            });
+        }
+
+        if (!Object.values(Status).includes(employmentType)) {
+            return res.status(400).json({
+                success: false,
+                message: `Invalid employment type. Must be one of: ${Object.values(employmentType).join(', ')}`,
+            });
+        }
+
         if (!req.authPayload) {
             return res.status(401).json({
                 status: 401,
@@ -91,7 +108,10 @@ async function createApplication(
                 status,
                 appliedDate,
                 source,
+                location,
                 notes,
+                workArrangement,
+                employmentType,
                 userId: req.authPayload.userId,
             },
         });
@@ -229,6 +249,9 @@ async function editApplication(
             status,
             appliedDate,
             source,
+            location,
+            workArrangement,
+            employmentType,
             notes,
         } = req.body;
 
@@ -252,6 +275,20 @@ async function editApplication(
             return res.status(400).json({
                 success: false,
                 message: `Invalid status. Must be one of: ${Object.values(Status).join(', ')}`,
+            });
+        }
+
+        if (!Object.values(Status).includes(workArrangement)) {
+            return res.status(400).json({
+                success: false,
+                message: `Invalid work arrangement. Must be one of: ${Object.values(workArrangement).join(', ')}`,
+            });
+        }
+
+        if (!Object.values(Status).includes(employmentType)) {
+            return res.status(400).json({
+                success: false,
+                message: `Invalid employment type. Must be one of: ${Object.values(employmentType).join(', ')}`,
             });
         }
 
@@ -302,6 +339,9 @@ async function editApplication(
                 status,
                 appliedDate,
                 source,
+                location,
+                workArrangement,
+                employmentType,
                 notes,
             },
         });

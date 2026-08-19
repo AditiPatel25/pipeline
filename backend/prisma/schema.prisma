@@ -30,6 +30,20 @@ enum OutreachSource {
   OTHER
 }
 
+enum WorkArrangement {
+  REMOTE
+  HYBRID
+  ONSITE
+}
+
+enum EmploymentType {
+  FULL_TIME
+  PART_TIME
+  CONTRACT
+  INTERNSHIP
+  TEMPORARY
+}
+
 model User {
   id           Int           @id @default(autoincrement())
   email        String        @unique
@@ -43,22 +57,25 @@ model User {
 }
 
 model Application {
-  id            Int             @id @default(autoincrement())
-  company       String
-  position      String
-  jobUrl        String
-  description   String?
-  status        Status
-  appliedDate   DateTime?
-  source        OutreachSource?
-  notes         String?
-  userId        Int
-  user          User            @relation(fields: [userId], references: [id])
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt       
-  followUps     FollowUp[]
-  outreaches    Outreach[]
-  resumeMatches ResumeMatch[]
+  id              Int              @id @default(autoincrement())
+  company         String
+  position        String
+  jobUrl          String
+  description     String?
+  status          Status
+  appliedDate     DateTime?
+  location        String?
+  workArrangement WorkArrangement?
+  employmentType  EmploymentType?
+  source          OutreachSource?
+  notes           String?
+  userId          Int
+  user            User             @relation(fields: [userId], references: [id])
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  followUps       FollowUp[]
+  outreaches      Outreach[]
+  resumeMatches   ResumeMatch[]
 }
 
 model FollowUp {

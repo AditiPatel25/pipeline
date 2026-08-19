@@ -6,7 +6,7 @@ function Navbar() {
 
     return (
         <nav className="border-b border-border bg-background">
-            <div className="mx-auto flex h-16 max-w-7xl items-center justify-between">
+            <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
                 {/* logo */}
                 <Link
                     to="/"
