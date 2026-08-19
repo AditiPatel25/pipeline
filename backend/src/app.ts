@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import type { Request, Response, NextFunction } from "express";
 import cookieParser from 'cookie-parser';
+import './config/passport.js';
 
 import authRouter from './routes/authRouter.js';
 import applicationRouter from './routes/applicationRouter.js';
@@ -25,7 +26,7 @@ app.get("/", (req, res) => {
 app.use('/api/auth', authRouter);
 app.use('/api/applications', applicationRouter);
 app.use('/api/followUps', followUpRouter);
-app.use('/api/outreach', followUpRouter);
+app.use('/api/outreach', outreachRouter);
 
 // no route matched
 app.use((req, res) => {

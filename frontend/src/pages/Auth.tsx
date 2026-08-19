@@ -60,7 +60,10 @@ function Auth() {
 
         try {
             if (isLogin) {
-                const data = await loginRequest(formData.identifier, formData.password);
+                const data = await loginRequest(
+                    formData.identifier,
+                    formData.password
+                );
                 login(data.user);
             } else {
                 const data = await registerRequest({
@@ -95,13 +98,9 @@ function Auth() {
     };
 
     return (
-        <div className="flex min-h-[80vh] flex-col items-center justify-center gap-8">
-            <h3 className="text-3xl font-bold text-discord-text">
-                {isLogin ? 'Login' : 'Register'}
-            </h3>
-
+        <div className="flex min-h-screen flex-col items-center justify-center px-4">
             {error && (
-                <div className="w-96 rounded-md border border-red-400/20 bg-red-400/10 px-3 py-2 text-sm text-red-300">
+                <div className="mb-4 w-full max-w-md rounded-md border border-red-400/20 bg-red-400/10 px-3 py-2 text-sm text-red-300">
                     {error}
                 </div>
             )}
@@ -125,7 +124,7 @@ function Auth() {
             <button
                 type="button"
                 onClick={onClick}
-                className="text-sm text-discord-text hover:underline pb-6"
+                className="mt-4 text-sm text-muted-foreground hover:text-foreground hover:underline"
             >
                 {isLogin
                     ? "Don't have an account? Register"
