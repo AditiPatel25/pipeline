@@ -42,7 +42,7 @@ function Applications() {
             </div>
             <div className="flex w-full">
                 {/* applications */}
-                <main>
+                <main className='mt-6'>
                     {loading ? (
                         <div>Loading applications...</div>
                     ) : applications.length === 0 ? (

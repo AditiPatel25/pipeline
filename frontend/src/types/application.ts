@@ -34,7 +34,7 @@ export type ApplicationSource =
 export type ApplicationData = {
     company: string;
     position: string;
-    jobUrl: string;
+    jobUrl?: string;
     description?: string;
     status: Status;
     appliedDate?: string;

@@ -59,8 +59,6 @@ async function createApplication(
             company.trim() === '' ||
             !position ||
             position.trim() === '' ||
-            !jobUrl ||
-            jobUrl.trim() === '' ||
             !status ||
             status.trim() === ''
         ) {
@@ -267,8 +265,6 @@ async function editApplication(
             company.trim() === '' ||
             !position ||
             position.trim() === '' ||
-            !jobUrl ||
-            jobUrl.trim() === '' ||
             !status ||
             status.trim() === ''
         ) {

@@ -55,6 +55,15 @@
     --color-sidebar-border: var(--sidebar-border);
     --color-sidebar-ring: var(--sidebar-ring);
 
+    /* status colors */
+    --color-status-applied: var(--status-applied);
+    --color-status-screening: var(--status-screening);
+    --color-status-interview: var(--status-interview);
+    --color-status-offer: var(--status-offer);
+    --color-status-rejected: var(--status-rejected);
+    --color-status-withdrawn: var(--status-withdrawn);
+    --color-status-ghosted: var(--status-ghosted);
+
     /* radius */
     --radius-sm: calc(var(--radius) * 0.6);
     --radius-md: calc(var(--radius) * 0.8);

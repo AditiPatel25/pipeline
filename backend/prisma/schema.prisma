@@ -69,7 +69,7 @@ model Application {
   id              Int              @id @default(autoincrement())
   company         String
   position        String
-  jobUrl          String
+  jobUrl          String?
   description     String?
   status          Status
   appliedDate     DateTime?
