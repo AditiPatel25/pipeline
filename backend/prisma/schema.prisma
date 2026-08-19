@@ -22,6 +22,15 @@ enum Status {
   GHOSTED
 }
 
+enum ApplicationSource {
+    LINKEDIN
+    INDEED
+    COMPANY_WEBSITE
+    REFERRAL
+    CAREER_FAIR
+    OTHER
+}
+
 enum OutreachSource {
   LINKEDIN
   REFERRAL
@@ -67,7 +76,7 @@ model Application {
   location        String?
   workArrangement WorkArrangement?
   employmentType  EmploymentType?
-  source          OutreachSource?
+  source          ApplicationSource?
   notes           String?
   userId          Int
   user            User             @relation(fields: [userId], references: [id])

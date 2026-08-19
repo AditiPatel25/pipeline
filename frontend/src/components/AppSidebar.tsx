@@ -16,6 +16,7 @@ import {
     House,
     ChevronUp,
     User,
+    Users,
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { Link } from 'react-router-dom';
@@ -36,6 +37,11 @@ const mainItems = [
         url: '/interviews',
         icon: CalendarDays,
     },
+    {
+        title: 'Contacts',
+        url: '/outreach',
+        icon: Users,
+    },
 ];
 
 const insightItems = [
@@ -52,7 +58,7 @@ function AppSidebar() {
     return (
         <Sidebar collapsible="icon">
             <SidebarContent>
-                {/* Main navigation */}
+                {/* main navigation */}
                 <SidebarGroup>
                     <SidebarGroupLabel className="text-xs font-semibold tracking-wider">
                         MAIN
@@ -62,7 +68,7 @@ function AppSidebar() {
                         <SidebarMenu className="mt-3 gap-1">
                             {mainItems.map((item) => (
                                 <SidebarMenuItem key={item.title}>
-                                    <SidebarMenuButton className="h-10 hover:pipeline-surface-hover">
+                                    <SidebarMenuButton className="h-10">
                                         <Link
                                             to={item.url}
                                             className="flex w-full items-center gap-3"
@@ -79,7 +85,7 @@ function AppSidebar() {
                     </SidebarGroupContent>
                 </SidebarGroup>
 
-                {/* Insights */}
+                {/* insights */}
                 <SidebarGroup>
                     <SidebarGroupLabel className="text-xs font-semibold tracking-wider">
                         INSIGHTS
@@ -107,23 +113,17 @@ function AppSidebar() {
                 </SidebarGroup>
             </SidebarContent>
 
-            {/* User section */}
+            {/* user section */}
             <SidebarFooter className="border-t p-2">
                 <SidebarMenu>
                     <SidebarMenuItem>
                         <SidebarMenuButton className="h-11">
-                            <button
-                                type="button"
-                                className="flex w-full items-center gap-3"
-                            >
-                                <User className="size-5" />
-
-                                <span className="truncate text-sm font-medium">
-                                    {user?.name ?? 'Account'}
+                            <span className="flex w-full items-center justify-between gap-3">
+                                <span className="font-semibold">
+                                    Hi, {user?.name || 'User'}
                                 </span>
-
-                                <ChevronUp className="ml-auto size-4" />
-                            </button>
+                                <ChevronUp />
+                            </span>
                         </SidebarMenuButton>
                     </SidebarMenuItem>
                 </SidebarMenu>
