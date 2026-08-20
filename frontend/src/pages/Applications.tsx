@@ -5,6 +5,8 @@ import { getApplicationsRequest } from '@/api/application';
 import axios from 'axios';
 import ApplicationCard from '@/components/ApplicationCard';
 import type { Application } from '@/types/application';
+import { Dialog, DialogTrigger } from '@/components/ui/dialog';
+import AddApplicationModal from '@/components/AddApplicationModal';
 
 function Applications() {
     const [applications, setApplications] = useState<Application[]>([]);
@@ -36,13 +38,20 @@ function Applications() {
         <>
             <div className="flex items-center justify-between px-4">
                 <h1 className="text-2xl font-extrabold">Applications</h1>
-                <Button>
-                    New Application <Plus />
-                </Button>
+                <Dialog>
+                    <DialogTrigger
+                        render={
+                            <Button>
+                                Add Application <Plus />
+                            </Button>
+                        }
+                    />
+                    <AddApplicationModal />
+                </Dialog>
             </div>
             <div className="flex w-full">
                 {/* applications */}
-                <main className='mt-6'>
+                <main className="mt-6">
                     {loading ? (
                         <div>Loading applications...</div>
                     ) : applications.length === 0 ? (
