@@ -1,33 +1,41 @@
 import App from './App';
+import AuthLayout from './layouts/AuthLayout';
 import Auth from './pages/Auth';
 import Home from './pages/Home';
 import Applications from './pages/Applications';
-// import Interviews from './pages/Interviews';
-// import Analytics from './pages/Analytics';
 import ProtectedRoute from './components/ProtectedRoute';
 
 const routes = [
     {
-        element: <ProtectedRoute />,
+        element: <AuthLayout />,
         children: [
             {
-                path: '/',
-                element: <App />,
-                children: [
-                    { index: true, element: <Home /> },
-                    { path: 'applications', element: <Applications /> },
-                    // { path: 'interviews', element: <Interviews /> },
-                    // { path: 'analytics', element: <Analytics /> },
-                ],
+                path: 'auth/login',
+                element: <Auth />,
+            },
+            {
+                path: 'auth/register',
+                element: <Auth />,
             },
         ],
     },
 
     {
-        path: 'auth',
+        element: <ProtectedRoute />,
         children: [
-            { path: 'login', element: <Auth /> },
-            { path: 'register', element: <Auth /> },
+            {
+                element: <App />,
+                children: [
+                    {
+                        path: '/',
+                        element: <Home />,
+                    },
+                    {
+                        path: '/applications',
+                        element: <Applications />,
+                    },
+                ],
+            },
         ],
     },
 ];
