@@ -1,6 +1,6 @@
 import { format } from 'date-fns';
 import { ApplicationData } from '@/types/application';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
     ApplicationSource,
     WorkArrangement,
@@ -63,17 +63,27 @@ const emptyApplication: ApplicationData = {
     notes: '',
 };
 
-type AddApplicationModalProps = {
+const getLabel = (
+    items: { label: string; value: string }[],
+    value: string | null
+) => {
+    return items.find((item) => item.value === value)?.label;
+};
+
+type ApplicationModalProps = {
+    initialApplication?: ApplicationData;
     handleSubmit: (application: ApplicationData) => Promise<void>;
     onSuccess: () => void;
 };
 
-function AddApplicationModal({
+function ApplicationModal({
+    initialApplication,
     handleSubmit,
     onSuccess,
-}: AddApplicationModalProps) {
-    const [application, setApplication] =
-        useState<ApplicationData>(emptyApplication);
+}: ApplicationModalProps) {
+    const [application, setApplication] = useState<ApplicationData>(
+        initialApplication ?? emptyApplication
+    );
 
     const handleChange = (
         e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -97,17 +107,18 @@ function AddApplicationModal({
         }
     };
 
-    const getLabel = (
-        items: { label: string; value: string }[],
-        value: string | null
-    ) => {
-        return items.find((item) => item.value === value)?.label;
-    };
+    const isEditing = !!initialApplication;
+
+    useEffect(() => {
+        setApplication(initialApplication ?? emptyApplication);
+    }, [initialApplication]);
 
     return (
         <DialogContent className="flex max-h-[90vh] flex-col sm:max-w-lg">
             <DialogHeader>
-                <DialogTitle>Add application</DialogTitle>
+                <DialogTitle>
+                    {isEditing ? 'Edit application' : 'Add application'}
+                </DialogTitle>
                 <DialogDescription>
                     Add your job application here. Click save when you&apos;re
                     done.
@@ -149,7 +160,7 @@ function AddApplicationModal({
                         <Field>
                             <FieldLabel htmlFor="status">Status</FieldLabel>
                             <Select
-                                value={application.status ?? 'None'}
+                                value={application.status}
                                 onValueChange={(value) =>
                                     setApplication((prev) => ({
                                         ...prev,
@@ -426,11 +437,13 @@ function AddApplicationModal({
                             </Button>
                         }
                     />
-                    <Button type="submit">Save</Button>
+                    <Button type="submit">
+                        {isEditing ? 'Save changes' : 'Save'}
+                    </Button>
                 </DialogFooter>
             </form>
         </DialogContent>
     );
 }
 
-export default AddApplicationModal;
+export default ApplicationModal;

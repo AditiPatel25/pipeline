@@ -5,10 +5,24 @@ import {
     employmentTypeLabels,
     sourceLabels,
 } from '@/constants/application';
+import { Button } from './ui/button';
+import { Trash, Pencil } from 'lucide-react';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 
 type ApplicationCardProps = {
     application: Application;
-    handleDelete: (applicationId: number) => Promise<void>;
+    onDelete: (applicationId: number) => Promise<void>;
+    onEdit: (application: Application) => void;
 };
 
 const statusStyles = {
@@ -21,9 +35,13 @@ const statusStyles = {
     GHOSTED: 'bg-status-ghosted',
 };
 
-function ApplicationCard({ application, handleDelete }: ApplicationCardProps) {
+function ApplicationCard({
+    application,
+    onDelete,
+    onEdit,
+}: ApplicationCardProps) {
     return (
-        <div className="rounded-xl border border-border bg-card p-5 shadow-sm transition-all hover:border-accent hover:shadow-md m-2 my-4">
+        <div className="rounded-xl border border-border bg-card p-5 shadow-sm transition-all hover:border-accent hover:shadow-md">
             {/* header */}
             <div>
                 <div className="flex items-center justify-between gap-4">
@@ -70,19 +88,66 @@ function ApplicationCard({ application, handleDelete }: ApplicationCardProps) {
             </div>
 
             {/* footer */}
-            {application.appliedDate && (
-                <div className="mt-5 border-t border-border pt-4 text-xs text-muted-foreground">
-                    Applied on{' '}
-                    {new Date(application.appliedDate).toLocaleDateString(
-                        'en-US',
-                        {
-                            month: 'short',
-                            day: 'numeric',
-                            year: 'numeric',
-                        }
+
+            <div className="flex justify-between items-center gap-4 mt-5 border-t border-border pt-4 text-xs text-muted-foreground">
+                <div>
+                    {application.appliedDate && (
+                        <>
+                            Applied on{' '}
+                            {new Date(
+                                application.appliedDate
+                            ).toLocaleDateString('en-US', {
+                                month: 'short',
+                                day: 'numeric',
+                                year: 'numeric',
+                            })}
+                        </>
                     )}
                 </div>
-            )}
+                <div className="flex items-center gap-1">
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        type="button"
+                        onClick={() => onEdit(application)}
+                    >
+                        <Pencil />
+                    </Button>
+
+                    <AlertDialog>
+                        <AlertDialogTrigger
+                            render={
+                                <Button
+                                    variant="destructive"
+                                    size="icon"
+                                    type="button"
+                                >
+                                    <Trash />
+                                </Button>
+                            }
+                        />
+                        <AlertDialogContent>
+                            <AlertDialogHeader>
+                                <AlertDialogTitle>
+                                    Are you absolutely sure?
+                                </AlertDialogTitle>
+                                <AlertDialogDescription>
+                                    This action cannot be undone and will
+                                    permanently delete this application.
+                                </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogAction
+                                    onClick={() => onDelete(application.id)}
+                                >
+                                    Continue
+                                </AlertDialogAction>
+                            </AlertDialogFooter>
+                        </AlertDialogContent>
+                    </AlertDialog>
+                </div>
+            </div>
         </div>
     );
 }

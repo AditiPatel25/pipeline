@@ -25,6 +25,6 @@ export async function editApplicationRequest(
     id: number,
     data: ApplicationData
 ) {
-    const res = await api.post(`/applications/${id}`, data);
+    const res = await api.patch(`/applications/${id}`, data);
     return res.data;
 }
