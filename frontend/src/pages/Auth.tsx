@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import Register from '../components/Register';
 import { loginRequest, registerRequest } from '@/api/auth.js';
 import Login from '../components/Login';
-import axios from 'axios';
+import { getErrorMessage } from '@/utils/getErrorMessage';
 
 const emptyForm = {
     identifier: '',
@@ -79,14 +79,7 @@ function Auth() {
             setConfirmPassword('');
             navigate('/');
         } catch (err) {
-            if (axios.isAxiosError(err)) {
-                setError(
-                    err.response?.data?.message ||
-                        'Something went wrong. Please try again.'
-                );
-            } else {
-                setError('Something went wrong. Please try again.');
-            }
+            getErrorMessage(err);
         }
     };
 

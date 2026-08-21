@@ -1,6 +1,11 @@
 import { prisma } from '../prisma.js';
 import type { Request, Response, NextFunction } from 'express';
-import { Status, WorkArrangement, EmploymentType, ApplicationSource } from '@prisma/client';
+import {
+    Status,
+    WorkArrangement,
+    EmploymentType,
+    ApplicationSource,
+} from '@prisma/client';
 
 type ApplicationParams = {
     id: string;
@@ -75,21 +80,30 @@ async function createApplication(
             });
         }
 
-        if (!Object.values(WorkArrangement).includes(workArrangement)) {
+        if (
+            workArrangement !== null &&
+            !Object.values(WorkArrangement).includes(workArrangement)
+        ) {
             return res.status(400).json({
                 success: false,
                 message: `Invalid work arrangement. Must be one of: ${Object.values(WorkArrangement).join(', ')}`,
             });
         }
 
-        if (!Object.values(EmploymentType).includes(employmentType)) {
+        if (
+            employmentType !== null &&
+            !Object.values(EmploymentType).includes(employmentType)
+        ) {
             return res.status(400).json({
                 success: false,
                 message: `Invalid employment type. Must be one of: ${Object.values(EmploymentType).join(', ')}`,
             });
         }
 
-        if (!Object.values(ApplicationSource).includes(source)) {
+        if (
+            source !== null &&
+            !Object.values(ApplicationSource).includes(source)
+        ) {
             return res.status(400).json({
                 success: false,
                 message: `Invalid source. Must be one of: ${Object.values(ApplicationSource).join(', ')}`,
@@ -281,21 +295,30 @@ async function editApplication(
             });
         }
 
-        if (!Object.values(WorkArrangement).includes(workArrangement)) {
+        if (
+            workArrangement !== null &&
+            !Object.values(WorkArrangement).includes(workArrangement)
+        ) {
             return res.status(400).json({
                 success: false,
                 message: `Invalid work arrangement. Must be one of: ${Object.values(WorkArrangement).join(', ')}`,
             });
         }
 
-        if (!Object.values(EmploymentType).includes(employmentType)) {
+        if (
+            employmentType !== null &&
+            !Object.values(EmploymentType).includes(employmentType)
+        ) {
             return res.status(400).json({
                 success: false,
                 message: `Invalid employment type. Must be one of: ${Object.values(EmploymentType).join(', ')}`,
             });
         }
 
-        if (!Object.values(ApplicationSource).includes(source)) {
+        if (
+            source !== null &&
+            !Object.values(ApplicationSource).includes(source)
+        ) {
             return res.status(400).json({
                 success: false,
                 message: `Invalid source. Must be one of: ${Object.values(ApplicationSource).join(', ')}`,

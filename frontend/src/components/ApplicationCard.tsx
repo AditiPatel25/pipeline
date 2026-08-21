@@ -1,8 +1,14 @@
 import type { Application } from '@/types/application';
 import { Badge } from '@/components/ui/badge';
+import {
+    workArrangementLabels,
+    employmentTypeLabels,
+    sourceLabels,
+} from '@/constants/application';
 
 type ApplicationCardProps = {
     application: Application;
+    handleDelete: (applicationId: number) => Promise<void>;
 };
 
 const statusStyles = {
@@ -12,34 +18,12 @@ const statusStyles = {
     OFFER: 'bg-status-offer',
     REJECTED: 'bg-status-rejected',
     WITHDRAWN: 'bg-status-withdrawn',
-    GHOSTED: 'bg-status-withdrawn',
+    GHOSTED: 'bg-status-ghosted',
 };
 
-const workArrangementLabels = {
-    REMOTE: 'Remote',
-    HYBRID: 'Hybrid',
-    ONSITE: 'On-site',
-};
-
-const employmentTypeLabels = {
-    FULL_TIME: 'Full-time',
-    PART_TIME: 'Part-time',
-    CONTRACT: 'Contract',
-    INTERNSHIP: 'Internship',
-    TEMPORARY: 'Temporary',
-};
-
-const sourceLabels = {
-    LINKEDIN: 'LinkedIn',
-    REFERRAL: 'Referral',
-    COLD_EMAIL: 'Cold email',
-    CAREER_FAIR: 'Career fair',
-    OTHER: 'Other',
-};
-
-function ApplicationCard({ application }: ApplicationCardProps) {
+function ApplicationCard({ application, handleDelete }: ApplicationCardProps) {
     return (
-        <div className="rounded-xl border border-border bg-card p-5 shadow-sm transition-all hover:border-accent hover:shadow-md">
+        <div className="rounded-xl border border-border bg-card p-5 shadow-sm transition-all hover:border-accent hover:shadow-md m-2 my-4">
             {/* header */}
             <div>
                 <div className="flex items-center justify-between gap-4">

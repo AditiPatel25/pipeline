@@ -1,5 +1,18 @@
-import * as React from 'react';
 import { format } from 'date-fns';
+import { ApplicationData } from '@/types/application';
+import { useState } from 'react';
+import {
+    ApplicationSource,
+    WorkArrangement,
+    EmploymentType,
+    Status,
+} from '@/types/application';
+import {
+    workArrangementItems,
+    jobSourceItems,
+    employmentTypeItems,
+    applicationStatusItems,
+} from '@/constants/application';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -36,41 +49,61 @@ import {
     PopoverTrigger,
 } from '@/components/ui/popover';
 
-const applicationStatusItems = [
-    { label: 'Applied', value: 'APPLIED' },
-    { label: 'Screening', value: 'SCREENING' },
-    { label: 'Interview', value: 'INTERVIEW' },
-    { label: 'Offer', value: 'OFFER' },
-    { label: 'Rejected', value: 'REJECTED' },
-    { label: 'Withdrawn', value: 'WITHDRAWN' },
-    { label: 'Ghosted', value: 'GHOSTED' },
-];
+const emptyApplication: ApplicationData = {
+    company: '',
+    position: '',
+    jobUrl: '',
+    description: '',
+    status: 'APPLIED',
+    appliedDate: '',
+    source: null,
+    location: '',
+    workArrangement: null,
+    employmentType: null,
+    notes: '',
+};
 
-const workArrangementItems = [
-    { label: 'Onsite', value: 'ONSITE' },
-    { label: 'Hybrid', value: 'HYBRID' },
-    { label: 'Remote', value: 'REMOTE' },
-];
+type AddApplicationModalProps = {
+    handleSubmit: (application: ApplicationData) => Promise<void>;
+    onSuccess: () => void;
+};
 
-const employmentTypeItems = [
-    { label: 'Full-time', value: 'FULL_TIME' },
-    { label: 'Part-time', value: 'PART_TIME' },
-    { label: 'Contract', value: 'CONTRACT' },
-    { label: 'Internship', value: 'INTERNSHIP' },
-    { label: 'Temporary', value: 'TEMPORARY' },
-];
+function AddApplicationModal({
+    handleSubmit,
+    onSuccess,
+}: AddApplicationModalProps) {
+    const [application, setApplication] =
+        useState<ApplicationData>(emptyApplication);
 
-const jobSourceItems = [
-    { label: 'LinkedIn', value: 'LINKEDIN' },
-    { label: 'Referral', value: 'REFERRAL' },
-    { label: 'Company Website', value: 'COMPANY_WEBSITE' },
-    { label: 'Cold Email', value: 'COLD_EMAIL' },
-    { label: 'Career Fair', value: 'CAREER_FAIR' },
-    { label: 'Other', value: 'OTHER' },
-];
+    const handleChange = (
+        e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    ) => {
+        const { name, value } = e.target;
 
-function AddApplicationModal() {
-    const [date, setDate] = React.useState<Date>();
+        setApplication((prev) => ({
+            ...prev,
+            [name]: value,
+        }));
+    };
+
+    const onSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
+        e.preventDefault();
+
+        try {
+            await handleSubmit(application);
+            onSuccess();
+        } catch (err) {
+            // Keep modal open if submission fails
+        }
+    };
+
+    const getLabel = (
+        items: { label: string; value: string }[],
+        value: string | null
+    ) => {
+        return items.find((item) => item.value === value)?.label;
+    };
+
     return (
         <DialogContent className="flex max-h-[90vh] flex-col sm:max-w-lg">
             <DialogHeader>
@@ -80,112 +113,65 @@ function AddApplicationModal() {
                     done.
                 </DialogDescription>
             </DialogHeader>
-            <form className="flex-1 overflow-y-auto pr-6" action="">
-                <FieldGroup className="px-2">
-                    <Field>
-                        <FieldLabel htmlFor="company">Company</FieldLabel>
-                        <Input
-                            id="company"
-                            name="company"
-                            placeholder="Google"
-                        />
-                    </Field>
-                    <Field>
-                        <FieldLabel htmlFor="position">Position</FieldLabel>
-                        <Input
-                            id="position"
-                            name="position"
-                            placeholder="Software Engineer"
-                        />
-                    </Field>
-                    <Field>
-                        <FieldLabel htmlFor="jobUrl">Job Url</FieldLabel>
-                        <Input
-                            id="jobUrl"
-                            name="jobUrl"
-                            placeholder="https://..."
-                        />
-                    </Field>
-                    <Field>
-                        <FieldLabel htmlFor="status">Status</FieldLabel>
-                        <Select>
-                            <SelectTrigger className="w-full">
-                                <SelectValue placeholder="Select application status" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectGroup>
-                                    <SelectLabel>
-                                        Application Status
-                                    </SelectLabel>
-                                    {applicationStatusItems.map((item) => (
-                                        <SelectItem
-                                            key={item.value}
-                                            value={item.value}
-                                        >
-                                            {item.label}
-                                        </SelectItem>
-                                    ))}
-                                </SelectGroup>
-                            </SelectContent>
-                        </Select>
-                    </Field>
-                    <Field>
-                        <FieldLabel htmlFor="dateApplied">
-                            Date Applied
-                        </FieldLabel>
-                        <Popover>
-                            <PopoverTrigger
-                                render={
-                                    <Button
-                                        variant={'outline'}
-                                        data-empty={!date}
-                                        className="w-53 justify-between text-left font-normal data-[empty=true]:text-muted-foreground"
-                                    >
-                                        {date ? (
-                                            format(date, 'PPP')
-                                        ) : (
-                                            <span>Pick a date</span>
-                                        )}
-                                        <ChevronDownIcon data-icon="inline-end" />
-                                    </Button>
-                                }
-                            />
-                            <PopoverContent
-                                className="w-auto p-0"
-                                align="start"
-                            >
-                                <Calendar
-                                    mode="single"
-                                    selected={date}
-                                    onSelect={setDate}
-                                    defaultMonth={date}
-                                />
-                            </PopoverContent>
-                        </Popover>
-                    </Field>
-                    <div className="grid grid-cols-2 gap-4">
+            <form className="flex min-h-0 flex-1 flex-col" onSubmit={onSubmit}>
+                <div className="flex-1 overflow-y-auto pr-6 pb-4">
+                    <FieldGroup className="px-2">
                         <Field>
-                            <FieldLabel htmlFor="location">Location</FieldLabel>
+                            <FieldLabel htmlFor="company">Company</FieldLabel>
                             <Input
-                                id="location"
-                                name="location"
-                                placeholder="NYC"
+                                id="company"
+                                name="company"
+                                placeholder="Google"
+                                onChange={handleChange}
+                                value={application.company}
                             />
                         </Field>
                         <Field>
-                            <FieldLabel htmlFor="workArrangement">
-                                Work Arrangement
-                            </FieldLabel>
-                            <Select>
+                            <FieldLabel htmlFor="position">Position</FieldLabel>
+                            <Input
+                                id="position"
+                                name="position"
+                                placeholder="Software Engineer"
+                                onChange={handleChange}
+                                value={application.position}
+                            />
+                        </Field>
+                        <Field>
+                            <FieldLabel htmlFor="jobUrl">Job Url</FieldLabel>
+                            <Input
+                                id="jobUrl"
+                                name="jobUrl"
+                                placeholder="https://..."
+                                onChange={handleChange}
+                                value={application.jobUrl}
+                            />
+                        </Field>
+                        <Field>
+                            <FieldLabel htmlFor="status">Status</FieldLabel>
+                            <Select
+                                value={application.status ?? 'None'}
+                                onValueChange={(value) =>
+                                    setApplication((prev) => ({
+                                        ...prev,
+                                        status: value as Status,
+                                    }))
+                                }
+                            >
                                 <SelectTrigger className="w-full">
-                                    <SelectValue placeholder="Select work arrangement" />
+                                    <SelectValue placeholder="Select application status">
+                                        {application.status &&
+                                            getLabel(
+                                                applicationStatusItems,
+                                                application.status
+                                            )}
+                                    </SelectValue>
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectGroup>
                                         <SelectLabel>
-                                            Work Arrangement
+                                            Application Status
                                         </SelectLabel>
-                                        {workArrangementItems.map((item) => (
+                                        {applicationStatusItems.map((item) => (
                                             <SelectItem
                                                 key={item.value}
                                                 value={item.value}
@@ -197,83 +183,252 @@ function AddApplicationModal() {
                                 </SelectContent>
                             </Select>
                         </Field>
-
                         <Field>
-                            <FieldLabel htmlFor="employmentType">
-                                Employment Type
+                            <FieldLabel htmlFor="dateApplied">
+                                Date Applied
                             </FieldLabel>
-                            <Select>
-                                <SelectTrigger className="w-full">
-                                    <SelectValue placeholder="Select employment type" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectGroup>
-                                        <SelectLabel>
-                                            Employment Type
-                                        </SelectLabel>
-                                        {employmentTypeItems.map((item) => (
-                                            <SelectItem
-                                                key={item.value}
-                                                value={item.value}
-                                            >
-                                                {item.label}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectGroup>
-                                </SelectContent>
-                            </Select>
+                            <Popover>
+                                <PopoverTrigger
+                                    render={
+                                        <Button
+                                            variant={'outline'}
+                                            data-empty={
+                                                !application.appliedDate
+                                            }
+                                            className="w-53 justify-between text-left font-normal data-[empty=true]:text-muted-foreground bg-popover border-input"
+                                        >
+                                            {application.appliedDate ? (
+                                                format(
+                                                    new Date(
+                                                        application.appliedDate
+                                                    ),
+                                                    'PPP'
+                                                )
+                                            ) : (
+                                                <span>Pick a date</span>
+                                            )}
+                                            <ChevronDownIcon data-icon="inline-end" />
+                                        </Button>
+                                    }
+                                />
+                                <PopoverContent
+                                    className="w-auto p-0"
+                                    align="start"
+                                >
+                                    <Calendar
+                                        mode="single"
+                                        defaultMonth={
+                                            application.appliedDate
+                                                ? new Date(
+                                                      application.appliedDate
+                                                  )
+                                                : new Date()
+                                        }
+                                        selected={
+                                            application.appliedDate
+                                                ? new Date(
+                                                      application.appliedDate
+                                                  )
+                                                : undefined
+                                        }
+                                        onSelect={(date) =>
+                                            setApplication((prev) => ({
+                                                ...prev,
+                                                appliedDate: date
+                                                    ? date.toISOString()
+                                                    : '',
+                                            }))
+                                        }
+                                    />
+                                </PopoverContent>
+                            </Popover>
+                        </Field>
+                        <div className="grid grid-cols-2 gap-4">
+                            <Field>
+                                <FieldLabel htmlFor="location">
+                                    Location
+                                </FieldLabel>
+                                <Input
+                                    id="location"
+                                    name="location"
+                                    placeholder="NYC"
+                                    onChange={handleChange}
+                                    value={application.location}
+                                />
+                            </Field>
+                            <Field>
+                                <FieldLabel htmlFor="workArrangement">
+                                    Work Arrangement
+                                </FieldLabel>
+                                <Select
+                                    value={
+                                        application.workArrangement ?? 'None'
+                                    }
+                                    onValueChange={(value) =>
+                                        setApplication((prev) => ({
+                                            ...prev,
+                                            workArrangement:
+                                                value === 'None'
+                                                    ? null
+                                                    : (value as WorkArrangement),
+                                        }))
+                                    }
+                                >
+                                    <SelectTrigger className="w-full">
+                                        <SelectValue placeholder="Select work arrangement">
+                                            {application.workArrangement &&
+                                                getLabel(
+                                                    workArrangementItems,
+                                                    application.workArrangement
+                                                )}
+                                        </SelectValue>
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectGroup>
+                                            <SelectLabel>
+                                                Work Arrangement
+                                            </SelectLabel>
+                                            {workArrangementItems.map(
+                                                (item) => (
+                                                    <SelectItem
+                                                        key={item.value}
+                                                        value={item.value}
+                                                    >
+                                                        {item.label}
+                                                    </SelectItem>
+                                                )
+                                            )}
+                                        </SelectGroup>
+                                    </SelectContent>
+                                </Select>
+                            </Field>
+
+                            <Field>
+                                <FieldLabel htmlFor="employmentType">
+                                    Employment Type
+                                </FieldLabel>
+                                <Select
+                                    value={application.employmentType ?? 'None'}
+                                    onValueChange={(value) =>
+                                        setApplication((prev) => ({
+                                            ...prev,
+                                            employmentType:
+                                                value === 'None'
+                                                    ? null
+                                                    : (value as EmploymentType),
+                                        }))
+                                    }
+                                >
+                                    <SelectTrigger className="w-full">
+                                        <SelectValue placeholder="Select employment type">
+                                            {application.employmentType &&
+                                                getLabel(
+                                                    employmentTypeItems,
+                                                    application.employmentType
+                                                )}
+                                        </SelectValue>
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectGroup>
+                                            <SelectLabel>
+                                                Employment Type
+                                            </SelectLabel>
+                                            {employmentTypeItems.map((item) => (
+                                                <SelectItem
+                                                    key={item.value}
+                                                    value={item.value}
+                                                >
+                                                    {item.label}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectGroup>
+                                    </SelectContent>
+                                </Select>
+                            </Field>
+
+                            <Field>
+                                <FieldLabel htmlFor="source">
+                                    Job Source
+                                </FieldLabel>
+                                <Select
+                                    value={application.source ?? 'None'}
+                                    onValueChange={(value) =>
+                                        setApplication((prev) => ({
+                                            ...prev,
+                                            source:
+                                                value === 'None'
+                                                    ? null
+                                                    : (value as ApplicationSource),
+                                        }))
+                                    }
+                                >
+                                    <SelectTrigger className="w-full">
+                                        <SelectValue placeholder="Select job source">
+                                            {application.source &&
+                                                getLabel(
+                                                    jobSourceItems,
+                                                    application.source
+                                                )}
+                                        </SelectValue>
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectGroup>
+                                            <SelectLabel>
+                                                Job Source
+                                            </SelectLabel>
+                                            {jobSourceItems.map((item) => (
+                                                <SelectItem
+                                                    key={item.value}
+                                                    value={item.value}
+                                                >
+                                                    {item.label}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectGroup>
+                                    </SelectContent>
+                                </Select>
+                            </Field>
+                        </div>
+                        <Field>
+                            <FieldLabel htmlFor="description">
+                                Job Description
+                            </FieldLabel>
+                            <FieldDescription>
+                                Paste the job description here for reference.
+                            </FieldDescription>
+                            <Textarea
+                                id="description"
+                                placeholder="Type your message here."
+                                onChange={handleChange}
+                                name="description"
+                                value={application.description}
+                            />
                         </Field>
 
                         <Field>
-                            <FieldLabel htmlFor="source">Job Source</FieldLabel>
-                            <Select>
-                                <SelectTrigger className="w-full">
-                                    <SelectValue placeholder="Select job source" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectGroup>
-                                        <SelectLabel>Job Source</SelectLabel>
-                                        {jobSourceItems.map((item) => (
-                                            <SelectItem
-                                                key={item.value}
-                                                value={item.value}
-                                            >
-                                                {item.label}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectGroup>
-                                </SelectContent>
-                            </Select>
+                            <FieldLabel htmlFor="notes">Notes</FieldLabel>
+                            <Textarea
+                                id="notes"
+                                placeholder="Add any notes about this application..."
+                                onChange={handleChange}
+                                name="notes"
+                                value={application.notes}
+                            />
                         </Field>
-                    </div>
-                    <Field>
-                        <FieldLabel htmlFor="description">
-                            Job Description
-                        </FieldLabel>
-                        <FieldDescription>
-                            Paste the job description here for reference.
-                        </FieldDescription>
-                        <Textarea
-                            id="description"
-                            placeholder="Type your message here."
-                        />
-                    </Field>
+                    </FieldGroup>
+                </div>
 
-                    <Field>
-                        <FieldLabel htmlFor="notes">Notes</FieldLabel>
-                        <Textarea
-                            id="notes"
-                            placeholder="Add any notes about this application..."
-                        />
-                    </Field>
-                </FieldGroup>
+                <DialogFooter className="sm:justify-around">
+                    <DialogClose
+                        render={
+                            <Button type="button" variant="outline">
+                                Cancel
+                            </Button>
+                        }
+                    />
+                    <Button type="submit">Save</Button>
+                </DialogFooter>
             </form>
-            <DialogFooter className="sm:justify-around">
-                <DialogClose
-                    render={<Button variant="outline">Cancel</Button>}
-                />
-                <Button type="submit">Save</Button>
-            </DialogFooter>
         </DialogContent>
     );
 }

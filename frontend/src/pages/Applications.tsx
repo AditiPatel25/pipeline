@@ -1,32 +1,30 @@
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 import { useState, useEffect } from 'react';
-import { getApplicationsRequest } from '@/api/application';
-import axios from 'axios';
+import {
+    createApplicationRequest,
+    deleteApplicationRequest,
+    getApplicationsRequest,
+} from '@/api/application';
 import ApplicationCard from '@/components/ApplicationCard';
-import type { Application } from '@/types/application';
+import type { Application, ApplicationData } from '@/types/application';
 import { Dialog, DialogTrigger } from '@/components/ui/dialog';
 import AddApplicationModal from '@/components/AddApplicationModal';
+import { getErrorMessage } from '@/utils/getErrorMessage';
 
 function Applications() {
     const [applications, setApplications] = useState<Application[]>([]);
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(true);
-
+    const [open, setOpen] = useState(false);
+    
     useEffect(() => {
         const fetchApplications = async () => {
             try {
                 const response = await getApplicationsRequest();
                 setApplications(response.applications);
             } catch (err) {
-                if (axios.isAxiosError(err)) {
-                    setError(
-                        err.response?.data?.message ||
-                            'Something went wrong. Please try again.'
-                    );
-                } else {
-                    setError('Something went wrong. Please try again.');
-                }
+                getErrorMessage(err)
             } finally {
                 setLoading(false);
             }
@@ -34,11 +32,45 @@ function Applications() {
         fetchApplications();
     }, []);
 
+    const handleCreateApplication = async (application: ApplicationData) => {
+        try {
+            const response = await createApplicationRequest(application);
+
+            setApplications((prev) => [...prev, response.application]);
+
+            setError('');
+        } catch (err) {
+            getErrorMessage(err);
+            throw err
+        }
+    };
+
+    async function handleDelete(applicationId: number) {
+        try {
+            await deleteApplicationRequest(applicationId);
+            setApplications((applications) =>
+                applications.filter(
+                    (application) => application.id !== applicationId
+                )
+            );
+        } catch (err) {
+            getErrorMessage(err);
+        }
+    }
+
+    if (loading) {
+        return (
+            <div className="flex justify-center py-20 text-muted">
+                Loading...
+            </div>
+        );
+    }
+
     return (
         <>
             <div className="flex items-center justify-between px-4">
                 <h1 className="text-2xl font-extrabold">Applications</h1>
-                <Dialog>
+                <Dialog open={open} onOpenChange={setOpen}>
                     <DialogTrigger
                         render={
                             <Button>
@@ -46,7 +78,7 @@ function Applications() {
                             </Button>
                         }
                     />
-                    <AddApplicationModal />
+                    <AddApplicationModal handleSubmit={handleCreateApplication} onSuccess={() => setOpen(false)} />
                 </Dialog>
             </div>
             <div className="flex w-full">
@@ -65,6 +97,7 @@ function Applications() {
                             <ApplicationCard
                                 key={application.id}
                                 application={application}
+                                handleDelete={handleDelete}
                             />
                         ))
                     )}

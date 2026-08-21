@@ -38,10 +38,10 @@ export type ApplicationData = {
     description?: string;
     status: Status;
     appliedDate?: string;
-    source?: OutreachSource;
+    source?: ApplicationSource | null;
     location?: string;
-    workArrangement?: WorkArrangement;
-    employmentType?: EmploymentType;
+    workArrangement?: WorkArrangement | null;
+    employmentType?: EmploymentType | null;
     notes?: string;
 };
 

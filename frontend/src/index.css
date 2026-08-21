@@ -145,10 +145,10 @@
     --status-applied: #3b82f6;
     --status-screening: #8b5cf6;
     --status-interview: #f59e0b;
-    --status-final: #f97316;
     --status-offer: #22c55e;
     --status-rejected: #ef4444;
     --status-withdrawn: #64748b;
+    --status-ghosted: #d3d3d3;
 }
 
 /* base */
