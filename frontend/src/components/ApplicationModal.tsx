@@ -1,6 +1,8 @@
 import { format } from 'date-fns';
 import { ApplicationData } from '@/types/application';
 import { useState, useEffect } from 'react';
+import { getLabel } from '@/utils/getLabel';
+
 import {
     ApplicationSource,
     WorkArrangement,
@@ -61,13 +63,6 @@ const emptyApplication: ApplicationData = {
     workArrangement: null,
     employmentType: null,
     notes: '',
-};
-
-const getLabel = (
-    items: { label: string; value: string }[],
-    value: string | null
-) => {
-    return items.find((item) => item.value === value)?.label;
 };
 
 type ApplicationModalProps = {

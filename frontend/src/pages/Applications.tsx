@@ -12,6 +12,7 @@ import type { Application, ApplicationData } from '@/types/application';
 import { Dialog, DialogTrigger } from '@/components/ui/dialog';
 import ApplicationModal from '@/components/ApplicationModal';
 import { getErrorMessage } from '@/utils/getErrorMessage';
+import ApplicationToolbar from '@/components/ApplicationToolbar';
 
 function Applications() {
     const [applications, setApplications] = useState<Application[]>([]);
@@ -20,6 +21,14 @@ function Applications() {
     const [open, setOpen] = useState(false);
     const [editingApplication, setEditingApplication] =
         useState<Application | null>(null);
+
+    // application toolbar
+    const [search, setSearch] = useState('');
+    const [statusFilter, setStatusFilter] = useState<string | null>(null);
+    const [workArrangementFilter, setWorkArrangementFilter] = useState<
+        string | null
+    >(null);
+    const [sortBy, setSortBy] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchApplications = async () => {
@@ -91,6 +100,60 @@ function Applications() {
         setOpen(true);
     };
 
+    const filteredApplications = applications.filter((application) => {
+        const matchesSearch =
+            application.company.toLowerCase().includes(search.toLowerCase()) ||
+            application.position.toLowerCase().includes(search.toLowerCase());
+
+        const matchesStatus =
+            !statusFilter || application.status === statusFilter;
+
+        const matchesWorkArrangement =
+            !workArrangementFilter ||
+            application.workArrangement === workArrangementFilter;
+
+        return matchesSearch && matchesStatus && matchesWorkArrangement;
+    });
+
+    const getTimestamp = (date: string | undefined) =>
+        date ? new Date(date).getTime() : null;
+
+    const displayedApplications = [...filteredApplications].sort((a, b) => {
+        switch (sortBy) {
+            case 'NEWEST':
+                return (
+                    (b.appliedDate ? new Date(b.appliedDate).getTime() : 0) -
+                    (a.appliedDate ? new Date(a.appliedDate).getTime() : 0)
+                );
+
+            case 'OLDEST': {
+                const aDate = getTimestamp(a.appliedDate);
+                const bDate = getTimestamp(b.appliedDate);
+
+                if (aDate === null) return 1;
+                if (bDate === null) return -1;
+
+                return aDate - bDate;
+            }
+
+            case 'COMPANY_ASC':
+                return a.company.localeCompare(b.company);
+
+            case 'COMPANY_DESC':
+                return b.company.localeCompare(a.company);
+
+            default:
+                return 0;
+        }
+    });
+
+    const handleClearFilters = () => {
+        setSearch('');
+        setStatusFilter(null);
+        setWorkArrangementFilter(null);
+        setSortBy('NEWEST');
+    };
+
     if (loading) {
         return (
             <div className="flex justify-center py-20 text-muted">
@@ -149,19 +212,30 @@ function Applications() {
                     />
                 </Dialog>
             </div>
+            <ApplicationToolbar
+                search={search}
+                onSearchChange={setSearch}
+                statusFilter={statusFilter}
+                onStatusChange={setStatusFilter}
+                workArrangementFilter={workArrangementFilter}
+                onWorkArrangementChange={setWorkArrangementFilter}
+                sortBy={sortBy}
+                onSortChange={setSortBy}
+                onClearFilters={handleClearFilters}
+            />
             <div className="flex w-full">
                 {/* applications */}
                 <main className="mt-6 grid w-full grid-cols-1 gap-4 px-4 md:grid-cols-2 xl:grid-cols-3">
-                    {loading ? (
-                        <div>Loading applications...</div>
-                    ) : applications.length === 0 ? (
-                        <div className="flex flex-col items-center justify-center py-20 text-center">
+                    {displayedApplications.length === 0 ? (
+                        <div className="col-span-full flex flex-col items-center justify-center py-20 text-center">
                             <h2 className="text-xl font-bold">
-                                You have no applications!
+                                {applications.length === 0
+                                    ? 'You have no applications!'
+                                    : 'No applications match your filters.'}
                             </h2>
                         </div>
                     ) : (
-                        applications.map((application) => (
+                        displayedApplications.map((application) => (
                             <ApplicationCard
                                 key={application.id}
                                 application={application}

@@ -51,3 +51,10 @@ export type Application = ApplicationData & {
     createdAt: string;
     updatedAt: string;
 };
+
+export const sortItems = [
+    { label: 'Newest applied', value: 'NEWEST' },
+    { label: 'Oldest applied', value: 'OLDEST' },
+    { label: 'Company A–Z', value: 'COMPANY_ASC' },
+    { label: 'Company Z–A', value: 'COMPANY_DESC' },
+];
