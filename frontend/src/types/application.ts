@@ -58,3 +58,8 @@ export const sortItems = [
     { label: 'Company A–Z', value: 'COMPANY_ASC' },
     { label: 'Company Z–A', value: 'COMPANY_DESC' },
 ];
+
+export type ApplicationStats = {
+    total: number;
+    stats: Partial<Record<Status, number>>;
+};

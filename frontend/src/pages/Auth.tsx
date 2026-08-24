@@ -80,6 +80,7 @@ function Auth() {
             navigate('/');
         } catch (err) {
             getErrorMessage(err);
+            setError(getErrorMessage(err))
         }
     };
 

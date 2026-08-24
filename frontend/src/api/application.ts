@@ -28,3 +28,13 @@ export async function editApplicationRequest(
     const res = await api.patch(`/applications/${id}`, data);
     return res.data;
 }
+
+export async function getApplicationStatsRequest() {
+    const res = await api.get(`/applications/stats`);
+    return res.data;
+}
+
+export async function getRecentApplicationsRequest() {
+    const res = await api.get(`/applications/recent`);
+    return res.data;
+}

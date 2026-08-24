@@ -389,10 +389,90 @@ async function editApplication(
     }
 }
 
+async function getApplicationStats(
+    req: Request,
+    res: Response,
+    next: NextFunction
+) {
+    try {
+        if (!req.authPayload) {
+            return res.status(401).json({
+                status: 401,
+                error: 'Unauthorized',
+                message: 'User is not logged in',
+            });
+        }
+
+        const total = await prisma.application.count({
+            where: {
+                userId: req.authPayload.userId,
+            },
+        });
+
+        const applicationsByStatus = await prisma.application.groupBy({
+            by: ['status'],
+            _count: {
+                status: true,
+            },
+        });
+
+        const stats = applicationsByStatus.reduce(
+            (acc, item) => {
+                acc[item.status] = item._count.status;
+                return acc;
+            },
+            {} as Record<string, number>
+        );
+
+        return res.status(200).json({
+            success: true,
+            message: 'Application stats loaded',
+            total,
+            stats,
+        });
+    } catch (e) {
+        next(e);
+    }
+}
+
+async function getRecentApplications(
+    req: Request,
+    res: Response,
+    next: NextFunction
+) {
+    try {
+        if (!req.authPayload) {
+            return res.status(401).json({
+                status: 401,
+                error: 'Unauthorized',
+                message: 'User is not logged in',
+            });
+        }
+
+        const recentApplications = await prisma.application.findMany({
+            where: { userId: req.authPayload.userId },
+            take: 5,
+            orderBy: {
+                createdAt: 'desc',
+            },
+        });
+
+        return res.status(200).json({
+            success: true,
+            message: 'Application stats loaded',
+            recentApplications,
+        });
+    } catch (e) {
+        next(e);
+    }
+}
+
 export {
     getApplications,
     createApplication,
     getApplicationById,
     deleteApplication,
     editApplication,
+    getApplicationStats,
+    getRecentApplications,
 };

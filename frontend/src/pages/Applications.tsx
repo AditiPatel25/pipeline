@@ -41,6 +41,7 @@ function Applications() {
                 setApplications(response.applications);
             } catch (err) {
                 getErrorMessage(err);
+                setError(getErrorMessage(err));
             } finally {
                 setLoading(false);
             }
@@ -57,6 +58,7 @@ function Applications() {
             setError('');
         } catch (err) {
             getErrorMessage(err);
+            setError(getErrorMessage(err));
             throw err;
         }
     };
@@ -78,6 +80,7 @@ function Applications() {
             );
         } catch (err) {
             getErrorMessage(err);
+            setError(getErrorMessage(err));
         }
     };
 
@@ -92,6 +95,7 @@ function Applications() {
             setSelectedApplication(null);
         } catch (err) {
             getErrorMessage(err);
+            setError(getErrorMessage(err));
         }
     }
 
@@ -250,19 +254,19 @@ function Applications() {
                             />
                         ))
                     )}
-                    <ApplicationDetailsDialog
-                        application={selectedApplication}
-                        open={selectedApplication !== null}
-                        onDelete={handleDeleteApplication}
-                        onEdit={handleEdit}
-                        onOpenChange={(open) => {
-                            if (!open) {
-                                setSelectedApplication(null);
-                            }
-                        }}
-                    />
                 </main>
             </div>
+            <ApplicationDetailsDialog
+                application={selectedApplication}
+                open={selectedApplication !== null}
+                onDelete={handleDeleteApplication}
+                onEdit={handleEdit}
+                onOpenChange={(open) => {
+                    if (!open) {
+                        setSelectedApplication(null);
+                    }
+                }}
+            />
         </>
     );
 }

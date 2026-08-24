@@ -1,5 +1,4 @@
 import type { Application } from '@/types/application';
-import { useNavigate } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
 import {
     workArrangementLabels,
@@ -43,8 +42,6 @@ function ApplicationCard({
     onEdit,
     onSelect,
 }: ApplicationCardProps) {
-    const navigate = useNavigate();
-
     return (
         <div className="rounded-xl border border-border bg-card p-5 shadow-sm transition-all hover:border-accent hover:shadow-md">
             <button
