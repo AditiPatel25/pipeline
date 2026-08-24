@@ -13,6 +13,7 @@ import { Dialog, DialogTrigger } from '@/components/ui/dialog';
 import ApplicationModal from '@/components/ApplicationModal';
 import { getErrorMessage } from '@/utils/getErrorMessage';
 import ApplicationToolbar from '@/components/ApplicationToolbar';
+import ApplicationDetailsDialog from '@/components/ApplicationDetailsDialog';
 
 function Applications() {
     const [applications, setApplications] = useState<Application[]>([]);
@@ -29,6 +30,9 @@ function Applications() {
         string | null
     >(null);
     const [sortBy, setSortBy] = useState<string | null>(null);
+
+    const [selectedApplication, setSelectedApplication] =
+        useState<Application | null>(null);
 
     useEffect(() => {
         const fetchApplications = async () => {
@@ -85,6 +89,7 @@ function Applications() {
                     (application) => application.id !== applicationId
                 )
             );
+            setSelectedApplication(null);
         } catch (err) {
             getErrorMessage(err);
         }
@@ -241,9 +246,21 @@ function Applications() {
                                 application={application}
                                 onDelete={handleDeleteApplication}
                                 onEdit={handleEdit}
+                                onSelect={setSelectedApplication}
                             />
                         ))
                     )}
+                    <ApplicationDetailsDialog
+                        application={selectedApplication}
+                        open={selectedApplication !== null}
+                        onDelete={handleDeleteApplication}
+                        onEdit={handleEdit}
+                        onOpenChange={(open) => {
+                            if (!open) {
+                                setSelectedApplication(null);
+                            }
+                        }}
+                    />
                 </main>
             </div>
         </>

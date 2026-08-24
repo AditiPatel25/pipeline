@@ -7,7 +7,7 @@ export async function getApplicationsRequest() {
 }
 
 export async function getApplicationByIdRequest(id: number) {
-    const res = await api.get('/applications');
+    const res = await api.get(`/applications/${id}`);
     return res.data;
 }
 

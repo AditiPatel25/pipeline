@@ -1,4 +1,5 @@
 import type { Application } from '@/types/application';
+import { useNavigate } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
 import {
     workArrangementLabels,
@@ -23,6 +24,7 @@ type ApplicationCardProps = {
     application: Application;
     onDelete: (applicationId: number) => Promise<void>;
     onEdit: (application: Application) => void;
+    onSelect: (application: Application) => void;
 };
 
 const statusStyles = {
@@ -39,53 +41,62 @@ function ApplicationCard({
     application,
     onDelete,
     onEdit,
+    onSelect,
 }: ApplicationCardProps) {
+    const navigate = useNavigate();
+
     return (
         <div className="rounded-xl border border-border bg-card p-5 shadow-sm transition-all hover:border-accent hover:shadow-md">
-            {/* header */}
-            <div>
-                <div className="flex items-center justify-between gap-4">
-                    <h2 className="truncate text-lg font-bold text-card-foreground">
-                        {application.company}
-                    </h2>
+            <button
+                type="button"
+                className="w-full text-left"
+                onClick={() => onSelect(application)}
+            >
+                {/* header */}
+                <div>
+                    <div className="flex items-center justify-between gap-4">
+                        <h2 className="truncate text-lg font-bold text-card-foreground">
+                            {application.company}
+                        </h2>
 
-                    <Badge
-                        className={`${statusStyles[application.status]} shrink-0 text-foreground`}
-                    >
-                        {application.status}
-                    </Badge>
+                        <Badge
+                            className={`${statusStyles[application.status]} shrink-0 text-foreground`}
+                        >
+                            {application.status}
+                        </Badge>
+                    </div>
+
+                    <p className="mt-1 text-sm text-muted-foreground">
+                        {application.position}
+                    </p>
                 </div>
 
-                <p className="mt-1 text-sm text-muted-foreground">
-                    {application.position}
-                </p>
-            </div>
+                {/* application details */}
+                <div className="mt-4 flex flex-wrap gap-2">
+                    {application.location && (
+                        <Badge variant="outline" className="border-accent">
+                            📍 {application.location}
+                        </Badge>
+                    )}
+                    {application.workArrangement && (
+                        <Badge variant="outline" className="border-accent">
+                            {workArrangementLabels[application.workArrangement]}
+                        </Badge>
+                    )}
 
-            {/* application details */}
-            <div className="mt-4 flex flex-wrap gap-2">
-                {application.location && (
-                    <Badge variant="outline" className="border-accent">
-                        📍 {application.location}
-                    </Badge>
-                )}
-                {application.workArrangement && (
-                    <Badge variant="outline" className="border-accent">
-                        {workArrangementLabels[application.workArrangement]}
-                    </Badge>
-                )}
+                    {application.employmentType && (
+                        <Badge variant="outline" className="border-accent">
+                            {employmentTypeLabels[application.employmentType]}
+                        </Badge>
+                    )}
 
-                {application.employmentType && (
-                    <Badge variant="outline" className="border-accent">
-                        {employmentTypeLabels[application.employmentType]}
-                    </Badge>
-                )}
-
-                {application.source && (
-                    <Badge variant="outline" className="border-accent">
-                        {sourceLabels[application.source]}
-                    </Badge>
-                )}
-            </div>
+                    {application.source && (
+                        <Badge variant="outline" className="border-accent">
+                            {sourceLabels[application.source]}
+                        </Badge>
+                    )}
+                </div>
+            </button>
 
             {/* footer */}
 
