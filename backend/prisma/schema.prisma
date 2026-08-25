@@ -53,6 +53,15 @@ enum EmploymentType {
   TEMPORARY
 }
 
+enum FollowUpType {
+  ASSESSMENT
+  PHONE_SCREEN
+  INTERVIEW
+  OFFER
+  FOLLOW_UP_EMAIL
+  OTHER
+}
+
 model User {
   id           Int           @id @default(autoincrement())
   email        String        @unique
@@ -91,6 +100,8 @@ model FollowUp {
   id            Int         @id @default(autoincrement())
   applicationId Int
   application   Application @relation(fields: [applicationId], references: [id])
+  title         String
+  type          FollowUpType  @default(OTHER)
   dueDate       DateTime
   notes         String?
   completed     Boolean     @default(false)

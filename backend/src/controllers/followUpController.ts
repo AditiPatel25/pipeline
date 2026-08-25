@@ -1,5 +1,6 @@
 import { prisma } from '../prisma.js';
 import { type Request, type Response, type NextFunction } from 'express';
+import { FollowUpType } from '@prisma/client';
 
 type FollowUpParams = {
     id: string;
@@ -57,12 +58,14 @@ async function createFollowUp(
     next: NextFunction
 ) {
     try {
-        const { dueDate, notes, completed } = req.body;
+        const { title, type, dueDate, notes, completed } = req.body;
 
         if (
             !dueDate ||
             dueDate.trim() === '' ||
-            typeof completed !== 'boolean'
+            typeof completed !== 'boolean' ||
+            !title ||
+            title.trim() === ''
         ) {
             return res.status(400).json({
                 success: false,
@@ -84,6 +87,13 @@ async function createFollowUp(
                 status: 400,
                 error: 'Bad Request',
                 message: 'Invalid application ID',
+            });
+        }
+
+        if (!Object.values(FollowUpType).includes(type)) {
+            return res.status(400).json({
+                success: false,
+                message: `Invalid type or type does not exist. Must be one of: ${Object.values(FollowUpType).join(', ')}`,
             });
         }
 
@@ -112,6 +122,8 @@ async function createFollowUp(
         const followUp = await prisma.followUp.create({
             data: {
                 dueDate,
+                type,
+                title,
                 notes,
                 completed,
                 application: {
@@ -198,12 +210,14 @@ async function editFollowUp(
     next: NextFunction
 ) {
     try {
-        const { dueDate, completed, notes } = req.body;
+        const { title, type, dueDate, notes, completed } = req.body;
 
         if (
             !dueDate ||
             dueDate.trim() === '' ||
-            typeof completed !== 'boolean'
+            typeof completed !== 'boolean' ||
+            !title ||
+            title.trim() === ''
         ) {
             return res.status(400).json({
                 success: false,
@@ -216,6 +230,13 @@ async function editFollowUp(
                 status: 401,
                 error: 'Unauthorized',
                 message: 'User is not logged in',
+            });
+        }
+
+        if (!Object.values(FollowUpType).includes(type)) {
+            return res.status(400).json({
+                success: false,
+                message: `Invalid type or type does not exist. Must be one of: ${Object.values(FollowUpType).join(', ')}`,
             });
         }
 
@@ -257,8 +278,10 @@ async function editFollowUp(
             where: { id: id },
             data: {
                 dueDate,
-                completed,
+                type,
+                title,
                 notes,
+                completed,
             },
         });
 
