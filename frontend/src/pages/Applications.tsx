@@ -14,6 +14,9 @@ import ApplicationModal from '@/components/ApplicationModal';
 import { getErrorMessage } from '@/utils/getErrorMessage';
 import ApplicationToolbar from '@/components/ApplicationToolbar';
 import ApplicationDetailsDialog from '@/components/ApplicationDetailsDialog';
+import { FollowUp, FollowUpData } from '@/types/followUp';
+import { createFollowUpRequest, editFollowUpRequest } from '@/api/followUp';
+import FollowUpModal from '@/components/FollowUpModal';
 
 function Applications() {
     const [applications, setApplications] = useState<Application[]>([]);
@@ -22,6 +25,13 @@ function Applications() {
     const [open, setOpen] = useState(false);
     const [editingApplication, setEditingApplication] =
         useState<Application | null>(null);
+    const [followUps, setFollowUps] = useState<FollowUp[]>([]);
+    const [editingFollowUp, setEditingFollowUp] = useState<FollowUp | null>(
+        null
+    );
+    const [selectedApplication, setSelectedApplication] =
+        useState<Application | null>(null);
+    const [followUpOpen, setFollowUpOpen] = useState(false);
 
     // application toolbar
     const [search, setSearch] = useState('');
@@ -30,9 +40,6 @@ function Applications() {
         string | null
     >(null);
     const [sortBy, setSortBy] = useState<string | null>(null);
-
-    const [selectedApplication, setSelectedApplication] =
-        useState<Application | null>(null);
 
     useEffect(() => {
         const fetchApplications = async () => {
@@ -109,6 +116,12 @@ function Applications() {
         setOpen(true);
     };
 
+    const handleAddFollowUp = (application: Application) => {
+        setSelectedApplication(application);
+        setEditingFollowUp(null);
+        setFollowUpOpen(true);
+    };
+
     const filteredApplications = applications.filter((application) => {
         const matchesSearch =
             application.company.toLowerCase().includes(search.toLowerCase()) ||
@@ -161,6 +174,36 @@ function Applications() {
         setStatusFilter(null);
         setWorkArrangementFilter(null);
         setSortBy('NEWEST');
+    };
+
+    const handleCreateFollowUp = async (followUp: FollowUpData) => {
+        try {
+            const response = await createFollowUpRequest(followUp);
+
+            setFollowUps((prev) => [...prev, response.followUp]);
+
+            setError('');
+        } catch (err) {
+            setError(getErrorMessage(err));
+            throw err;
+        }
+    };
+
+    const handleEditFollowUp = async (
+        followUpId: number,
+        followUp: FollowUpData
+    ) => {
+        try {
+            const response = await editFollowUpRequest(followUpId, followUp);
+
+            setFollowUps((prev) =>
+                prev.map((app) =>
+                    app.id === followUpId ? response.updatedFollowUp : app
+                )
+            );
+        } catch (err) {
+            setError(getErrorMessage(err));
+        }
     };
 
     if (loading) {
@@ -266,7 +309,35 @@ function Applications() {
                         setSelectedApplication(null);
                     }
                 }}
+                onAddFollowUp={handleAddFollowUp}
             />
+            <Dialog open={followUpOpen} onOpenChange={setFollowUpOpen}>
+                <FollowUpModal
+                    initialFollowUp={
+                        editingFollowUp
+                            ? {
+                                  applicationId: editingFollowUp.applicationId,
+                                  title: editingFollowUp.title,
+                                  dueDate: editingFollowUp.dueDate,
+                                  type: editingFollowUp.type,
+                                  notes: editingFollowUp.notes,
+                              }
+                            : undefined
+                    }
+                    handleSubmit={
+                        editingFollowUp
+                            ? (data: FollowUpData) =>
+                                  handleEditFollowUp(editingFollowUp.id, data)
+                            : handleCreateFollowUp
+                    }
+                    onSuccess={() => {
+                        setFollowUpOpen(false);
+                        setEditingFollowUp(null);
+                    }}
+                    applications={applications}
+                    applicationId={selectedApplication?.id}
+                />
+            </Dialog>
         </>
     );
 }

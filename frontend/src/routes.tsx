@@ -4,6 +4,7 @@ import Auth from './pages/Auth';
 import Home from './pages/Home';
 import Applications from './pages/Applications';
 import ProtectedRoute from './components/ProtectedRoute';
+import FollowUps from './pages/FollowUps';
 
 const routes = [
     {
@@ -33,6 +34,10 @@ const routes = [
                     {
                         path: '/applications',
                         element: <Applications />,
+                    },    
+                    {
+                        path: '/followUps',
+                        element: <FollowUps />,
                     },           
                 ],
             },

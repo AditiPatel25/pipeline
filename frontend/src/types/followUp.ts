@@ -10,7 +10,6 @@ export type FollowUpData = {
     applicationId: number;
     dueDate: string;
     notes?: string;
-    completed: boolean;
     title: string;
     type: FollowUpType;
 };

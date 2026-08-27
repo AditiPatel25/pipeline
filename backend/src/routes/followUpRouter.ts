@@ -1,13 +1,18 @@
 import { Router } from 'express';
-import {editFollowUp, deleteFollowUp } from '../controllers/followUpController.js';
+import { editFollowUp, deleteFollowUp, getAllFollowUps } from '../controllers/followUpController.js';
+import { createFollowUp } from '../controllers/followUpController.js';
 import { authenticateToken } from '../middleware/auth.js';
-const applicationRouter = Router();
-applicationRouter.use(authenticateToken);
+const followUpRouter = Router();
+followUpRouter.use(authenticateToken);
+
+followUpRouter.post('/', createFollowUp);
+
+followUpRouter.get('/', getAllFollowUps);
 
 // edit specific follow up
-applicationRouter.patch('/:id', editFollowUp );
+followUpRouter.patch('/:id', editFollowUp );
 
 // delete follow up
-applicationRouter.delete('/:id', deleteFollowUp );
+followUpRouter.delete('/:id', deleteFollowUp );
 
-export default applicationRouter;
+export default followUpRouter;

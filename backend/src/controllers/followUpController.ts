@@ -10,7 +10,7 @@ type ApplicationParams = {
     id: string;
 };
 
-async function getFollowUps(
+async function getFollowUpsByApplication(
     req: Request<ApplicationParams>,
     res: Response,
     next: NextFunction
@@ -33,7 +33,7 @@ async function getFollowUps(
             });
         }
 
-        const allFollowUps = await prisma.followUp.findMany({
+        const followUps = await prisma.followUp.findMany({
             where: {
                 applicationId: id,
                 application: {
@@ -45,7 +45,39 @@ async function getFollowUps(
         return res.status(200).json({
             success: true,
             message: 'FollowUps loaded',
-            allFollowUps,
+            followUps,
+        });
+    } catch (e) {
+        next(e);
+    }
+}
+
+async function getAllFollowUps(
+    req: Request<ApplicationParams>,
+    res: Response,
+    next: NextFunction
+) {
+    try {
+        if (!req.authPayload) {
+            return res.status(401).json({
+                status: 401,
+                error: 'Unauthorized',
+                message: 'User is not logged in',
+            });
+        }
+
+        const followUps = await prisma.followUp.findMany({
+            where: {
+                application: {
+                    userId: req.authPayload.userId,
+                },
+            },
+        });
+
+        return res.status(200).json({
+            success: true,
+            message: 'FollowUps loaded',
+            followUps,
         });
     } catch (e) {
         next(e);
@@ -53,17 +85,16 @@ async function getFollowUps(
 }
 
 async function createFollowUp(
-    req: Request<ApplicationParams>,
+    req: Request<{ id?: string }>,
     res: Response,
     next: NextFunction
 ) {
     try {
-        const { title, type, dueDate, notes, completed } = req.body;
+        const { title, type, dueDate, notes, applicationId } = req.body;
 
         if (
             !dueDate ||
             dueDate.trim() === '' ||
-            typeof completed !== 'boolean' ||
             !title ||
             title.trim() === ''
         ) {
@@ -81,7 +112,10 @@ async function createFollowUp(
             });
         }
 
-        const id = parseInt(req.params.id);
+        const id = req.params.id
+            ? parseInt(req.params.id)
+            : Number(applicationId);
+
         if (isNaN(id)) {
             return res.status(400).json({
                 status: 400,
@@ -125,7 +159,6 @@ async function createFollowUp(
                 type,
                 title,
                 notes,
-                completed,
                 application: {
                     connect: {
                         id: id,
@@ -210,12 +243,11 @@ async function editFollowUp(
     next: NextFunction
 ) {
     try {
-        const { title, type, dueDate, notes, completed } = req.body;
+        const { title, type, dueDate, notes } = req.body;
 
         if (
             !dueDate ||
             dueDate.trim() === '' ||
-            typeof completed !== 'boolean' ||
             !title ||
             title.trim() === ''
         ) {
@@ -245,7 +277,7 @@ async function editFollowUp(
             return res.status(400).json({
                 status: 400,
                 error: 'Bad Request',
-                message: 'Invalid follow up ID',
+                message: 'Invalid follow ID',
             });
         }
 
@@ -281,7 +313,6 @@ async function editFollowUp(
                 type,
                 title,
                 notes,
-                completed,
             },
         });
 
@@ -295,4 +326,10 @@ async function editFollowUp(
     }
 }
 
-export { getFollowUps, createFollowUp, deleteFollowUp, editFollowUp };
+export {
+    getFollowUpsByApplication,
+    createFollowUp,
+    deleteFollowUp,
+    editFollowUp,
+    getAllFollowUps,
+};

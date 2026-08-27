@@ -48,6 +48,7 @@ type ApplicationDetailsDialogProps = {
     onOpenChange: (open: boolean) => void;
     onDelete: (applicationId: number) => Promise<void>;
     onEdit: (application: Application) => void;
+    onAddFollowUp: (application: Application) => void
 };
 
 function ApplicationDetailsDialog({
@@ -56,6 +57,7 @@ function ApplicationDetailsDialog({
     onOpenChange,
     onDelete,
     onEdit,
+    onAddFollowUp
 }: ApplicationDetailsDialogProps) {
     const contentRef = useRef<HTMLDivElement>(null);
 
@@ -213,6 +215,12 @@ function ApplicationDetailsDialog({
 
                 {/* footer */}
                 <DialogFooter className="shrink-0 border-t pt-4 sm:justify-end">
+                    <Button
+                        variant="outline"
+                        onClick={() => onAddFollowUp(application)}
+                    >
+                        Add Follow-Up
+                    </Button>
                     <Button
                         variant="outline"
                         onClick={() => onEdit(application)}

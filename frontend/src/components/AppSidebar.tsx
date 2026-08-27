@@ -33,8 +33,8 @@ const mainItems = [
         icon: Briefcase,
     },
     {
-        title: 'Interviews',
-        url: '/interviews',
+        title: 'Follow-Ups',
+        url: '/followUps',
         icon: CalendarDays,
     },
     {

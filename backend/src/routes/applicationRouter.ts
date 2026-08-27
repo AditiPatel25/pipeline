@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { createApplication, deleteApplication, editApplication, getApplicationById, getApplications, getApplicationStats, getRecentApplications } from '../controllers/applicationController.js';
-import { createFollowUp, getFollowUps } from '../controllers/followUpController.js';
+import { createFollowUp, getFollowUpsByApplication } from '../controllers/followUpController.js';
 import { authenticateToken } from '../middleware/auth.js';
 const applicationRouter = Router();
 applicationRouter.use(authenticateToken);
@@ -30,7 +30,7 @@ applicationRouter.delete('/:id', deleteApplication);
 applicationRouter.post('/:id/followUps', createFollowUp);
 
 // get all follow ups
-applicationRouter.get('/:id/followUps', getFollowUps);
+applicationRouter.get('/:id/followUps', getFollowUpsByApplication);
 
 
 
