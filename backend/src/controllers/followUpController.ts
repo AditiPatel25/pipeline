@@ -41,7 +41,7 @@ async function getFollowUpsByApplication(
                 },
             },
             orderBy: {
-                dueDate: 'desc', 
+                dueDate: 'desc',
             },
             include: {
                 application: true,
@@ -90,6 +90,49 @@ async function getAllFollowUps(
             success: true,
             message: 'FollowUps loaded',
             followUps,
+        });
+    } catch (e) {
+        next(e);
+    }
+}
+
+async function getUpcomingFollowUps(
+    req: Request<ApplicationParams>,
+    res: Response,
+    next: NextFunction
+) {
+    try {
+        if (!req.authPayload) {
+            return res.status(401).json({
+                status: 401,
+                error: 'Unauthorized',
+                message: 'User is not logged in',
+            });
+        }
+
+        const upcomingFollowUps = await prisma.followUp.findMany({
+            where: {
+                application: {
+                    userId: req.authPayload.userId,
+                },
+                completed: false,
+                dueDate: {
+                    gte: new Date(),
+                },
+            },
+            take: 3,
+            orderBy: {
+                dueDate: 'asc',
+            },
+            include: {
+                application: true,
+            },
+        });
+
+        return res.status(200).json({
+            success: true,
+            message: 'Upcoming FollowUps loaded',
+            upcomingFollowUps,
         });
     } catch (e) {
         next(e);
@@ -348,4 +391,5 @@ export {
     deleteFollowUp,
     editFollowUp,
     getAllFollowUps,
+    getUpcomingFollowUps,
 };

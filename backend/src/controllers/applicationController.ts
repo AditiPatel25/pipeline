@@ -451,7 +451,7 @@ async function getRecentApplications(
 
         const recentApplications = await prisma.application.findMany({
             where: { userId: req.authPayload.userId },
-            take: 5,
+            take: 3,
             orderBy: {
                 createdAt: 'desc',
             },

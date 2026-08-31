@@ -6,6 +6,11 @@ export async function getAllFollowUpsRequest() {
     return res.data;
 }
 
+export async function getUpcomingFollowUpsRequest() {
+    const res = await api.get(`/followUps/upcoming`);
+    return res.data;
+}
+
 export async function createFollowUpRequest(data: FollowUpData) {
     const res = await api.post(`/followUps`, data);
     return res.data;

@@ -10,6 +10,8 @@ import DashboardApplicationCard from '@/components/DashboardApplicationCard';
 import { FollowUp } from '@/types/followUp';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
+import DashboardFollowUpCard from '@/components/DashboardFollowUpCard';
+import { getUpcomingFollowUpsRequest } from '@/api/followUp';
 
 function Home() {
     const { user } = useAuth();
@@ -30,13 +32,16 @@ function Home() {
     useEffect(() => {
         const fetchDashboardData = async () => {
             try {
-                const [statsResponse, recentResponse] = await Promise.all([
-                    getApplicationStatsRequest(),
-                    getRecentApplicationsRequest(),
-                ]);
+                const [statsResponse, recentResponse, deadlinesResponse] =
+                    await Promise.all([
+                        getApplicationStatsRequest(),
+                        getRecentApplicationsRequest(),
+                        getUpcomingFollowUpsRequest(),
+                    ]);
 
                 setApplicationStats(statsResponse);
                 setRecentApplications(recentResponse.recentApplications);
+                setUpcomingDeadlines(deadlinesResponse.upcomingFollowUps);
             } catch (err) {
                 setError(getErrorMessage(err));
             } finally {
@@ -105,7 +110,11 @@ function Home() {
                                 Upcoming Deadlines
                             </h2>
 
-                            <Button variant="ghost" size="sm">
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => navigate('/followUps')}
+                            >
                                 View all
                             </Button>
                         </div>
@@ -121,8 +130,10 @@ function Home() {
                                 </div>
                             ) : (
                                 upcomingDeadlines.map((followUp) => (
-                                    // FollowUpCard
-                                    <div></div>
+                                    <DashboardFollowUpCard
+                                        key={followUp.id}
+                                        followUp={followUp}
+                                    />
                                 ))
                             )}
                         </div>
@@ -133,7 +144,11 @@ function Home() {
                                 Recent Applications
                             </h2>
 
-                            <Button variant="ghost" size="sm" onClick={() => navigate('/applications')}>
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => navigate('/applications')}
+                            >
                                 View all
                             </Button>
                         </div>
