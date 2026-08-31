@@ -1,3 +1,5 @@
+import { Application } from "./application";
+
 export type FollowUpType =
     | 'ASSESSMENT'
     | 'PHONE_SCREEN'
@@ -12,6 +14,7 @@ export type FollowUpData = {
     notes?: string;
     title: string;
     type: FollowUpType;
+    completed: boolean;  
 };
 
 export type FollowUp = FollowUpData & {
@@ -19,4 +22,7 @@ export type FollowUp = FollowUpData & {
     userId: number;
     createdAt: string;
     updatedAt: string;
+    application: Application;
 };
+
+export type FollowUpFilter = 'ALL' | 'UPCOMING' | 'OVERDUE' | 'COMPLETED';

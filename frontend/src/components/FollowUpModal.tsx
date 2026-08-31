@@ -50,6 +50,7 @@ const emptyFollowUp: FollowUpData = {
     type: 'ASSESSMENT',
     notes: '',
     applicationId: -1,
+    completed: false
 };
 
 type FollowUpModalProps = {

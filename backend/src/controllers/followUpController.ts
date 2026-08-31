@@ -40,6 +40,12 @@ async function getFollowUpsByApplication(
                     userId: req.authPayload.userId,
                 },
             },
+            orderBy: {
+                dueDate: 'desc', 
+            },
+            include: {
+                application: true,
+            },
         });
 
         return res.status(200).json({
@@ -71,6 +77,12 @@ async function getAllFollowUps(
                 application: {
                     userId: req.authPayload.userId,
                 },
+            },
+            orderBy: {
+                dueDate: 'desc',
+            },
+            include: {
+                application: true,
             },
         });
 
@@ -243,7 +255,7 @@ async function editFollowUp(
     next: NextFunction
 ) {
     try {
-        const { title, type, dueDate, notes } = req.body;
+        const { title, type, dueDate, notes, completed } = req.body;
 
         if (
             !dueDate ||
@@ -313,6 +325,10 @@ async function editFollowUp(
                 type,
                 title,
                 notes,
+                completed,
+            },
+            include: {
+                application: true,
             },
         });
 

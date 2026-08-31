@@ -321,6 +321,7 @@ function Applications() {
                                   dueDate: editingFollowUp.dueDate,
                                   type: editingFollowUp.type,
                                   notes: editingFollowUp.notes,
+                                  completed: editingFollowUp.completed
                               }
                             : undefined
                     }
