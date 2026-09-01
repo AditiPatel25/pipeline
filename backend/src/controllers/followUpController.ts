@@ -41,7 +41,7 @@ async function getFollowUpsByApplication(
                 },
             },
             orderBy: {
-                dueDate: 'desc',
+                dueDate: 'asc',
             },
             include: {
                 application: true,
@@ -79,7 +79,7 @@ async function getAllFollowUps(
                 },
             },
             orderBy: {
-                dueDate: 'desc',
+                dueDate: 'asc',
             },
             include: {
                 application: true,

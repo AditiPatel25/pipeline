@@ -5,7 +5,6 @@ import {
     useState,
     type ReactNode,
 } from 'react';
-import api from '../api/axiosInstance';
 
 import { getCurrentUser } from '../api/auth';
 

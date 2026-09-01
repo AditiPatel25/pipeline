@@ -424,6 +424,9 @@ async function getApplicationStats(
         });
 
         const applicationsByStatus = await prisma.application.groupBy({
+            where: {
+                userId: req.authPayload.userId,
+            },
             by: ['status'],
             _count: {
                 status: true,

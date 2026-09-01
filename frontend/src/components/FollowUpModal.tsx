@@ -211,7 +211,7 @@ function FollowUpModal({
                             )}
 
                             {applicationError && (
-                                <p className="text-sm text-destructive">
+                                <p className="text-sm text-destructive ml-1">
                                     {applicationError}
                                 </p>
                             )}

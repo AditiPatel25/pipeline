@@ -18,6 +18,24 @@ import {
     User,
     Users,
 } from 'lucide-react';
+
+import { Button } from '@/components/ui/button';
+
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuGroup,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuPortal,
+    DropdownMenuSeparator,
+    DropdownMenuShortcut,
+    DropdownMenuSub,
+    DropdownMenuSubContent,
+    DropdownMenuSubTrigger,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+
 import { useAuth } from '@/context/AuthContext';
 import { Link } from 'react-router-dom';
 
@@ -53,7 +71,7 @@ const insightItems = [
 ];
 
 function AppSidebar() {
-    const { user } = useAuth();
+    const { user, logout } = useAuth();
 
     return (
         <Sidebar collapsible="icon">
@@ -117,14 +135,30 @@ function AppSidebar() {
             <SidebarFooter className="border-t p-2">
                 <SidebarMenu>
                     <SidebarMenuItem>
-                        <SidebarMenuButton className="h-11">
-                            <span className="flex w-full items-center justify-between gap-3">
-                                <span className="font-semibold">
-                                    Hi, {user?.name || 'User'}
-                                </span>
-                                <ChevronUp />
-                            </span>
-                        </SidebarMenuButton>
+                        <DropdownMenu>
+                            <DropdownMenuTrigger
+                                render={
+                                    <SidebarMenuButton className="h-11">
+                                        <span className="flex w-full items-center justify-between gap-3">
+                                            <span className="font-semibold">
+                                                Hi, {user?.name || 'User'}
+                                            </span>
+                                            <ChevronUp />
+                                        </span>
+                                    </SidebarMenuButton>
+                                }
+                            />
+
+                            <DropdownMenuContent
+                                className="w-48"
+                                align="end"
+                                side="top"
+                            >
+                                <DropdownMenuItem onClick={logout} className="cursor-pointer text-destructive focus:bg-destructive/10 focus:text-destructive">
+                                    Log out
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
                     </SidebarMenuItem>
                 </SidebarMenu>
             </SidebarFooter>

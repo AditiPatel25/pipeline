@@ -17,6 +17,7 @@ import ApplicationDetailsDialog from '@/components/ApplicationDetailsDialog';
 import { FollowUpData } from '@/types/followUp';
 import { createFollowUpRequest } from '@/api/followUp';
 import FollowUpModal from '@/components/FollowUpModal';
+import { Skeleton } from '@/components/ui/skeleton';
 
 function Applications() {
     const [applications, setApplications] = useState<Application[]>([]);
@@ -198,9 +199,35 @@ function Applications() {
 
     if (loading) {
         return (
-            <div className="flex justify-center py-20 text-muted">
-                Loading...
-            </div>
+            <>
+                <div className="flex items-center justify-between px-4">
+                    <Skeleton className="h-8 w-36" />
+                    <Skeleton className="h-10 w-36" />
+                </div>
+
+                <div className="mt-6 flex gap-3 px-4">
+                    <Skeleton className="h-10 w-64" />
+                    <Skeleton className="h-10 w-32" />
+                    <Skeleton className="h-10 w-40" />
+                    <Skeleton className="h-10 w-32" />
+                </div>
+
+                <main className="mt-6 grid w-full grid-cols-1 gap-4 px-4 md:grid-cols-2 xl:grid-cols-3">
+                    {Array.from({ length: 6 }).map((_, index) => (
+                        <div
+                            key={index}
+                            className="rounded-xl border border-border bg-card p-5 shadow-sm"
+                        >
+                            <div className="flex items-center justify-between gap-4">
+                                <Skeleton className="h-6 w-32" />
+                                <Skeleton className="h-5 w-20 rounded-full" />
+                            </div>
+
+                            <Skeleton className="mt-2 h-4 w-40" />
+                        </div>
+                    ))}
+                </main>
+            </>
         );
     }
 

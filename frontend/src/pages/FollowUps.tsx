@@ -15,6 +15,7 @@ import FollowUpModal from '@/components/FollowUpModal';
 import { getApplicationsRequest } from '@/api/application';
 import { Application } from '@/types/application';
 import { FollowUpFilter } from '@/types/followUp';
+import { Skeleton } from '@/components/ui/skeleton';
 
 function FollowUps() {
     const [followUps, setFollowUps] = useState<FollowUp[]>([]);
@@ -165,9 +166,35 @@ function FollowUps() {
 
     if (loading) {
         return (
-            <div className="flex justify-center py-20 text-muted">
-                Loading...
-            </div>
+            <main className="mt-6 flex w-full flex-col gap-3 px-4 lg:max-w-6xl">
+                {Array.from({ length: 5 }).map((_, index) => (
+                    <div
+                        key={index}
+                        className="rounded-xl border border-border bg-card p-3 px-4 shadow-sm"
+                    >
+                        <div className="flex items-center justify-between gap-4">
+                            <div className="flex min-w-0 items-center gap-3">
+                                <Skeleton className="size-5 rounded-sm" />
+
+                                <Skeleton className="h-6 w-40" />
+
+                                <Skeleton className="h-5 w-20 rounded-full" />
+                            </div>
+
+                            <Skeleton className="h-5 w-12" />
+                        </div>
+
+                        <div className="mt-4 flex items-center justify-between">
+                            <Skeleton className="h-4 w-56" />
+
+                            <div className="flex gap-2">
+                                <Skeleton className="size-9 rounded-md" />
+                                <Skeleton className="size-9 rounded-md" />
+                            </div>
+                        </div>
+                    </div>
+                ))}
+            </main>
         );
     }
 
@@ -233,9 +260,8 @@ function FollowUps() {
                     </Button>
                 ))}
             </div>
-            <div className="flex w-full">
-                {/* follow ups */}
-                <main className="mt-6 flex w-full flex-col gap-3 px-4 lg:max-w-4xl">
+            <div className="flex w-full justify-center">
+                <main className="mt-6 flex w-full max-w-6xl flex-col gap-3 px-4">
                     {filteredFollowUps.length === 0 ? (
                         <div className="flex flex-col items-center justify-center py-20 text-center">
                             <h2 className="text-xl font-bold">

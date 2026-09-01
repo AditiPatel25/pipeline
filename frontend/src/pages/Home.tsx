@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import DashboardFollowUpCard from '@/components/DashboardFollowUpCard';
 import { getUpcomingFollowUpsRequest } from '@/api/followUp';
+import { Skeleton } from '@/components/ui/skeleton';
 
 function Home() {
     const { user } = useAuth();
@@ -51,6 +52,92 @@ function Home() {
 
         fetchDashboardData();
     }, []);
+
+    if (loading) {
+        return (
+            <div className="flex flex-col gap-8">
+                {/* welcome + heading */}
+                <div>
+                    <Skeleton className="h-4 w-40" />
+                    <Skeleton className="mt-4 h-8 w-32" />
+                </div>
+
+                {/* application overview */}
+                <section>
+                    <Skeleton className="h-6 w-44" />
+
+                    <div className="mt-4 grid grid-cols-2 gap-4 md:grid-cols-4">
+                        {Array.from({ length: 4 }).map((_, index) => (
+                            <div
+                                key={index}
+                                className="rounded-xl border border-border bg-card p-5 shadow-sm"
+                            >
+                                <Skeleton className="h-4 w-32" />
+                                <Skeleton className="mt-2 h-9 w-12" />
+                            </div>
+                        ))}
+                    </div>
+                </section>
+
+                {/* upcoming + recent */}
+                <div className="grid gap-6 lg:grid-cols-2">
+                    {/* Upcoming Deadlines */}
+                    <section className="rounded-xl border bg-card p-5 shadow-sm">
+                        <div className="mb-4 flex items-center justify-between">
+                            <Skeleton className="h-5 w-36" />
+                            <Skeleton className="h-8 w-16" />
+                        </div>
+
+                        <div className="space-y-3">
+                            {Array.from({ length: 3 }).map((_, index) => (
+                                <div
+                                    key={index}
+                                    className="rounded-xl border border-border bg-card p-5 shadow-sm"
+                                >
+                                    <div className="flex items-center justify-between gap-4">
+                                        <div className="min-w-0 flex-1">
+                                            <div className="flex items-center gap-3">
+                                                <Skeleton className="h-5 w-32" />
+                                                <Skeleton className="h-5 w-20 rounded-full" />
+                                            </div>
+
+                                            <Skeleton className="mt-2 h-4 w-48" />
+                                        </div>
+
+                                        <Skeleton className="h-4 w-12" />
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </section>
+
+                    {/* recent Applications */}
+                    <section className="rounded-xl border bg-card p-5 shadow-sm">
+                        <div className="mb-4 flex items-center justify-between">
+                            <Skeleton className="h-5 w-40" />
+                            <Skeleton className="h-8 w-16" />
+                        </div>
+
+                        <div className="space-y-3">
+                            {Array.from({ length: 3 }).map((_, index) => (
+                                <div
+                                    key={index}
+                                    className="rounded-xl border border-border bg-card p-5 shadow-sm"
+                                >
+                                    <div className="flex items-center justify-between gap-4">
+                                        <Skeleton className="h-5 w-36" />
+                                        <Skeleton className="h-5 w-20 rounded-full" />
+                                    </div>
+
+                                    <Skeleton className="mt-2 h-4 w-44" />
+                                </div>
+                            ))}
+                        </div>
+                    </section>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <>
