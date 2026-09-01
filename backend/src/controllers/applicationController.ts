@@ -27,6 +27,13 @@ async function getApplications(
 
         const applications = await prisma.application.findMany({
             where: { userId: req.authPayload.userId },
+            include: {
+                followUps: {
+                    orderBy: {
+                        dueDate: 'asc',
+                    },
+                },
+            },
         });
 
         return res.status(200).json({
@@ -226,6 +233,13 @@ async function getApplicationById(
         }
         const application = await prisma.application.findUnique({
             where: { id: id },
+            include: {
+                followUps: {
+                    orderBy: {
+                        dueDate: 'asc',
+                    },
+                },
+            },
         });
 
         if (!application) {

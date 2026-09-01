@@ -1,6 +1,6 @@
 import { Application } from '@/types/application';
 import { useEffect, useRef } from 'react';
-
+import { getLabel } from '@/utils/getLabel';
 import {
     Dialog,
     DialogContent,
@@ -41,6 +41,7 @@ import {
 } from '@/constants/application';
 
 import { Badge } from '@/components/ui/badge';
+import { followUpTypeItems } from '@/constants/followUp';
 
 type ApplicationDetailsDialogProps = {
     application: Application | null;
@@ -48,7 +49,7 @@ type ApplicationDetailsDialogProps = {
     onOpenChange: (open: boolean) => void;
     onDelete: (applicationId: number) => Promise<void>;
     onEdit: (application: Application) => void;
-    onAddFollowUp: (application: Application) => void
+    onAddFollowUp: (application: Application) => void;
 };
 
 function ApplicationDetailsDialog({
@@ -57,7 +58,7 @@ function ApplicationDetailsDialog({
     onOpenChange,
     onDelete,
     onEdit,
-    onAddFollowUp
+    onAddFollowUp,
 }: ApplicationDetailsDialogProps) {
     const contentRef = useRef<HTMLDivElement>(null);
 
@@ -70,6 +71,10 @@ function ApplicationDetailsDialog({
     }, [open, application?.id]);
 
     if (!application) return null;
+
+    const activeFollowUps = application.followUps.filter(
+        (followUp) => !followUp.completed
+    );
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
@@ -180,6 +185,45 @@ function ApplicationDetailsDialog({
                             <p className="py-8 text-center text-sm text-muted-foreground">
                                 No additional information added.
                             </p>
+                        )}
+
+                        {/* follow-ups*/}
+                        {application.followUps.length > 0 && (
+                            <div className="space-y-3">
+                                <h3 className="border-b pb-2 text-sm font-semibold">
+                                    Follow-Ups
+                                </h3>
+
+                                <div className="space-y-2">
+                                    {activeFollowUps.map((followUp) => (
+                                        <div
+                                            key={followUp.id}
+                                            className="flex items-center justify-between rounded-lg border p-3"
+                                        >
+                                            <div>
+                                                <p className="text-sm font-medium mb-1">
+                                                    {followUp.title}
+                                                </p>
+                                                <p className="text-xs text-muted-foreground">
+                                                    {getLabel(
+                                                        followUpTypeItems,
+                                                        followUp.type
+                                                    )}
+                                                </p>
+                                            </div>
+
+                                            <p className="text-sm text-muted-foreground">
+                                                {new Date(
+                                                    followUp.dueDate
+                                                ).toLocaleDateString('en-US', {
+                                                    month: 'short',
+                                                    day: 'numeric',
+                                                })}
+                                            </p>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
                         )}
 
                         {/* date and job url */}

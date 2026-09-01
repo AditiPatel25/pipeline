@@ -5,6 +5,7 @@ import Home from './pages/Home';
 import Applications from './pages/Applications';
 import ProtectedRoute from './components/ProtectedRoute';
 import FollowUps from './pages/FollowUps';
+// import Analytics from './pages/Analytics';
 
 const routes = [
     {
@@ -38,7 +39,11 @@ const routes = [
                     {
                         path: '/followUps',
                         element: <FollowUps />,
-                    },           
+                    },       
+                    // {
+                    //     path: '/analytics',
+                    //     element: <Analytics />,
+                    // },           
                 ],
             },
         ],

@@ -1,3 +1,5 @@
+import { FollowUp } from "./followUp";
+
 export type Status =
     | 'APPLIED'
     | 'SCREENING'
@@ -48,6 +50,7 @@ export type ApplicationData = {
 export type Application = ApplicationData & {
     id: number;
     userId: number;
+    followUps: FollowUp[];
     createdAt: string;
     updatedAt: string;
 };

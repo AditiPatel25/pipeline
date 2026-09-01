@@ -14,8 +14,8 @@ import ApplicationModal from '@/components/ApplicationModal';
 import { getErrorMessage } from '@/utils/getErrorMessage';
 import ApplicationToolbar from '@/components/ApplicationToolbar';
 import ApplicationDetailsDialog from '@/components/ApplicationDetailsDialog';
-import { FollowUp, FollowUpData } from '@/types/followUp';
-import { createFollowUpRequest, editFollowUpRequest } from '@/api/followUp';
+import { FollowUpData } from '@/types/followUp';
+import { createFollowUpRequest } from '@/api/followUp';
 import FollowUpModal from '@/components/FollowUpModal';
 
 function Applications() {
@@ -25,10 +25,6 @@ function Applications() {
     const [open, setOpen] = useState(false);
     const [editingApplication, setEditingApplication] =
         useState<Application | null>(null);
-    const [followUps, setFollowUps] = useState<FollowUp[]>([]);
-    const [editingFollowUp, setEditingFollowUp] = useState<FollowUp | null>(
-        null
-    );
     const [selectedApplication, setSelectedApplication] =
         useState<Application | null>(null);
     const [followUpOpen, setFollowUpOpen] = useState(false);
@@ -118,7 +114,6 @@ function Applications() {
 
     const handleAddFollowUp = (application: Application) => {
         setSelectedApplication(application);
-        setEditingFollowUp(null);
         setFollowUpOpen(true);
     };
 
@@ -180,29 +175,24 @@ function Applications() {
         try {
             const response = await createFollowUpRequest(followUp);
 
-            setFollowUps((prev) => [...prev, response.followUp]);
+            setApplications((prev) =>
+                prev.map((application) =>
+                    application.id === followUp.applicationId
+                        ? {
+                              ...application,
+                              followUps: [
+                                  ...application.followUps,
+                                  response.followUp,
+                              ],
+                          }
+                        : application
+                )
+            );
 
             setError('');
         } catch (err) {
             setError(getErrorMessage(err));
             throw err;
-        }
-    };
-
-    const handleEditFollowUp = async (
-        followUpId: number,
-        followUp: FollowUpData
-    ) => {
-        try {
-            const response = await editFollowUpRequest(followUpId, followUp);
-
-            setFollowUps((prev) =>
-                prev.map((app) =>
-                    app.id === followUpId ? response.updatedFollowUp : app
-                )
-            );
-        } catch (err) {
-            setError(getErrorMessage(err));
         }
     };
 
@@ -313,27 +303,10 @@ function Applications() {
             />
             <Dialog open={followUpOpen} onOpenChange={setFollowUpOpen}>
                 <FollowUpModal
-                    initialFollowUp={
-                        editingFollowUp
-                            ? {
-                                  applicationId: editingFollowUp.applicationId,
-                                  title: editingFollowUp.title,
-                                  dueDate: editingFollowUp.dueDate,
-                                  type: editingFollowUp.type,
-                                  notes: editingFollowUp.notes,
-                                  completed: editingFollowUp.completed
-                              }
-                            : undefined
-                    }
-                    handleSubmit={
-                        editingFollowUp
-                            ? (data: FollowUpData) =>
-                                  handleEditFollowUp(editingFollowUp.id, data)
-                            : handleCreateFollowUp
-                    }
+                    initialFollowUp={undefined}
+                    handleSubmit={handleCreateFollowUp}
                     onSuccess={() => {
                         setFollowUpOpen(false);
-                        setEditingFollowUp(null);
                     }}
                     applications={applications}
                     applicationId={selectedApplication?.id}
