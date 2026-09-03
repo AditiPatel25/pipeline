@@ -18,13 +18,6 @@ export type EmploymentType =
     | 'INTERNSHIP'
     | 'TEMPORARY';
 
-export type OutreachSource =
-    | 'LINKEDIN'
-    | 'REFERRAL'
-    | 'COLD_EMAIL'
-    | 'CAREER_FAIR'
-    | 'OTHER';
-
 export type ApplicationSource =
     | 'LINKEDIN'
     | 'REFERRAL'

@@ -31,14 +31,6 @@ enum ApplicationSource {
     OTHER
 }
 
-enum OutreachSource {
-  LINKEDIN
-  REFERRAL
-  COLD_EMAIL
-  CAREER_FAIR
-  OTHER
-}
-
 enum WorkArrangement {
   REMOTE
   HYBRID
@@ -71,7 +63,6 @@ model User {
   googleId     String?       @unique
   createdAt    DateTime      @default(now())
   applications Application[]
-  outreaches   Outreach[]
 }
 
 model Application {
@@ -92,7 +83,6 @@ model Application {
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
   followUps       FollowUp[]
-  outreaches      Outreach[]
   resumeMatches   ResumeMatch[]
 }
 
@@ -107,24 +97,13 @@ model FollowUp {
   completed     Boolean     @default(false)
 }
 
-model Outreach {
-  id            Int            @id @default(autoincrement())
-  userId        Int
-  user          User           @relation(fields: [userId], references: [id])
-  company       String
-  contactName   String?
-  sourceEnum    OutreachSource
-  notes         String?
-  date          DateTime
-  applicationId Int?
-  application   Application?   @relation(fields: [applicationId], references: [id])
-}
-
 model ResumeMatch {
   id            Int         @id @default(autoincrement())
   applicationId Int
   application   Application @relation(fields: [applicationId], references: [id])
   extractedGaps Json
   matchedSkills Json
+  matchScore    Int
+  suggestions   Json
   createdAt     DateTime    @default(now())
 }

@@ -45,7 +45,7 @@ function Applications() {
     const [workArrangementFilter, setWorkArrangementFilter] = useState<
         string | null
     >(null);
-    const [sortBy, setSortBy] = useState<string | null>('NEWEST');
+    const [sortBy, setSortBy] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchApplications = async () => {

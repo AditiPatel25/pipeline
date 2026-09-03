@@ -7,7 +7,6 @@ import './config/passport.js';
 import authRouter from './routes/authRouter.js';
 import applicationRouter from './routes/applicationRouter.js';
 import followUpRouter from './routes/followUpRouter.js';
-import outreachRouter from './routes/outreachRouter.js';
 import aiRouter from './routes/aiRouter.js';
 
 const app = express();
@@ -27,7 +26,6 @@ app.get("/", (req, res) => {
 app.use('/api/auth', authRouter);
 app.use('/api/applications', applicationRouter);
 app.use('/api/followUps', followUpRouter);
-app.use('/api/outreach', outreachRouter);
 app.use('/api/ai', aiRouter);
 
 // no route matched

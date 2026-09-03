@@ -296,6 +296,7 @@ function ApplicationModal({
                                             <SelectLabel>
                                                 Work Arrangement
                                             </SelectLabel>
+                                            <SelectItem value="None">None</SelectItem>
                                             {workArrangementItems.map(
                                                 (item) => (
                                                     <SelectItem
@@ -341,6 +342,7 @@ function ApplicationModal({
                                             <SelectLabel>
                                                 Employment Type
                                             </SelectLabel>
+                                            <SelectItem value="None">None</SelectItem>
                                             {employmentTypeItems.map((item) => (
                                                 <SelectItem
                                                     key={item.value}
@@ -384,6 +386,7 @@ function ApplicationModal({
                                             <SelectLabel>
                                                 Job Source
                                             </SelectLabel>
+                                            <SelectItem value="None">None</SelectItem>
                                             {jobSourceItems.map((item) => (
                                                 <SelectItem
                                                     key={item.value}
