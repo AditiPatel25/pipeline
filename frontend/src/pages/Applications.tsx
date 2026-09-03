@@ -6,6 +6,8 @@ import {
     deleteApplicationRequest,
     getApplicationsRequest,
     editApplicationRequest,
+    createResumeMatchRequest,
+    getResumeMatchRequest,
 } from '@/api/application';
 import ApplicationCard from '@/components/ApplicationCard';
 import type { Application, ApplicationData } from '@/types/application';
@@ -21,12 +23,14 @@ import { Skeleton } from '@/components/ui/skeleton';
 import AddApplicationDialog from '@/components/AddApplicationDialog';
 import JobDescriptionDialog from '@/components/JobDescriptionDialog';
 import { extractApplicationRequest } from '@/api/ai';
+import ResumeAnalysisDialog from '@/components/ResumeAnalysisDialog';
 
 function Applications() {
     const [applications, setApplications] = useState<Application[]>([]);
     const [addApplicationOpen, setAddApplicationOpen] = useState(false);
     const [jobDescriptionOpen, setJobDescriptionOpen] = useState(false);
     const [applicationModalOpen, setApplicationModalOpen] = useState(false);
+    const [resumeAnalysisOpen, setResumeAnalysisOpen] = useState(false);
 
     const [initialApplication, setInitialApplication] = useState<
         ApplicationData | undefined
@@ -134,24 +138,59 @@ function Applications() {
     };
 
     const handleExtract = async (jobDescription: string) => {
-        const extractedInfo = await extractApplicationRequest(jobDescription);
+        try {
+            const extractedInfo =
+                await extractApplicationRequest(jobDescription);
 
-        setInitialApplication({
-            company: extractedInfo.company ?? '',
-            position: extractedInfo.position ?? '',
-            jobUrl: '',
-            description: jobDescription,
-            status: 'APPLIED',
-            appliedDate: undefined,
-            source: undefined,
-            location: extractedInfo.location ?? '',
-            workArrangement: extractedInfo.workArrangement,
-            employmentType: extractedInfo.employmentType,
-            notes: '',
-        });
+            setInitialApplication({
+                company: extractedInfo.company ?? '',
+                position: extractedInfo.position ?? '',
+                jobUrl: '',
+                description: jobDescription,
+                status: 'APPLIED',
+                appliedDate: undefined,
+                source: undefined,
+                location: extractedInfo.location ?? '',
+                workArrangement: extractedInfo.workArrangement,
+                employmentType: extractedInfo.employmentType,
+                notes: '',
+            });
 
-        setJobDescriptionOpen(false);
-        setApplicationModalOpen(true);
+            setJobDescriptionOpen(false);
+            setApplicationModalOpen(true);
+        } catch (err) {
+            setError(getErrorMessage(err));
+            throw err;
+        }
+    };
+
+    const handleCreateResumeMatch = async (
+        applicationId: number,
+        resume: string
+    ) => {
+        try {
+            const response = await createResumeMatchRequest(
+                applicationId,
+                resume
+            );
+
+            setApplications((prev) =>
+                prev.map((application) =>
+                    application.id === applicationId
+                        ? {
+                              ...application,
+                              resumeMatch: response.resumeMatch,
+                          }
+                        : application
+                )
+            );
+
+            setError('');
+            return response.resumeMatch;
+        } catch (err) {
+            setError(getErrorMessage(err));
+            throw err;
+        }
     };
 
     const handleManualAdd = () => {
@@ -173,6 +212,11 @@ function Applications() {
     const handleAddFollowUp = (application: Application) => {
         setSelectedApplication(application);
         setFollowUpOpen(true);
+    };
+
+    const handleResumeAnalysis = (application: Application) => {
+        setSelectedApplication(application);
+        setResumeAnalysisOpen(true);
     };
 
     const handleClearFilters = () => {
@@ -401,6 +445,13 @@ function Applications() {
                     }
                 }}
                 onAddFollowUp={handleAddFollowUp}
+                onResumeAnalysis={handleResumeAnalysis}
+            />
+            <ResumeAnalysisDialog
+                application={selectedApplication}
+                open={resumeAnalysisOpen}
+                onOpenChange={setResumeAnalysisOpen}
+                onCreateResumeMatch={handleCreateResumeMatch}
             />
             <Dialog open={followUpOpen} onOpenChange={setFollowUpOpen}>
                 <FollowUpModal

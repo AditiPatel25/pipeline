@@ -1,7 +1,8 @@
 import { Router } from 'express';
-import { createApplication, deleteApplication, editApplication, getApplicationById, getApplications, getApplicationStats, getRecentApplications } from '../controllers/applicationController.js';
+import { createApplication, deleteApplication, editApplication, getApplicationById, getApplications, getApplicationStats, getRecentApplications, getResumeMatch } from '../controllers/applicationController.js';
 import { createFollowUp, getFollowUpsByApplication } from '../controllers/followUpController.js';
 import { authenticateToken } from '../middleware/auth.js';
+import { createResumeMatch } from '../controllers/aiController.js';
 const applicationRouter = Router();
 applicationRouter.use(authenticateToken);
 
@@ -16,6 +17,12 @@ applicationRouter.get('/stats', getApplicationStats);
 
 // get recent applications
 applicationRouter.get('/recent', getRecentApplications);
+
+// match resume with job description
+applicationRouter.post('/:id/resume-match', createResumeMatch );
+
+// get resume with job description analysis
+applicationRouter.get('/:id/resume-match', getResumeMatch);
 
 // get specific application
 applicationRouter.get('/:id', getApplicationById);

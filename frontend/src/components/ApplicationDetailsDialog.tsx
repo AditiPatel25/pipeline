@@ -24,6 +24,8 @@ import {
 
 import { Button } from '@/components/ui/button';
 
+import { Sparkles } from 'lucide-react';
+
 const statusStyles = {
     APPLIED: 'bg-status-applied',
     SCREENING: 'bg-status-screening',
@@ -50,6 +52,7 @@ type ApplicationDetailsDialogProps = {
     onDelete: (applicationId: number) => Promise<void>;
     onEdit: (application: Application) => void;
     onAddFollowUp: (application: Application) => void;
+    onResumeAnalysis: (application: Application) => void;
 };
 
 function ApplicationDetailsDialog({
@@ -59,6 +62,7 @@ function ApplicationDetailsDialog({
     onDelete,
     onEdit,
     onAddFollowUp,
+    onResumeAnalysis
 }: ApplicationDetailsDialogProps) {
     const contentRef = useRef<HTMLDivElement>(null);
 
@@ -259,6 +263,14 @@ function ApplicationDetailsDialog({
 
                 {/* footer */}
                 <DialogFooter className="shrink-0 border-t pt-4 sm:justify-end">
+                    {application.description && (
+                        <Button
+                            variant="outline"
+                            onClick={() => onResumeAnalysis(application)}
+                        >
+                            Resume Analysis <Sparkles/>
+                        </Button>
+                    )}
                     <Button
                         variant="outline"
                         onClick={() => onAddFollowUp(application)}

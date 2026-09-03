@@ -15,24 +15,13 @@ import {
     CalendarDays,
     House,
     ChevronUp,
-    User,
     Users,
 } from 'lucide-react';
-
-import { Button } from '@/components/ui/button';
 
 import {
     DropdownMenu,
     DropdownMenuContent,
-    DropdownMenuGroup,
     DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuPortal,
-    DropdownMenuSeparator,
-    DropdownMenuShortcut,
-    DropdownMenuSub,
-    DropdownMenuSubContent,
-    DropdownMenuSubTrigger,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 
@@ -54,19 +43,6 @@ const mainItems = [
         title: 'Follow-Ups',
         url: '/followUps',
         icon: CalendarDays,
-    },
-    {
-        title: 'Contacts',
-        url: '/outreach',
-        icon: Users,
-    },
-];
-
-const insightItems = [
-    {
-        title: 'Analytics',
-        url: '/analytics',
-        icon: BarChart3,
     },
 ];
 
@@ -104,31 +80,6 @@ function AppSidebar() {
                 </SidebarGroup>
 
                 {/* insights */}
-                <SidebarGroup>
-                    <SidebarGroupLabel className="text-xs font-semibold tracking-wider">
-                        INSIGHTS
-                    </SidebarGroupLabel>
-
-                    <SidebarGroupContent>
-                        <SidebarMenu className="mt-3 gap-1">
-                            {insightItems.map((item) => (
-                                <SidebarMenuItem key={item.title}>
-                                    <SidebarMenuButton className="h-10">
-                                        <Link
-                                            to={item.url}
-                                            className="flex w-full items-center gap-3"
-                                        >
-                                            <item.icon className="size-5" />
-                                            <span className="text-sm font-medium">
-                                                {item.title}
-                                            </span>
-                                        </Link>
-                                    </SidebarMenuButton>
-                                </SidebarMenuItem>
-                            ))}
-                        </SidebarMenu>
-                    </SidebarGroupContent>
-                </SidebarGroup>
             </SidebarContent>
 
             {/* user section */}
@@ -154,7 +105,10 @@ function AppSidebar() {
                                 align="end"
                                 side="top"
                             >
-                                <DropdownMenuItem onClick={logout} className="cursor-pointer text-destructive focus:bg-destructive/10 focus:text-destructive">
+                                <DropdownMenuItem
+                                    onClick={logout}
+                                    className="cursor-pointer text-destructive focus:bg-destructive/10 focus:text-destructive"
+                                >
                                     Log out
                                 </DropdownMenuItem>
                             </DropdownMenuContent>

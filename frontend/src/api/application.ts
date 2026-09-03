@@ -38,3 +38,13 @@ export async function getRecentApplicationsRequest() {
     const res = await api.get(`/applications/recent`);
     return res.data;
 }
+
+export async function createResumeMatchRequest(id: Number, resume: String) {
+    const res = await api.post(`/applications/${id}/resume-match`, {resume});
+    return res.data;
+}
+
+export async function getResumeMatchRequest(id: Number) {
+    const res = await api.get(`/applications/${id}/resume-match`);
+    return res.data;
+}

@@ -33,13 +33,24 @@ async function getApplications(
                         dueDate: 'asc',
                     },
                 },
+                resumeMatches: {
+                    orderBy: {
+                        createdAt: 'desc',
+                    },
+                    take: 1,
+                },
             },
         });
+
+        const applicationsWithResumeMatch = applications.map((application) => ({
+            ...application,
+            resumeMatch: application.resumeMatches[0] ?? null,
+        }));
 
         return res.status(200).json({
             success: true,
             message: 'Applications loaded',
-            applications,
+            applications: applicationsWithResumeMatch,
         });
     } catch (e) {
         next(e);
@@ -490,6 +501,63 @@ async function getRecentApplications(
     }
 }
 
+async function getResumeMatch(
+    req: Request<ApplicationParams>,
+    res: Response,
+    next: NextFunction
+) {
+    try {
+        if (!req.authPayload) {
+            return res.status(401).json({
+                status: 401,
+                error: 'Unauthorized',
+                message: 'User is not logged in',
+            });
+        }
+
+        const id = parseInt(req.params.id);
+        if (isNaN(id)) {
+            return res.status(400).json({
+                status: 400,
+                error: 'Bad Request',
+                message: 'Invalid application ID',
+            });
+        }
+
+        const application = await prisma.application.findUnique({
+            where: {
+                id,
+                userId: req.authPayload.userId,
+            },
+        });
+
+        if (!application) {
+            return res.status(404).json({
+                status: 404,
+                error: 'Not Found',
+                message: 'Application not found',
+            });
+        }
+
+        const resumeMatch = await prisma.resumeMatch.findFirst({
+            where: {
+                applicationId: id,
+            },
+            orderBy: {
+                createdAt: 'desc',
+            },
+        });
+
+        return res.status(200).json({
+            success: true,
+            message: 'Resume match loaded',
+            resumeMatch,
+        });
+    } catch (e) {
+        next(e);
+    }
+}
+
 export {
     getApplications,
     createApplication,
@@ -498,4 +566,5 @@ export {
     editApplication,
     getApplicationStats,
     getRecentApplications,
+    getResumeMatch,
 };

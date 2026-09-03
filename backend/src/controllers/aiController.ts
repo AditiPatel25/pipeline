@@ -1,78 +1,12 @@
 import type { Request, Response, NextFunction } from 'express';
-import OpenAI from 'openai';
+import {
+    analyzeResumeMatch,
+    extractApplicationInfo,
+} from '../services/aiService.js';
+import { prisma } from '../prisma.js';
 
-const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
-});
-
-export const extractApplicationInfo = async (jobDescription: string) => {
-    const response = await openai.responses.create({
-        model: 'gpt-5.6-luna',
-        input: `
-            Extract the following information from this job description:
-
-            - Company
-            - Position
-            - Location
-            - Work arrangement
-            - Employment type
-
-            Rules:
-            - Only extract information explicitly stated or strongly implied by the job description.
-            - If information cannot be determined, return null.
-            - For work arrangement, use only REMOTE, HYBRID, or ONSITE.
-            - For employment type, use only FULL_TIME, PART_TIME, CONTRACT, INTERNSHIP, or TEMPORARY.
-
-            Job description:
-            ${jobDescription}
-        `,
-        text: {
-            format: {
-                type: 'json_schema',
-                name: 'application_extraction',
-                strict: true,
-                schema: {
-                    type: 'object',
-                    properties: {
-                        company: {
-                            type: ['string', 'null'],
-                        },
-                        position: {
-                            type: ['string', 'null'],
-                        },
-                        location: {
-                            type: ['string', 'null'],
-                        },
-                        workArrangement: {
-                            type: ['string', 'null'],
-                            enum: ['REMOTE', 'HYBRID', 'ONSITE', null],
-                        },
-                        employmentType: {
-                            type: ['string', 'null'],
-                            enum: [
-                                'FULL_TIME',
-                                'PART_TIME',
-                                'CONTRACT',
-                                'INTERNSHIP',
-                                'TEMPORARY',
-                                null,
-                            ],
-                        },
-                    },
-                    required: [
-                        'company',
-                        'position',
-                        'location',
-                        'workArrangement',
-                        'employmentType',
-                    ],
-                    additionalProperties: false,
-                },
-            },
-        },
-    });
-
-    return JSON.parse(response.output_text);
+type ApplicationParams = {
+    id: string;
 };
 
 async function extractApplication(
@@ -99,7 +33,6 @@ async function extractApplication(
         }
 
         const extractedInfo = await extractApplicationInfo(jobDescription);
-       
 
         return res.status(200).json({
             success: true,
@@ -111,4 +44,84 @@ async function extractApplication(
     }
 }
 
-export { extractApplication };
+async function createResumeMatch(
+    req: Request<ApplicationParams>,
+    res: Response,
+    next: NextFunction
+) {
+    try {
+        const { resume } = req.body;
+
+        if (!resume || resume.trim() === '') {
+            return res.status(400).json({
+                success: false,
+                message: 'Resume is required',
+            });
+        }
+
+        if (!req.authPayload) {
+            return res.status(401).json({
+                status: 401,
+                error: 'Unauthorized',
+                message: 'User is not logged in',
+            });
+        }
+
+        const id = parseInt(req.params.id);
+        if (isNaN(id)) {
+            return res.status(400).json({
+                status: 400,
+                error: 'Bad Request',
+                message: 'Invalid application ID',
+            });
+        }
+
+        const application = await prisma.application.findUnique({
+            where: {
+                id: id,
+                userId: req.authPayload.userId,
+            },
+        });
+
+        if (!application) {
+            return res.status(404).json({
+                status: 404,
+                error: 'Not Found',
+                message: 'Application not found',
+            });
+        }
+
+        if (!application.description) {
+            return res.status(404).json({
+                status: 404,
+                error: 'Not Found',
+                message: 'Application must have a description',
+            });
+        }
+
+        const result = await analyzeResumeMatch(
+            resume,
+            application.description
+        );
+
+        const resumeMatch = await prisma.resumeMatch.create({
+            data: {
+                applicationId: id,
+                matchScore: result.matchScore,
+                matchedSkills: result.matchedSkills,
+                extractedGaps: result.extractedGaps,
+                suggestions: result.suggestions,
+            },
+        });
+
+        return res.status(201).json({
+            success: true,
+            message: 'Resume match created',
+            resumeMatch,
+        });
+    } catch (e) {
+        next(e);
+    }
+}
+
+export { extractApplication, createResumeMatch };
