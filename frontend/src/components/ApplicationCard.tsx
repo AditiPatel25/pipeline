@@ -43,10 +43,10 @@ function ApplicationCard({
     onSelect,
 }: ApplicationCardProps) {
     return (
-        <div className="rounded-xl border border-border bg-card p-5 shadow-sm transition-all hover:border-accent hover:shadow-md">
+        <div className="flex h-full flex-col rounded-xl border border-border bg-card p-5 shadow-sm transition-all hover:border-accent hover:shadow-md">
             <button
                 type="button"
-                className="w-full text-left"
+                className="flex w-full flex-1 flex-col text-left"
                 onClick={() => onSelect(application)}
             >
                 {/* header */}
@@ -97,7 +97,7 @@ function ApplicationCard({
 
             {/* footer */}
 
-            <div className="flex justify-between items-center gap-4 mt-5 border-t border-border pt-4 text-xs text-muted-foreground">
+            <div className="mt-5 flex items-center justify-between gap-4 border-t border-border pt-4 text-xs text-muted-foreground">
                 <div>
                     {application.appliedDate && (
                         <>

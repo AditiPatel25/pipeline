@@ -66,3 +66,11 @@ export type ApplicationStats = {
     total: number;
     stats: Partial<Record<Status, number>>;
 };
+
+export type ApplicationExtraction = {
+  company?: string;
+  position?: string;
+  location?: string;
+  workArrangement?: WorkArrangement;
+  employmentType?: EmploymentType;
+};

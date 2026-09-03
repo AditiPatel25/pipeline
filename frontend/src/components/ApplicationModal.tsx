@@ -69,12 +69,14 @@ type ApplicationModalProps = {
     initialApplication?: ApplicationData;
     handleSubmit: (application: ApplicationData) => Promise<void>;
     onSuccess: () => void;
+    isEditing?: boolean;
 };
 
 function ApplicationModal({
     initialApplication,
     handleSubmit,
     onSuccess,
+    isEditing = false,
 }: ApplicationModalProps) {
     const [application, setApplication] = useState<ApplicationData>(
         initialApplication ?? emptyApplication
@@ -102,11 +104,11 @@ function ApplicationModal({
         }
     };
 
-    const isEditing = !!initialApplication;
-
     useEffect(() => {
         setApplication(initialApplication ?? emptyApplication);
     }, [initialApplication]);
+
+ 
 
     return (
         <DialogContent className="flex max-h-[90vh] flex-col sm:max-w-lg">

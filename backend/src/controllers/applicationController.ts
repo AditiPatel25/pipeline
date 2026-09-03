@@ -89,6 +89,7 @@ async function createApplication(
 
         if (
             workArrangement !== null &&
+            workArrangement !== undefined &&
             !Object.values(WorkArrangement).includes(workArrangement)
         ) {
             return res.status(400).json({
@@ -99,6 +100,7 @@ async function createApplication(
 
         if (
             employmentType !== null &&
+            employmentType !== undefined &&
             !Object.values(EmploymentType).includes(employmentType)
         ) {
             return res.status(400).json({
@@ -109,6 +111,7 @@ async function createApplication(
 
         if (
             source !== null &&
+            source !== undefined &&
             !Object.values(ApplicationSource).includes(source)
         ) {
             return res.status(400).json({
@@ -139,6 +142,9 @@ async function createApplication(
                 workArrangement,
                 employmentType,
                 userId: req.authPayload.userId,
+            },
+            include: {
+                followUps: true,
             },
         });
 

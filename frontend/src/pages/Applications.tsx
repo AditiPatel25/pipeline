@@ -18,12 +18,21 @@ import { FollowUpData } from '@/types/followUp';
 import { createFollowUpRequest } from '@/api/followUp';
 import FollowUpModal from '@/components/FollowUpModal';
 import { Skeleton } from '@/components/ui/skeleton';
+import AddApplicationDialog from '@/components/AddApplicationDialog';
+import JobDescriptionDialog from '@/components/JobDescriptionDialog';
+import { extractApplicationRequest } from '@/api/ai';
 
 function Applications() {
     const [applications, setApplications] = useState<Application[]>([]);
+    const [addApplicationOpen, setAddApplicationOpen] = useState(false);
+    const [jobDescriptionOpen, setJobDescriptionOpen] = useState(false);
+    const [applicationModalOpen, setApplicationModalOpen] = useState(false);
+
+    const [initialApplication, setInitialApplication] = useState<
+        ApplicationData | undefined
+    >();
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(true);
-    const [open, setOpen] = useState(false);
     const [editingApplication, setEditingApplication] =
         useState<Application | null>(null);
     const [selectedApplication, setSelectedApplication] =
@@ -36,7 +45,7 @@ function Applications() {
     const [workArrangementFilter, setWorkArrangementFilter] = useState<
         string | null
     >(null);
-    const [sortBy, setSortBy] = useState<string | null>(null);
+    const [sortBy, setSortBy] = useState<string | null>('NEWEST');
 
     useEffect(() => {
         const fetchApplications = async () => {
@@ -44,7 +53,6 @@ function Applications() {
                 const response = await getApplicationsRequest();
                 setApplications(response.applications);
             } catch (err) {
-                getErrorMessage(err);
                 setError(getErrorMessage(err));
             } finally {
                 setLoading(false);
@@ -61,7 +69,6 @@ function Applications() {
 
             setError('');
         } catch (err) {
-            getErrorMessage(err);
             setError(getErrorMessage(err));
             throw err;
         }
@@ -83,7 +90,6 @@ function Applications() {
                 )
             );
         } catch (err) {
-            getErrorMessage(err);
             setError(getErrorMessage(err));
         }
     };
@@ -98,24 +104,82 @@ function Applications() {
             );
             setSelectedApplication(null);
         } catch (err) {
-            getErrorMessage(err);
             setError(getErrorMessage(err));
         }
     }
 
-    const handleAdd = () => {
-        setEditingApplication(null);
-        setOpen(true);
+    const handleCreateFollowUp = async (followUp: FollowUpData) => {
+        try {
+            const response = await createFollowUpRequest(followUp);
+
+            setApplications((prev) =>
+                prev.map((application) =>
+                    application.id === followUp.applicationId
+                        ? {
+                              ...application,
+                              followUps: [
+                                  ...application.followUps,
+                                  response.followUp,
+                              ],
+                          }
+                        : application
+                )
+            );
+
+            setError('');
+        } catch (err) {
+            setError(getErrorMessage(err));
+            throw err;
+        }
+    };
+
+    const handleExtract = async (jobDescription: string) => {
+        const extractedInfo = await extractApplicationRequest(jobDescription);
+
+        setInitialApplication({
+            company: extractedInfo.company ?? '',
+            position: extractedInfo.position ?? '',
+            jobUrl: '',
+            description: jobDescription,
+            status: 'APPLIED',
+            appliedDate: undefined,
+            source: undefined,
+            location: extractedInfo.location ?? '',
+            workArrangement: extractedInfo.workArrangement,
+            employmentType: extractedInfo.employmentType,
+            notes: '',
+        });
+
+        setJobDescriptionOpen(false);
+        setApplicationModalOpen(true);
+    };
+
+    const handleManualAdd = () => {
+        setInitialApplication(undefined);
+        setAddApplicationOpen(false);
+        setApplicationModalOpen(true);
+    };
+
+    const handleAIAdd = () => {
+        setAddApplicationOpen(false);
+        setJobDescriptionOpen(true);
     };
 
     const handleEdit = (application: Application) => {
         setEditingApplication(application);
-        setOpen(true);
+        setApplicationModalOpen(true);
     };
 
     const handleAddFollowUp = (application: Application) => {
         setSelectedApplication(application);
         setFollowUpOpen(true);
+    };
+
+    const handleClearFilters = () => {
+        setSearch('');
+        setStatusFilter(null);
+        setWorkArrangementFilter(null);
+        setSortBy('NEWEST');
     };
 
     const filteredApplications = applications.filter((application) => {
@@ -165,38 +229,6 @@ function Applications() {
         }
     });
 
-    const handleClearFilters = () => {
-        setSearch('');
-        setStatusFilter(null);
-        setWorkArrangementFilter(null);
-        setSortBy('NEWEST');
-    };
-
-    const handleCreateFollowUp = async (followUp: FollowUpData) => {
-        try {
-            const response = await createFollowUpRequest(followUp);
-
-            setApplications((prev) =>
-                prev.map((application) =>
-                    application.id === followUp.applicationId
-                        ? {
-                              ...application,
-                              followUps: [
-                                  ...application.followUps,
-                                  response.followUp,
-                              ],
-                          }
-                        : application
-                )
-            );
-
-            setError('');
-        } catch (err) {
-            setError(getErrorMessage(err));
-            throw err;
-        }
-    };
-
     if (loading) {
         return (
             <>
@@ -218,12 +250,30 @@ function Applications() {
                             key={index}
                             className="rounded-xl border border-border bg-card p-5 shadow-sm"
                         >
+                            {/* Company + Status */}
                             <div className="flex items-center justify-between gap-4">
                                 <Skeleton className="h-6 w-32" />
                                 <Skeleton className="h-5 w-20 rounded-full" />
                             </div>
 
+                            {/* Position */}
                             <Skeleton className="mt-2 h-4 w-40" />
+
+                            {/* Details */}
+                            <div className="mt-4 space-y-2 flex gap-2">
+                                <Skeleton className="h-4 w-20" />
+                                <Skeleton className="h-4 w-20" />
+                                <Skeleton className="h-4 w-20" />
+                            </div>
+
+                            <div className="mt-6 flex items-center justify-between">
+                                <Skeleton className="h-4 w-24" />
+
+                                <div className="flex gap-2">
+                                    <Skeleton className="size-8 rounded-md" />
+                                    <Skeleton className="size-8 rounded-md" />
+                                </div>
+                            </div>
                         </div>
                     ))}
                 </main>
@@ -235,17 +285,39 @@ function Applications() {
         <>
             <div className="flex items-center justify-between px-4">
                 <h1 className="text-2xl font-extrabold">Applications</h1>
-                <Dialog open={open} onOpenChange={setOpen}>
+                <Dialog
+                    open={addApplicationOpen}
+                    onOpenChange={setAddApplicationOpen}
+                >
                     <DialogTrigger
                         render={
-                            <Button onClick={handleAdd}>
+                            <Button onClick={() => setEditingApplication(null)}>
                                 Add Application <Plus />
                             </Button>
                         }
                     />
+
+                    <AddApplicationDialog
+                        onManual={handleManualAdd}
+                        onJobDescription={handleAIAdd}
+                    />
+                </Dialog>
+
+                <Dialog
+                    open={jobDescriptionOpen}
+                    onOpenChange={setJobDescriptionOpen}
+                >
+                    <JobDescriptionDialog onExtract={handleExtract} />
+                </Dialog>
+
+                <Dialog
+                    open={applicationModalOpen}
+                    onOpenChange={setApplicationModalOpen}
+                >
                     <ApplicationModal
                         initialApplication={
-                            editingApplication
+                            initialApplication ??
+                            (editingApplication
                                 ? {
                                       company: editingApplication.company,
                                       position: editingApplication.position,
@@ -263,7 +335,7 @@ function Applications() {
                                           editingApplication.employmentType,
                                       notes: editingApplication.notes,
                                   }
-                                : undefined
+                                : undefined)
                         }
                         handleSubmit={
                             editingApplication
@@ -275,9 +347,11 @@ function Applications() {
                                 : handleCreateApplication
                         }
                         onSuccess={() => {
-                            setOpen(false);
+                            setApplicationModalOpen(false);
                             setEditingApplication(null);
+                            setInitialApplication(undefined);
                         }}
+                        isEditing={!!editingApplication}
                     />
                 </Dialog>
             </div>

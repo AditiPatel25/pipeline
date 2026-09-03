@@ -157,7 +157,7 @@ function ApplicationDetailsDialog({
 
                         {/* job description */}
                         {application.description && (
-                            <div className="space-y-3">
+                            <div className="space-y-3 mb-2">
                                 <h3 className="border-b pb-2 text-sm font-semibold">
                                     Job Description
                                 </h3>
@@ -170,7 +170,7 @@ function ApplicationDetailsDialog({
 
                         {/* notes */}
                         {application.notes && (
-                            <div className="space-y-3">
+                            <div className="space-y-3 mb-2">
                                 <h3 className="border-b pb-2 text-sm font-semibold">
                                     Notes
                                 </h3>
