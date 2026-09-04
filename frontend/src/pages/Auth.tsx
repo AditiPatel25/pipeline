@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router';
 import { useAuth } from '../context/AuthContext';
-import Register from '../components/Register';
+import Register from '../components/Auth/Register';
 import { loginRequest, registerRequest } from '@/api/auth.js';
-import Login from '../components/Login';
+import Login from '../components/Auth/Login';
 import { getErrorMessage } from '@/utils/getErrorMessage';
 
 const emptyForm = {

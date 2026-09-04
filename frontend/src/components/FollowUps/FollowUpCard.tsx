@@ -1,5 +1,5 @@
 import { FollowUp } from '@/types/followUp';
-import { Button } from './ui/button';
+import { Button } from '../ui/button';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -12,8 +12,8 @@ import {
     AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { Pencil, Trash } from 'lucide-react';
-import { Badge } from './ui/badge';
-import { Checkbox } from './ui/checkbox';
+import { Badge } from '../ui/badge';
+import { Checkbox } from '../ui/checkbox';
 import { getLabel } from '@/utils/getLabel';
 import { followUpTypeItems } from '@/constants/followUp';
 

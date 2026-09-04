@@ -23,12 +23,12 @@ enum Status {
 }
 
 enum ApplicationSource {
-    LINKEDIN
-    INDEED
-    COMPANY_WEBSITE
-    REFERRAL
-    CAREER_FAIR
-    OTHER
+  LINKEDIN
+  INDEED
+  COMPANY_WEBSITE
+  REFERRAL
+  CAREER_FAIR
+  OTHER
 }
 
 enum WorkArrangement {
@@ -63,10 +63,12 @@ model User {
   googleId     String?       @unique
   createdAt    DateTime      @default(now())
   applications Application[]
+
+  resumes Resume[]
 }
 
 model Application {
-  id              Int              @id @default(autoincrement())
+  id              Int                @id @default(autoincrement())
   company         String
   position        String
   jobUrl          String?
@@ -79,22 +81,22 @@ model Application {
   source          ApplicationSource?
   notes           String?
   userId          Int
-  user            User             @relation(fields: [userId], references: [id])
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
+  user            User               @relation(fields: [userId], references: [id])
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
   followUps       FollowUp[]
   resumeMatches   ResumeMatch[]
 }
 
 model FollowUp {
-  id            Int         @id @default(autoincrement())
+  id            Int          @id @default(autoincrement())
   applicationId Int
-  application   Application @relation(fields: [applicationId], references: [id])
+  application   Application  @relation(fields: [applicationId], references: [id])
   title         String
-  type          FollowUpType  @default(OTHER)
+  type          FollowUpType @default(OTHER)
   dueDate       DateTime
   notes         String?
-  completed     Boolean     @default(false)
+  completed     Boolean      @default(false)
 }
 
 model ResumeMatch {
@@ -106,4 +108,14 @@ model ResumeMatch {
   matchScore    Int
   suggestions   Json
   createdAt     DateTime    @default(now())
+}
+
+model Resume {
+  id        Int      @id @default(autoincrement())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int      @unique
+  fileName  String
+  filePath   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

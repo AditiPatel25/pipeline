@@ -5,6 +5,7 @@ import Home from './pages/Home';
 import Applications from './pages/Applications';
 import ProtectedRoute from './components/ProtectedRoute';
 import FollowUps from './pages/FollowUps';
+import Resume from './pages/Resume';
 // import Analytics from './pages/Analytics';
 
 const routes = [
@@ -40,10 +41,10 @@ const routes = [
                         path: '/followUps',
                         element: <FollowUps />,
                     },       
-                    // {
-                    //     path: '/analytics',
-                    //     element: <Analytics />,
-                    // },           
+                    {
+                        path: '/resume',
+                        element: <Resume />,
+                    },           
                 ],
             },
         ],

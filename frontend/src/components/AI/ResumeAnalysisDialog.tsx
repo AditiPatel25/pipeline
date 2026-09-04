@@ -1,5 +1,5 @@
 import { Application } from '@/types/application';
-import { Button } from './ui/button';
+import { Button } from '../ui/button';
 import { useEffect, useState } from 'react';
 import {
     Dialog,

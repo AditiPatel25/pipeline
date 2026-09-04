@@ -5,7 +5,7 @@ import {
     employmentTypeLabels,
     sourceLabels,
 } from '@/constants/application';
-import { Button } from './ui/button';
+import { Button } from '../ui/button';
 import { Trash, Pencil } from 'lucide-react';
 import {
     AlertDialog,

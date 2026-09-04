@@ -8,6 +8,7 @@ import authRouter from './routes/authRouter.js';
 import applicationRouter from './routes/applicationRouter.js';
 import followUpRouter from './routes/followUpRouter.js';
 import aiRouter from './routes/aiRouter.js';
+import resumeRouter from './routes/resumeRouter.js';
 
 const app = express();
 app.use(
@@ -27,6 +28,7 @@ app.use('/api/auth', authRouter);
 app.use('/api/applications', applicationRouter);
 app.use('/api/followUps', followUpRouter);
 app.use('/api/ai', aiRouter);
+app.use('/api/resume', resumeRouter)
 
 // no route matched
 app.use((req, res) => {

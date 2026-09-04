@@ -10,12 +10,11 @@ import {
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import {
-    BarChart3,
     Briefcase,
     CalendarDays,
     House,
     ChevronUp,
-    Users,
+    FileText
 } from 'lucide-react';
 
 import {
@@ -43,6 +42,11 @@ const mainItems = [
         title: 'Follow-Ups',
         url: '/followUps',
         icon: CalendarDays,
+    },
+    {
+        title: 'Resume',
+        url: '/resume',
+        icon: FileText,
     },
 ];
 

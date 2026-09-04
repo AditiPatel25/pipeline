@@ -6,11 +6,11 @@ import {
 import { getErrorMessage } from '@/utils/getErrorMessage';
 import { useEffect, useState } from 'react';
 import { ApplicationStats, Application } from '@/types/application';
-import DashboardApplicationCard from '@/components/DashboardApplicationCard';
+import DashboardApplicationCard from '@/components/Dashboard/DashboardApplicationCard';
 import { FollowUp } from '@/types/followUp';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
-import DashboardFollowUpCard from '@/components/DashboardFollowUpCard';
+import DashboardFollowUpCard from '@/components/Dashboard/DashboardFollowUpCard';
 import { getUpcomingFollowUpsRequest } from '@/api/followUp';
 import { Skeleton } from '@/components/ui/skeleton';
 

@@ -9,21 +9,21 @@ import {
     createResumeMatchRequest,
     getResumeMatchRequest,
 } from '@/api/application';
-import ApplicationCard from '@/components/ApplicationCard';
+import ApplicationCard from '@/components/Applications/ApplicationCard';
 import type { Application, ApplicationData } from '@/types/application';
 import { Dialog, DialogTrigger } from '@/components/ui/dialog';
-import ApplicationModal from '@/components/ApplicationModal';
+import ApplicationModal from '@/components/Applications/ApplicationModal';
 import { getErrorMessage } from '@/utils/getErrorMessage';
-import ApplicationToolbar from '@/components/ApplicationToolbar';
-import ApplicationDetailsDialog from '@/components/ApplicationDetailsDialog';
+import ApplicationToolbar from '@/components/Applications/ApplicationToolbar';
+import ApplicationDetailsDialog from '@/components/Applications/ApplicationDetailsDialog';
 import { FollowUpData } from '@/types/followUp';
 import { createFollowUpRequest } from '@/api/followUp';
-import FollowUpModal from '@/components/FollowUpModal';
+import FollowUpModal from '@/components/FollowUps/FollowUpModal';
 import { Skeleton } from '@/components/ui/skeleton';
-import AddApplicationDialog from '@/components/AddApplicationDialog';
-import JobDescriptionDialog from '@/components/JobDescriptionDialog';
+import AddApplicationDialog from '@/components/Applications/AddApplicationDialog';
+import JobDescriptionDialog from '@/components/AI/JobDescriptionDialog';
 import { extractApplicationRequest } from '@/api/ai';
-import ResumeAnalysisDialog from '@/components/ResumeAnalysisDialog';
+import ResumeAnalysisDialog from '@/components/AI/ResumeAnalysisDialog';
 
 function Applications() {
     const [applications, setApplications] = useState<Application[]>([]);
