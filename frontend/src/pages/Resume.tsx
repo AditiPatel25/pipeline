@@ -102,7 +102,7 @@ function Resume() {
     }
 
     return (
-        <div className="space-y-6 px-4 py-6">
+        <div className="space-y-6 px-4 py-2">
             <div>
                 <h1 className="text-2xl font-extrabold">Resume</h1>
 
