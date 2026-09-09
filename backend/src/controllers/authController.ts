@@ -1,9 +1,9 @@
-import { hash, compare } from 'bcryptjs';
+import { compare, hash } from 'bcryptjs';
+import type { NextFunction, Request, Response } from 'express';
 import pkg from 'jsonwebtoken';
-const { sign } = pkg;
-import { prisma } from '../prisma.js';
-import type { Request, Response, NextFunction } from 'express';
 import passport from 'passport';
+import { prisma } from '../prisma.js';
+const { sign } = pkg;
 
 function issueAuthCookie(res: Response, userId: number) {
     const JWT_SECRET = process.env.JWT_SECRET;
@@ -202,4 +202,5 @@ async function googleCallback(req: Request, res: Response, next: NextFunction) {
         }
     )(req, res, next);
 }
-export { register, login, getCurrentUser, logout, googleCallback };
+export { getCurrentUser, googleCallback, login, logout, register };
+

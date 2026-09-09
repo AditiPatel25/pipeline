@@ -1,6 +1,5 @@
 import { Router } from 'express';
-import { editFollowUp, deleteFollowUp, getAllFollowUps, getUpcomingFollowUps } from '../controllers/followUpController.js';
-import { createFollowUp } from '../controllers/followUpController.js';
+import { createFollowUp, deleteFollowUp, editFollowUp, getAllFollowUps, getUpcomingFollowUps } from '../controllers/followUpController.js';
 import { authenticateToken } from '../middleware/auth.js';
 const followUpRouter = Router();
 followUpRouter.use(authenticateToken);

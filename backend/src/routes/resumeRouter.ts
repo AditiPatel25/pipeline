@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { authenticateToken } from '../middleware/auth.js';
 import { addResume, deleteResume, getResume } from '../controllers/resumeController.js';
+import { authenticateToken } from '../middleware/auth.js';
 import { resumeUpload } from '../middleware/upload.js';
 const resumeRouter = Router();
 resumeRouter.use(authenticateToken);

@@ -1,13 +1,13 @@
 import { Router } from 'express';
+import passport from 'passport';
 import {
-    register,
-    login,
     getCurrentUser,
+    googleCallback,
+    login,
     logout,
-    googleCallback
+    register
 } from '../controllers/authController.js';
 import { authenticateToken } from '../middleware/auth.js';
-import passport from 'passport';
 const authRouter = Router();
 
 // submit sign up form

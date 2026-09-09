@@ -1,5 +1,5 @@
-import { PDFParse } from 'pdf-parse';
 import mammoth from 'mammoth';
+import { PDFParse } from 'pdf-parse';
 import client from '../config/supabase.js';
 
 export async function extractResumeText(

@@ -1,6 +1,6 @@
 import passport from 'passport';
-import { prisma } from '../prisma.js';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
+import { prisma } from '../prisma.js';
 
 function generateRandomUsername(email: string) {
     const emailPrefix = email.split('@')[0];

@@ -1,9 +1,9 @@
-import type { Request, Response, NextFunction } from 'express';
+import type { NextFunction, Request, Response } from 'express';
+import { prisma } from '../prisma.js';
 import {
     analyzeResumeMatch,
     extractApplicationInfo,
 } from '../services/aiService.js';
-import { prisma } from '../prisma.js';
 import { extractResumeText } from '../services/resumeService.js';
 
 type ApplicationParams = {
@@ -160,4 +160,5 @@ async function createResumeMatch(
     }
 }
 
-export { extractApplication, createResumeMatch };
+export { createResumeMatch, extractApplication };
+

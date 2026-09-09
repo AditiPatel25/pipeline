@@ -1,6 +1,6 @@
-import { prisma } from '../prisma.js';
-import { type Request, type Response, type NextFunction } from 'express';
 import { FollowUpType } from '@prisma/client';
+import { type NextFunction, type Request, type Response } from 'express';
+import { prisma } from '../prisma.js';
 
 type FollowUpParams = {
     id: string;
@@ -386,10 +386,8 @@ async function editFollowUp(
 }
 
 export {
-    getFollowUpsByApplication,
     createFollowUp,
     deleteFollowUp,
     editFollowUp,
-    getAllFollowUps,
-    getUpcomingFollowUps,
+    getAllFollowUps, getFollowUpsByApplication, getUpcomingFollowUps
 };

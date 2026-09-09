@@ -1,6 +1,6 @@
-import { prisma } from '../prisma.js';
-import { type Request, type Response, type NextFunction } from 'express';
+import { type NextFunction, type Request, type Response } from 'express';
 import client from '../config/supabase.js';
+import { prisma } from '../prisma.js';
 
 async function addResume(req: Request, res: Response, next: NextFunction) {
     try {

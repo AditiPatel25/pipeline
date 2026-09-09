@@ -1,7 +1,7 @@
+import type { NextFunction, Request, Response } from 'express';
 import pkg from 'jsonwebtoken';
-const { verify } = pkg;
-import type { Request, Response, NextFunction } from 'express';
 import type { AuthPayload } from '../types/auth.js';
+const { verify } = pkg;
 
 function authenticateToken(req: Request, res: Response, next: NextFunction) {
     const token = req.cookies.token;

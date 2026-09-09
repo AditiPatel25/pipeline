@@ -1,11 +1,11 @@
-import { prisma } from '../prisma.js';
-import type { Request, Response, NextFunction } from 'express';
 import {
+    ApplicationSource,
+    EmploymentType,
     Status,
     WorkArrangement,
-    EmploymentType,
-    ApplicationSource,
 } from '@prisma/client';
+import type { NextFunction, Request, Response } from 'express';
+import { prisma } from '../prisma.js';
 
 type ApplicationParams = {
     id: string;
@@ -559,12 +559,9 @@ async function getResumeMatch(
 }
 
 export {
-    getApplications,
-    createApplication,
-    getApplicationById,
-    deleteApplication,
-    editApplication,
-    getApplicationStats,
+    createApplication, deleteApplication,
+    editApplication, getApplicationById, getApplications, getApplicationStats,
     getRecentApplications,
-    getResumeMatch,
+    getResumeMatch
 };
+

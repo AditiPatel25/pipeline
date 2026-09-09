@@ -1,8 +1,8 @@
 import { Router } from 'express';
+import { createResumeMatch } from '../controllers/aiController.js';
 import { createApplication, deleteApplication, editApplication, getApplicationById, getApplications, getApplicationStats, getRecentApplications, getResumeMatch } from '../controllers/applicationController.js';
 import { createFollowUp, getFollowUpsByApplication } from '../controllers/followUpController.js';
 import { authenticateToken } from '../middleware/auth.js';
-import { createResumeMatch } from '../controllers/aiController.js';
 const applicationRouter = Router();
 applicationRouter.use(authenticateToken);
 
