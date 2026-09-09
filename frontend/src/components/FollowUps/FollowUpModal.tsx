@@ -43,6 +43,8 @@ import {
     PopoverTrigger,
 } from '@/components/ui/popover';
 import { ChevronDownIcon } from 'lucide-react';
+import { defaultDateLib } from 'react-day-picker';
+import { getErrorMessage } from '@/utils/getErrorMessage';
 
 const emptyFollowUp: FollowUpData = {
     title: '',
@@ -50,7 +52,7 @@ const emptyFollowUp: FollowUpData = {
     type: 'ASSESSMENT',
     notes: '',
     applicationId: -1,
-    completed: false
+    completed: false,
 };
 
 type FollowUpModalProps = {
@@ -75,7 +77,31 @@ function FollowUpModal({
         }
     );
     const [applicationSearch, setApplicationSearch] = useState('');
-    const [applicationError, setApplicationError] = useState('');
+
+    const [error, setError] = useState('');
+
+    const [fieldErrors, setFieldErrors] = useState({
+        dueDate: false,
+        title: false,
+        application: false,
+    });
+
+    const resetForm = () => {
+        setFollowUp(
+            initialFollowUp ?? {
+                ...emptyFollowUp,
+                applicationId: applicationId ?? -1,
+            }
+        );
+
+        setFieldErrors({
+            application: false,
+            dueDate: false,
+            title: false,
+        });
+
+        setError('');
+    };
 
     const handleChange = (
         e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -86,22 +112,35 @@ function FollowUpModal({
             ...prev,
             [name]: value,
         }));
+
+        setFieldErrors((prev) => ({
+            ...prev,
+            [name]: false,
+        }));
+        setError('');
     };
 
     const onSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        if (followUp.applicationId === -1) {
-            setApplicationError('Please select an application.');
+        const errors = {
+            title: !followUp.title.trim(),
+            dueDate: !followUp.dueDate,
+            application: followUp.applicationId === -1,
+        };
+
+        setFieldErrors(errors);
+
+        if (Object.values(errors).some(Boolean)) {
+            setError('Application, title, and due date are required.');
             return;
         }
-        setApplicationError('');
 
         try {
             await handleSubmit(followUp);
             onSuccess();
         } catch (err) {
-            // Keep modal open if submission fails
+            setError(getErrorMessage(err));
         }
     };
 
@@ -143,12 +182,16 @@ function FollowUpModal({
                     Add your follow-up here. Click save when you&apos;re done.
                 </DialogDescription>
             </DialogHeader>
+            {error && (
+                <div className="w-full max-w-md rounded-md border border-red-400/20 bg-red-400/10 px-3 py-2 text-sm text-red-300">
+                    {error}
+                </div>
+            )}
             <form className="flex min-h-0 flex-1 flex-col" onSubmit={onSubmit}>
                 <div className="flex-1 overflow-y-auto pr-6 pb-4">
                     <FieldGroup className="px-2">
                         <Field>
                             <FieldLabel>Application</FieldLabel>
-
                             {isApplicationSpecific ? (
                                 <div className="rounded-md border bg-muted/50 px-3 py-2 text-sm">
                                     {selectedApplication
@@ -181,14 +224,27 @@ function FollowUpModal({
                                             applicationId: selected.id,
                                         }));
 
+                                        setFieldErrors((prev) => ({
+                                            ...prev,
+                                            application: false,
+                                        }));
+
+                                        setError('');
+
                                         setApplicationSearch('');
-                                        setApplicationError('');
                                     }}
                                     onInputValueChange={(value) => {
                                         setApplicationSearch(value);
                                     }}
                                 >
-                                    <ComboboxInput placeholder="Search applications..." />
+                                    <ComboboxInput
+                                        className={`rounded-md border bg-muted/50 px-3 py-2 text-sm ${
+                                            fieldErrors.application
+                                                ? 'border-red-500'
+                                                : ''
+                                        }`}
+                                        placeholder="Search applications..."
+                                    />
 
                                     <ComboboxContent>
                                         <ComboboxEmpty>
@@ -209,12 +265,6 @@ function FollowUpModal({
                                     </ComboboxContent>
                                 </Combobox>
                             )}
-
-                            {applicationError && (
-                                <p className="text-sm text-destructive ml-1">
-                                    {applicationError}
-                                </p>
-                            )}
                         </Field>
                         <Field>
                             <FieldLabel htmlFor="title">Title</FieldLabel>
@@ -224,6 +274,9 @@ function FollowUpModal({
                                 placeholder="OA"
                                 onChange={handleChange}
                                 value={followUp.title}
+                                className={
+                                    fieldErrors.title ? 'border-red-500' : ''
+                                }
                             />
                         </Field>
                         <Field>
@@ -270,7 +323,11 @@ function FollowUpModal({
                                         <Button
                                             variant={'outline'}
                                             data-empty={!followUp.dueDate}
-                                            className="w-53 justify-between text-left font-normal data-[empty=true]:text-muted-foreground bg-popover border-input"
+                                            className={`w-53 justify-between text-left font-normal data-[empty=true]:text-muted-foreground bg-popover border-input ${
+                                                fieldErrors.dueDate
+                                                    ? 'border-red-500'
+                                                    : ''
+                                            }`}
                                         >
                                             {followUp.dueDate ? (
                                                 format(
@@ -300,14 +357,21 @@ function FollowUpModal({
                                                 ? new Date(followUp.dueDate)
                                                 : undefined
                                         }
-                                        onSelect={(date) =>
+                                        onSelect={(date) => {
                                             setFollowUp((prev) => ({
                                                 ...prev,
                                                 dueDate: date
                                                     ? date.toISOString()
                                                     : '',
-                                            }))
-                                        }
+                                            }));
+
+                                            setFieldErrors((prev) => ({
+                                                ...prev,
+                                                dueDate: false,
+                                            }));
+
+                                            setError('');
+                                        }}
                                     />
                                 </PopoverContent>
                             </Popover>
@@ -328,7 +392,11 @@ function FollowUpModal({
                 <DialogFooter className="sm:justify-around">
                     <DialogClose
                         render={
-                            <Button type="button" variant="outline">
+                            <Button
+                                type="button"
+                                variant="outline"
+                                onClick={resetForm}
+                            >
                                 Cancel
                             </Button>
                         }

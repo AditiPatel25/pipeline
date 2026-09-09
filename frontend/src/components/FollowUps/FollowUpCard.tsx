@@ -59,7 +59,10 @@ function FollowUpCard({
                         </h2>
 
                         <Badge className="shrink-0 text-foreground">
-                            {getLabel(followUpTypeItems, followUp.type)?.toUpperCase()}
+                            {getLabel(
+                                followUpTypeItems,
+                                followUp.type
+                            )?.toUpperCase()}
                         </Badge>
                     </div>
 
@@ -126,7 +129,7 @@ function FollowUpCard({
                                     <AlertDialogAction
                                         onClick={() => onDelete(followUp.id)}
                                     >
-                                        Continue
+                                        Delete
                                     </AlertDialogAction>
                                 </AlertDialogFooter>
                             </AlertDialogContent>

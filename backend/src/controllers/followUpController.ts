@@ -220,6 +220,9 @@ async function createFollowUp(
                     },
                 },
             },
+            include: {
+                application: true,
+            },
         });
 
         return res.status(201).json({
@@ -389,5 +392,7 @@ export {
     createFollowUp,
     deleteFollowUp,
     editFollowUp,
-    getAllFollowUps, getFollowUpsByApplication, getUpcomingFollowUps
+    getAllFollowUps,
+    getFollowUpsByApplication,
+    getUpcomingFollowUps,
 };

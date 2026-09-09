@@ -160,7 +160,9 @@ function FollowUps() {
                 }
             }
 
-            return 0;
+            return (
+                new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime()
+            );
         });
 
     if (loading) {
