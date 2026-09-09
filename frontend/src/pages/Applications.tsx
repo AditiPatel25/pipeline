@@ -7,7 +7,6 @@ import {
     getApplicationsRequest,
     editApplicationRequest,
     createResumeMatchRequest,
-    getResumeMatchRequest,
 } from '@/api/application';
 import ApplicationCard from '@/components/Applications/ApplicationCard';
 import type { Application, ApplicationData } from '@/types/application';
@@ -24,6 +23,10 @@ import AddApplicationDialog from '@/components/Applications/AddApplicationDialog
 import JobDescriptionDialog from '@/components/AI/JobDescriptionDialog';
 import { extractApplicationRequest } from '@/api/ai';
 import ResumeAnalysisDialog from '@/components/AI/ResumeAnalysisDialog';
+import ChooseResumeDialog from '@/components/AI/ChooseResumeDialog';
+import { ResumeData } from '@/types/resume';
+import { getResumeRequest } from '@/api/resume';
+import { ResumeSource } from '@/types/resumeMatch';
 
 function Applications() {
     const [applications, setApplications] = useState<Application[]>([]);
@@ -31,6 +34,11 @@ function Applications() {
     const [jobDescriptionOpen, setJobDescriptionOpen] = useState(false);
     const [applicationModalOpen, setApplicationModalOpen] = useState(false);
     const [resumeAnalysisOpen, setResumeAnalysisOpen] = useState(false);
+    const [chooseResumeOpen, setChooseResumeOpen] = useState(false);
+    const [resumeSource, setResumeSource] = useState<ResumeSource | null>(null);
+    const [resumeAnalysisView, setResumeAnalysisView] = useState<
+        'history' | 'new'
+    >('new');
 
     const [initialApplication, setInitialApplication] = useState<
         ApplicationData | undefined
@@ -42,6 +50,7 @@ function Applications() {
     const [selectedApplication, setSelectedApplication] =
         useState<Application | null>(null);
     const [followUpOpen, setFollowUpOpen] = useState(false);
+    const [savedResume, setSavedResume] = useState<ResumeData | null>(null);
 
     // application toolbar
     const [search, setSearch] = useState('');
@@ -54,8 +63,13 @@ function Applications() {
     useEffect(() => {
         const fetchApplications = async () => {
             try {
-                const response = await getApplicationsRequest();
-                setApplications(response.applications);
+                const [applicationsResponse, resumeResponse] =
+                    await Promise.all([
+                        getApplicationsRequest(),
+                        getResumeRequest(),
+                    ]);
+                setApplications(applicationsResponse.applications);
+                setSavedResume(resumeResponse.resume);
             } catch (err) {
                 setError(getErrorMessage(err));
             } finally {
@@ -166,11 +180,13 @@ function Applications() {
 
     const handleCreateResumeMatch = async (
         applicationId: number,
+        resumeSource: ResumeSource,
         resume: string
     ) => {
         try {
-            const response = await createResumeMatchRequest(
+            const resumeMatch = await createResumeMatchRequest(
                 applicationId,
+                resumeSource,
                 resume
             );
 
@@ -179,14 +195,27 @@ function Applications() {
                     application.id === applicationId
                         ? {
                               ...application,
-                              resumeMatch: response.resumeMatch,
+                              resumeMatches: [
+                                  resumeMatch,
+                                  ...application.resumeMatches,
+                              ],
                           }
                         : application
                 )
             );
 
+            setSelectedApplication((prev) =>
+                prev?.id === applicationId
+                    ? {
+                          ...prev,
+                          resumeMatches: [resumeMatch, ...prev.resumeMatches],
+                      }
+                    : prev
+            );
+
             setError('');
-            return response.resumeMatch;
+
+            return resumeMatch;
         } catch (err) {
             setError(getErrorMessage(err));
             throw err;
@@ -214,8 +243,31 @@ function Applications() {
         setFollowUpOpen(true);
     };
 
+    const handleSavedResume = (application: Application) => {
+        setSelectedApplication(application);
+        setResumeSource('SAVED');
+        setResumeAnalysisView('new');
+        setChooseResumeOpen(false);
+        setResumeAnalysisOpen(true);
+    };
+
+    const handleAnotherResume = (application: Application) => {
+        setSelectedApplication(application);
+        setResumeSource('ANOTHER');
+        setResumeAnalysisView('new');
+        setChooseResumeOpen(false);
+        setResumeAnalysisOpen(true);
+    };
+
     const handleResumeAnalysis = (application: Application) => {
         setSelectedApplication(application);
+        setChooseResumeOpen(true);
+    };
+
+    const handlePreviousAnalyses = (application: Application) => {
+        setSelectedApplication(application);
+        setResumeAnalysisView('history');
+        setChooseResumeOpen(false);
         setResumeAnalysisOpen(true);
     };
 
@@ -445,6 +497,8 @@ function Applications() {
                     }
                 }}
                 onAddFollowUp={handleAddFollowUp}
+                onChooseAnotherResume={handleAnotherResume}
+                onSavedResume={handleSavedResume}
                 onResumeAnalysis={handleResumeAnalysis}
             />
             <ResumeAnalysisDialog
@@ -452,7 +506,18 @@ function Applications() {
                 open={resumeAnalysisOpen}
                 onOpenChange={setResumeAnalysisOpen}
                 onCreateResumeMatch={handleCreateResumeMatch}
+                resumeSource={resumeSource}
+                savedResume={savedResume}
+                initialView={resumeAnalysisView}
             />
+            <Dialog open={chooseResumeOpen} onOpenChange={setChooseResumeOpen}>
+                <ChooseResumeDialog
+                    onSavedResume={handleSavedResume}
+                    onAnotherResume={handleAnotherResume}
+                    application={selectedApplication}
+                    onPreviousAnalyses={handlePreviousAnalyses}
+                />
+            </Dialog>
             <Dialog open={followUpOpen} onOpenChange={setFollowUpOpen}>
                 <FollowUpModal
                     initialFollowUp={undefined}

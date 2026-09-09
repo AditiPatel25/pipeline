@@ -45,7 +45,7 @@ export type Application = ApplicationData & {
     id: number;
     userId: number;
     followUps: FollowUp[];
-    resumeMatch?: ResumeMatch | null;
+    resumeMatches: ResumeMatch[];
     createdAt: string;
     updatedAt: string;
 };

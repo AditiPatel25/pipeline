@@ -37,7 +37,7 @@ async function getApplications(
                     orderBy: {
                         createdAt: 'desc',
                     },
-                    take: 1,
+                    take: 5
                 },
             },
         });

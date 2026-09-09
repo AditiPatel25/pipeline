@@ -52,6 +52,8 @@ type ApplicationDetailsDialogProps = {
     onDelete: (applicationId: number) => Promise<void>;
     onEdit: (application: Application) => void;
     onAddFollowUp: (application: Application) => void;
+    onSavedResume: (application: Application) => void;
+    onChooseAnotherResume: (application: Application) => void;
     onResumeAnalysis: (application: Application) => void;
 };
 
@@ -62,7 +64,9 @@ function ApplicationDetailsDialog({
     onDelete,
     onEdit,
     onAddFollowUp,
-    onResumeAnalysis
+    onChooseAnotherResume,
+    onSavedResume,
+    onResumeAnalysis,
 }: ApplicationDetailsDialogProps) {
     const contentRef = useRef<HTMLDivElement>(null);
 
@@ -264,11 +268,8 @@ function ApplicationDetailsDialog({
                 {/* footer */}
                 <DialogFooter className="shrink-0 border-t pt-4 sm:justify-end">
                     {application.description && (
-                        <Button
-                            variant="outline"
-                            onClick={() => onResumeAnalysis(application)}
-                        >
-                            Resume Analysis <Sparkles/>
+                        <Button onClick={() => onResumeAnalysis(application)}>
+                            Resume Analysis <Sparkles />
                         </Button>
                     )}
                     <Button

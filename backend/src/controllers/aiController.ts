@@ -4,6 +4,7 @@ import {
     extractApplicationInfo,
 } from '../services/aiService.js';
 import { prisma } from '../prisma.js';
+import { extractResumeText } from '../services/resumeService.js';
 
 type ApplicationParams = {
     id: string;
@@ -50,20 +51,21 @@ async function createResumeMatch(
     next: NextFunction
 ) {
     try {
-        const { resume } = req.body;
-
-        if (!resume || resume.trim() === '') {
-            return res.status(400).json({
-                success: false,
-                message: 'Resume is required',
-            });
-        }
+        const { resumeSource, resume } = req.body;
 
         if (!req.authPayload) {
             return res.status(401).json({
                 status: 401,
                 error: 'Unauthorized',
                 message: 'User is not logged in',
+            });
+        }
+
+        if (resumeSource !== 'SAVED' && resumeSource !== 'ANOTHER') {
+            return res.status(400).json({
+                status: 400,
+                error: 'Bad Request',
+                message: 'Invalid resume source',
             });
         }
 
@@ -99,10 +101,42 @@ async function createResumeMatch(
             });
         }
 
-        const result = await analyzeResumeMatch(
-            resume,
-            application.description
-        );
+        let input: string;
+        let resumeName: string | null = null;
+
+        if (resumeSource === 'SAVED') {
+            const savedResume = await prisma.resume.findUnique({
+                where: {
+                    userId: req.authPayload.userId,
+                },
+            });
+
+            if (!savedResume) {
+                return res.status(404).json({
+                    status: 404,
+                    error: 'Not Found',
+                    message: 'No saved resume found',
+                });
+            }
+
+            input = await extractResumeText(
+                savedResume.filePath,
+                savedResume.fileName
+            );
+
+            resumeName = savedResume.fileName;
+        } else {
+            if (!resume || resume.trim() === '') {
+                return res.status(400).json({
+                    status: 400,
+                    error: 'Bad Request',
+                    message: 'Resume text is required',
+                });
+            }
+
+            input = resume;
+        }
+        const result = await analyzeResumeMatch(input, application.description);
 
         const resumeMatch = await prisma.resumeMatch.create({
             data: {
@@ -111,6 +145,8 @@ async function createResumeMatch(
                 matchedSkills: result.matchedSkills,
                 extractedGaps: result.extractedGaps,
                 suggestions: result.suggestions,
+                resumeSource: resumeSource,
+                resumeName: resumeName,
             },
         });
 

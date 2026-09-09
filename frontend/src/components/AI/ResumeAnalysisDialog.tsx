@@ -13,8 +13,9 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import { Field, FieldGroup, FieldLabel } from '@/components/ui/field';
 import { ResumeMatch } from '@/types/resumeMatch';
-import { Sparkles } from 'lucide-react';
+import { FileText, Sparkles } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
+import { ResumeData } from '@/types/resume';
 
 type ResumeAnalysisDialogProps = {
     application: Application | null;
@@ -22,8 +23,12 @@ type ResumeAnalysisDialogProps = {
     onOpenChange: (open: boolean) => void;
     onCreateResumeMatch: (
         applicationId: number,
+        resumeSource: 'SAVED' | 'ANOTHER',
         resume: string
     ) => Promise<ResumeMatch>;
+    resumeSource: 'SAVED' | 'ANOTHER' | null;
+    savedResume: ResumeData | null;
+    initialView: 'history' | 'new';
 };
 
 function ResumeAnalysisDialog({
@@ -31,47 +36,156 @@ function ResumeAnalysisDialog({
     open,
     onOpenChange,
     onCreateResumeMatch,
+    savedResume,
+    resumeSource,
+    initialView,
 }: ResumeAnalysisDialogProps) {
     const [resume, setResume] = useState('');
     const [loading, setLoading] = useState(false);
-    const [resumeMatch, setResumeMatch] = useState<ResumeMatch | null>(
-        application?.resumeMatch ?? null
+
+    const [view, setView] = useState<'history' | 'new' | 'result'>('history');
+
+    const [selectedMatch, setSelectedMatch] = useState<ResumeMatch | null>(
+        null
     );
 
     useEffect(() => {
-        setResumeMatch(application?.resumeMatch ?? null);
-    }, [application, open]);
+        if (open) {
+            setView(initialView);
+            setSelectedMatch(null);
+            setResume('');
+            setLoading(false);
+        }
+    }, [open, initialView]);
 
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        if (!resume.trim() || !application) return;
+        if (!application || !resumeSource) return;
+
+        if (resumeSource === 'ANOTHER' && !resume.trim()) {
+            return;
+        }
 
         try {
             setLoading(true);
 
-            const result = await onCreateResumeMatch(application.id, resume);
+            const result = await onCreateResumeMatch(
+                application.id,
+                resumeSource,
+                resume
+            );
 
-            setResumeMatch(result);
+            console.log('Resume match result:', result);
+
+            setSelectedMatch(result);
+            setView('result');
         } finally {
             setLoading(false);
         }
     };
 
-    const handleOpenChange = (open: boolean) => {
-        if (!open) {
+    const handleAnalyzeAgain = () => {
+        setSelectedMatch(null);
+        setResume('');
+        setView('new');
+    };
+
+    const handleOpenChange = (isOpen: boolean) => {
+        if (!isOpen) {
             setResume('');
-            setResumeMatch(null);
+            setSelectedMatch(null);
             setLoading(false);
         }
 
-        onOpenChange(open);
+        onOpenChange(isOpen);
+    };
+
+    const handleViewAnalysis = (match: ResumeMatch) => {
+        setSelectedMatch(match);
+        setView('result');
+    };
+
+    const handleStartNewAnalysis = () => {
+        setSelectedMatch(null);
+        setResume('');
+        setView('new');
     };
 
     return (
         <Dialog open={open} onOpenChange={handleOpenChange}>
             <DialogContent className="flex max-h-[90vh] flex-col overflow-hidden sm:max-w-2xl">
-                {!resumeMatch ? (
+                {/* HISTORY */}
+                {view === 'history' && (
+                    <>
+                        <DialogHeader>
+                            <DialogTitle className="flex items-center gap-2">
+                                <Sparkles className="size-4 text-primary" />
+                                Resume Analysis
+                            </DialogTitle>
+
+                            <DialogDescription>
+                                Previous analyses for this application.
+                            </DialogDescription>
+                        </DialogHeader>
+
+                        <div className="min-h-0 flex-1 overflow-y-auto py-4 pr-2">
+                            <div className="space-y-3">
+                                {application?.resumeMatches?.map((match) => (
+                                    <button
+                                        key={match.id}
+                                        type="button"
+                                        onClick={() =>
+                                            handleViewAnalysis(match)
+                                        }
+                                        className="w-full rounded-xl border bg-muted/40 p-4 text-left transition-colors hover:bg-muted"
+                                    >
+                                        <div className="flex items-center justify-between gap-4">
+                                            <div className="min-w-0">
+                                                <p className="font-medium">
+                                                    {match.resumeSource ===
+                                                    'SAVED'
+                                                        ? match.resumeName ||
+                                                          'Saved resume'
+                                                        : 'Another resume'}
+                                                </p>
+
+                                                <p className="text-sm text-muted-foreground">
+                                                    {new Date(
+                                                        match.createdAt
+                                                    ).toLocaleDateString()}
+                                                </p>
+                                            </div>
+
+                                            <div className="shrink-0 text-right">
+                                                <p className="text-2xl font-semibold">
+                                                    {match.matchScore}%
+                                                </p>
+
+                                                <p className="text-xs text-muted-foreground">
+                                                    match
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        <DialogFooter className="border-t pt-4">
+                            <DialogClose
+                                render={
+                                    <Button type="button" variant="outline">
+                                        Done
+                                    </Button>
+                                }
+                            />
+                        </DialogFooter>
+                    </>
+                )}
+
+                {/* NEW ANALYSIS */}
+                {view === 'new' && (
                     <>
                         <DialogHeader className="pb-2">
                             <div className="mb-1 flex items-center gap-2">
@@ -83,9 +197,9 @@ function ResumeAnalysisDialog({
                             </div>
 
                             <DialogDescription>
-                                Paste your resume below and we&apos;ll compare
-                                it against the job description to see how well
-                                you match.
+                                {resumeSource === 'SAVED'
+                                    ? 'Analyze your saved resume against this job description.'
+                                    : 'Paste a resume below to compare it against this job description.'}
                             </DialogDescription>
                         </DialogHeader>
 
@@ -106,42 +220,69 @@ function ResumeAnalysisDialog({
                             onSubmit={handleSubmit}
                         >
                             <div className="flex-1 overflow-y-auto py-4 pr-2">
-                                <FieldGroup>
-                                    <Field>
-                                        <FieldLabel htmlFor="resume">
-                                            Resume
-                                        </FieldLabel>
+                                {resumeSource === 'ANOTHER' ? (
+                                    <FieldGroup>
+                                        <Field>
+                                            <FieldLabel htmlFor="resume">
+                                                Resume
+                                            </FieldLabel>
 
-                                        <Textarea
-                                            id="resume"
-                                            placeholder="Paste your resume here..."
-                                            value={resume}
-                                            onChange={(e) =>
-                                                setResume(e.target.value)
-                                            }
-                                            className="min-h-72 resize-none"
-                                        />
+                                            <Textarea
+                                                id="resume"
+                                                placeholder="Paste your resume here..."
+                                                value={resume}
+                                                onChange={(e) =>
+                                                    setResume(e.target.value)
+                                                }
+                                                className="min-h-72 resize-none"
+                                            />
 
-                                        <p className="text-xs text-muted-foreground">
-                                            Your resume is only used to analyze
-                                            your match for this position.
-                                        </p>
-                                    </Field>
-                                </FieldGroup>
+                                            <p className="text-xs text-muted-foreground">
+                                                Your resume is only used to
+                                                analyze your match for this
+                                                position.
+                                            </p>
+                                        </Field>
+                                    </FieldGroup>
+                                ) : (
+                                    <div className="rounded-xl border bg-muted/40 p-5">
+                                        <div className="flex items-center gap-4">
+                                            <div className="flex size-11 shrink-0 items-center justify-center rounded-full bg-primary/10">
+                                                <FileText className="size-5 text-primary" />
+                                            </div>
+
+                                            <div>
+                                                <p className="font-medium">
+                                                    {savedResume?.fileName ||
+                                                        'Saved resume'}
+                                                </p>
+
+                                                <p className="text-sm text-muted-foreground">
+                                                    Your saved resume will be
+                                                    compared against this job.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
 
                             <DialogFooter className="border-t pt-4 sm:justify-end">
-                                <DialogClose
-                                    render={
-                                        <Button type="button" variant="outline">
-                                            Cancel
-                                        </Button>
-                                    }
-                                />
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    onClick={() => onOpenChange(false)}
+                                >
+                                    Cancel
+                                </Button>
 
                                 <Button
                                     type="submit"
-                                    disabled={!resume.trim() || loading}
+                                    disabled={
+                                        (resumeSource === 'ANOTHER' &&
+                                            !resume.trim()) ||
+                                        loading
+                                    }
                                 >
                                     {loading ? (
                                         <>
@@ -158,13 +299,22 @@ function ResumeAnalysisDialog({
                             </DialogFooter>
                         </form>
                     </>
-                ) : (
+                )}
+
+                {/* RESULT */}
+                {view === 'result' && selectedMatch && (
                     <>
                         <DialogHeader>
                             <DialogTitle className="flex items-center gap-2">
                                 <Sparkles className="size-4 text-primary" />
                                 Resume Analysis
                             </DialogTitle>
+
+                            <DialogDescription>
+                                {selectedMatch.resumeSource === 'SAVED'
+                                    ? 'Analysis using your saved resume.'
+                                    : 'Analysis using another resume.'}
+                            </DialogDescription>
                         </DialogHeader>
 
                         <div className="min-h-0 flex-1 overflow-y-auto py-4 pr-2">
@@ -174,17 +324,21 @@ function ResumeAnalysisDialog({
                                         <p className="font-medium">
                                             {application?.position}
                                         </p>
+
                                         <p className="text-sm text-muted-foreground">
                                             {application?.company}
                                         </p>
                                     </div>
+
                                     <div className="text-right">
                                         <p className="text-4xl font-semibold leading-none">
-                                            {resumeMatch.matchScore}
+                                            {selectedMatch.matchScore}
+
                                             <span className="text-xl text-muted-foreground">
                                                 %
                                             </span>
                                         </p>
+
                                         <p className="mt-1 text-xs text-muted-foreground">
                                             match score
                                         </p>
@@ -192,7 +346,7 @@ function ResumeAnalysisDialog({
                                 </div>
 
                                 <Progress
-                                    value={resumeMatch.matchScore}
+                                    value={selectedMatch.matchScore}
                                     className="h-1.5"
                                 />
 
@@ -201,10 +355,11 @@ function ResumeAnalysisDialog({
                                         <p className="mb-3 text-xs font-medium uppercase tracking-wide text-muted-foreground">
                                             Matched skills
                                         </p>
-                                        {resumeMatch.matchedSkills.length >
+
+                                        {selectedMatch.matchedSkills.length >
                                         0 ? (
                                             <div className="flex flex-wrap gap-1.5">
-                                                {resumeMatch.matchedSkills.map(
+                                                {selectedMatch.matchedSkills.map(
                                                     (skill) => (
                                                         <span
                                                             key={skill}
@@ -226,16 +381,18 @@ function ResumeAnalysisDialog({
                                         <p className="mb-3 text-xs font-medium uppercase tracking-wide text-muted-foreground">
                                             Potential gaps
                                         </p>
-                                        {resumeMatch.extractedGaps.length >
+
+                                        {selectedMatch.extractedGaps.length >
                                         0 ? (
                                             <div className="space-y-2">
-                                                {resumeMatch.extractedGaps.map(
+                                                {selectedMatch.extractedGaps.map(
                                                     (gap) => (
                                                         <div
                                                             key={gap}
                                                             className="flex items-start gap-2"
                                                         >
                                                             <div className="mt-1.5 size-1.5 shrink-0 rounded-full bg-destructive" />
+
                                                             <p className="text-sm leading-relaxed text-muted-foreground">
                                                                 {gap}
                                                             </p>
@@ -251,22 +408,24 @@ function ResumeAnalysisDialog({
                                     </div>
                                 </div>
 
-                                {/* Suggestions */}
                                 <div className="rounded-xl bg-muted/50 p-4">
                                     <p className="mb-3 text-xs font-medium uppercase tracking-wide text-muted-foreground">
                                         Suggestions
                                     </p>
+
                                     <div className="space-y-3">
-                                        {resumeMatch.suggestions.map(
+                                        {selectedMatch.suggestions.map(
                                             (suggestion, index) => (
                                                 <div key={suggestion}>
                                                     {index !== 0 && (
                                                         <div className="mb-3 border-t border-border" />
                                                     )}
+
                                                     <div className="flex items-start gap-3">
                                                         <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-medium text-primary">
                                                             {index + 1}
                                                         </span>
+
                                                         <p className="text-sm leading-relaxed text-muted-foreground">
                                                             {suggestion}
                                                         </p>
@@ -282,15 +441,13 @@ function ResumeAnalysisDialog({
                         <DialogFooter className="border-t pt-4">
                             <Button
                                 type="button"
-                                variant="outline"
-                                onClick={() => setResumeMatch(null)}
+                                onClick={() => {
+                                    setSelectedMatch(null);
+                                    setView('history');
+                                }}
                             >
-                                Analyze again
+                                Back
                             </Button>
-
-                            <DialogClose
-                                render={<Button type="button">Done</Button>}
-                            />
                         </DialogFooter>
                     </>
                 )}

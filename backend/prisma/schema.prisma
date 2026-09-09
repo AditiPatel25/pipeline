@@ -54,6 +54,11 @@ enum FollowUpType {
   OTHER
 }
 
+enum ResumeSource {
+  SAVED
+  ANOTHER
+}
+
 model User {
   id           Int           @id @default(autoincrement())
   email        String        @unique
@@ -100,14 +105,16 @@ model FollowUp {
 }
 
 model ResumeMatch {
-  id            Int         @id @default(autoincrement())
+  id            Int          @id @default(autoincrement())
   applicationId Int
-  application   Application @relation(fields: [applicationId], references: [id])
+  application   Application  @relation(fields: [applicationId], references: [id])
+  resumeSource  ResumeSource @default(SAVED)
+  resumeName    String?
   extractedGaps Json
   matchedSkills Json
   matchScore    Int
   suggestions   Json
-  createdAt     DateTime    @default(now())
+  createdAt     DateTime     @default(now())
 }
 
 model Resume {
@@ -115,7 +122,7 @@ model Resume {
   user      User     @relation(fields: [userId], references: [id])
   userId    Int      @unique
   fileName  String
-  filePath   String
+  filePath  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

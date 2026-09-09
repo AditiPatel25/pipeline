@@ -1,3 +1,7 @@
+export type ResumeSource =
+    | 'SAVED'
+    | 'ANOTHER'
+
 export type ResumeMatch = {
     id: number;
     applicationId: number;
@@ -6,4 +10,6 @@ export type ResumeMatch = {
     extractedGaps: string[];
     suggestions: string[];
     createdAt: string;
+    resumeSource: ResumeSource
+    resumeName: string;
 };
