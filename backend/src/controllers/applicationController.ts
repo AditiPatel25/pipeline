@@ -87,7 +87,7 @@ async function createApplication(
         ) {
             return res.status(400).json({
                 success: false,
-                message: 'Bad Request',
+                message: 'Company, position, and status are required.',
             });
         }
 

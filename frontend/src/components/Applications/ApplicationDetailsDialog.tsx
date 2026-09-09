@@ -76,10 +76,9 @@ function ApplicationDetailsDialog({
 
     if (!application) return null;
 
-    const activeFollowUps = application.followUps.filter(
+    const activeFollowUps = (application.followUps ?? []).filter(
         (followUp) => !followUp.completed
     );
-
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="flex max-h-[90vh] flex-col gap-0 sm:max-w-2xl">

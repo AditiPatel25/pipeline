@@ -71,7 +71,7 @@ function ChooseResumeDialog({
                     </div>
                 </Button>
             </div>
-            {application?.resumeMatches.length > 0 && (
+            {application?.resumeMatches?.length > 0 && (
                 <>
                     <div className="my-2 border-t" />
 
@@ -85,7 +85,7 @@ function ChooseResumeDialog({
                             }
                         }}
                     >
-                        <History className='size-4'/> View previous analyses
+                        <History className="size-4" /> View previous analyses
                     </Button>
                 </>
             )}

@@ -223,6 +223,7 @@ function Applications() {
     };
 
     const handleManualAdd = () => {
+        setError('');
         setInitialApplication(undefined);
         setAddApplicationOpen(false);
         setApplicationModalOpen(true);
@@ -448,6 +449,7 @@ function Applications() {
                             setInitialApplication(undefined);
                         }}
                         isEditing={!!editingApplication}
+                        
                     />
                 </Dialog>
             </div>

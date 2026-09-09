@@ -241,7 +241,7 @@ function Resume() {
                         </Button>
                     </div>
                 ) : (
-                    <div className="flex min-h-[360px] flex-col items-center justify-center text-center">
+                    <div className="flex min-h-90 flex-col items-center justify-center text-center">
                         <div className="mb-5 flex size-16 items-center justify-center rounded-2xl bg-muted">
                             <FileText className="size-8 text-muted-foreground" />
                         </div>

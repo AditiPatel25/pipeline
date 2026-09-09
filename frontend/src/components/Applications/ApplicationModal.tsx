@@ -50,6 +50,7 @@ import {
     PopoverTrigger,
 } from '@/components/ui/popover';
 import { ChevronDownIcon } from 'lucide-react';
+import { getErrorMessage } from '@/utils/getErrorMessage';
 
 const emptyApplication: ApplicationData = {
     company: '',
@@ -81,6 +82,21 @@ function ApplicationModal({
     const [application, setApplication] = useState<ApplicationData>(
         initialApplication ?? emptyApplication
     );
+    const [error, setError] = useState('');
+
+    const [fieldErrors, setFieldErrors] = useState({
+        company: false,
+        position: false,
+    });
+
+    const resetForm = () => {
+        setApplication(initialApplication ?? emptyApplication);
+        setFieldErrors({
+            company: false,
+            position: false,
+        });
+        setError('');
+    };
 
     const handleChange = (
         e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -91,24 +107,39 @@ function ApplicationModal({
             ...prev,
             [name]: value,
         }));
+
+        setFieldErrors((prev) => ({
+            ...prev,
+            [name]: false,
+        }));
+        setError('');
     };
 
     const onSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
         e.preventDefault();
+        const errors = {
+            company: !application.company.trim(),
+            position: !application.position.trim(),
+        };
+
+        setFieldErrors(errors);
+
+        if (Object.values(errors).some(Boolean)) {
+            setError('Company and position are required.');
+            return;
+        }
 
         try {
             await handleSubmit(application);
             onSuccess();
         } catch (err) {
-            // Keep modal open if submission fails
+            setError(getErrorMessage(err));
         }
     };
 
     useEffect(() => {
-        setApplication(initialApplication ?? emptyApplication);
+        resetForm();
     }, [initialApplication]);
-
- 
 
     return (
         <DialogContent className="flex max-h-[90vh] flex-col sm:max-w-lg">
@@ -121,6 +152,11 @@ function ApplicationModal({
                     done.
                 </DialogDescription>
             </DialogHeader>
+            {error && (
+                <div className="w-full max-w-md rounded-md border border-red-400/20 bg-red-400/10 px-3 py-2 text-sm text-red-300">
+                    {error}
+                </div>
+            )}
             <form className="flex min-h-0 flex-1 flex-col" onSubmit={onSubmit}>
                 <div className="flex-1 overflow-y-auto pr-6 pb-4">
                     <FieldGroup className="px-2">
@@ -132,6 +168,9 @@ function ApplicationModal({
                                 placeholder="Google"
                                 onChange={handleChange}
                                 value={application.company}
+                                className={
+                                    fieldErrors.company ? 'border-red-500' : ''
+                                }
                             />
                         </Field>
                         <Field>
@@ -142,6 +181,9 @@ function ApplicationModal({
                                 placeholder="Software Engineer"
                                 onChange={handleChange}
                                 value={application.position}
+                                className={
+                                    fieldErrors.position ? 'border-red-500' : ''
+                                }
                             />
                         </Field>
                         <Field>
@@ -157,6 +199,7 @@ function ApplicationModal({
                         <Field>
                             <FieldLabel htmlFor="status">Status</FieldLabel>
                             <Select
+                                id="status"
                                 value={application.status}
                                 onValueChange={(value) =>
                                     setApplication((prev) => ({
@@ -218,6 +261,7 @@ function ApplicationModal({
                                             <ChevronDownIcon data-icon="inline-end" />
                                         </Button>
                                     }
+                                    id="dateApplied"
                                 />
                                 <PopoverContent
                                     className="w-auto p-0"
@@ -281,6 +325,7 @@ function ApplicationModal({
                                                     : (value as WorkArrangement),
                                         }))
                                     }
+                                    id="workArrangement"
                                 >
                                     <SelectTrigger className="w-full">
                                         <SelectValue placeholder="Select work arrangement">
@@ -296,7 +341,9 @@ function ApplicationModal({
                                             <SelectLabel>
                                                 Work Arrangement
                                             </SelectLabel>
-                                            <SelectItem value="None">None</SelectItem>
+                                            <SelectItem value="None">
+                                                None
+                                            </SelectItem>
                                             {workArrangementItems.map(
                                                 (item) => (
                                                     <SelectItem
@@ -327,6 +374,7 @@ function ApplicationModal({
                                                     : (value as EmploymentType),
                                         }))
                                     }
+                                    id="employmentType"
                                 >
                                     <SelectTrigger className="w-full">
                                         <SelectValue placeholder="Select employment type">
@@ -342,7 +390,9 @@ function ApplicationModal({
                                             <SelectLabel>
                                                 Employment Type
                                             </SelectLabel>
-                                            <SelectItem value="None">None</SelectItem>
+                                            <SelectItem value="None">
+                                                None
+                                            </SelectItem>
                                             {employmentTypeItems.map((item) => (
                                                 <SelectItem
                                                     key={item.value}
@@ -371,6 +421,7 @@ function ApplicationModal({
                                                     : (value as ApplicationSource),
                                         }))
                                     }
+                                    id="source"
                                 >
                                     <SelectTrigger className="w-full">
                                         <SelectValue placeholder="Select job source">
@@ -386,7 +437,9 @@ function ApplicationModal({
                                             <SelectLabel>
                                                 Job Source
                                             </SelectLabel>
-                                            <SelectItem value="None">None</SelectItem>
+                                            <SelectItem value="None">
+                                                None
+                                            </SelectItem>
                                             {jobSourceItems.map((item) => (
                                                 <SelectItem
                                                     key={item.value}
@@ -409,7 +462,7 @@ function ApplicationModal({
                             </FieldDescription>
                             <Textarea
                                 id="description"
-                                placeholder="Type your message here."
+                                placeholder="Add job description here..."
                                 onChange={handleChange}
                                 name="description"
                                 value={application.description}
@@ -432,7 +485,11 @@ function ApplicationModal({
                 <DialogFooter className="sm:justify-around">
                     <DialogClose
                         render={
-                            <Button type="button" variant="outline">
+                            <Button
+                                type="button"
+                                variant="outline"
+                                onClick={resetForm}
+                            >
                                 Cancel
                             </Button>
                         }
