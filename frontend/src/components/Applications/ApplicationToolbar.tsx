@@ -1,11 +1,11 @@
-import { Search } from 'lucide-react';
-import { getLabel } from '@/utils/getLabel';
 import { sortItems } from '@/types/application';
+import { getLabel } from '@/utils/getLabel';
+import { Search } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import {
-    workArrangementItems,
     applicationStatusItems,
+    workArrangementItems,
 } from '@/constants/application';
 
 import {

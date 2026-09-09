@@ -4,6 +4,17 @@ import {
     uploadResumeRequest,
 } from '@/api/resume';
 import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
+import {
     Attachment,
     AttachmentAction,
     AttachmentActions,
@@ -16,17 +27,6 @@ import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
 import { ResumeData } from '@/types/resume';
 import { getErrorMessage } from '@/utils/getErrorMessage';
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-    AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
 import { FileText, Trash, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 

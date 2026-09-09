@@ -1,9 +1,9 @@
-import { format } from 'date-fns';
-import { FollowUpData, FollowUpType } from '@/types/followUp';
-import { useState, useEffect } from 'react';
-import { getLabel } from '@/utils/getLabel';
 import { followUpTypeItems } from '@/constants/followUp';
 import { Application } from '@/types/application';
+import { FollowUpData, FollowUpType } from '@/types/followUp';
+import { getLabel } from '@/utils/getLabel';
+import { format } from 'date-fns';
+import { useEffect, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -14,7 +14,6 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
-import { Textarea } from '@/components/ui/textarea';
 import { Field, FieldGroup, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import {
@@ -26,6 +25,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
 
 import {
     Combobox,
@@ -36,13 +36,13 @@ import {
     ComboboxList,
 } from '@/components/ui/combobox';
 
-import { ChevronDownIcon } from 'lucide-react';
 import { Calendar } from '@/components/ui/calendar';
 import {
     Popover,
     PopoverContent,
     PopoverTrigger,
 } from '@/components/ui/popover';
+import { ChevronDownIcon } from 'lucide-react';
 
 const emptyFollowUp: FollowUpData = {
     title: '',

@@ -1,7 +1,7 @@
 import { Badge } from '@/components/ui/badge';
+import { followUpTypeItems } from '@/constants/followUp';
 import { FollowUp } from '@/types/followUp';
 import { getLabel } from '@/utils/getLabel';
-import { followUpTypeItems } from '@/constants/followUp';
 
 type DashboardFollowUpCardProps = {
     followUp: FollowUp;

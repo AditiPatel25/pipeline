@@ -1,6 +1,3 @@
-import { Application } from '@/types/application';
-import { useEffect, useRef } from 'react';
-import { getLabel } from '@/utils/getLabel';
 import {
     Dialog,
     DialogContent,
@@ -9,6 +6,9 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
+import { Application } from '@/types/application';
+import { getLabel } from '@/utils/getLabel';
+import { useEffect, useRef } from 'react';
 
 import {
     AlertDialog,
@@ -37,9 +37,9 @@ const statusStyles = {
 };
 
 import {
-    workArrangementLabels,
     employmentTypeLabels,
     sourceLabels,
+    workArrangementLabels,
 } from '@/constants/application';
 
 import { Badge } from '@/components/ui/badge';
@@ -52,8 +52,6 @@ type ApplicationDetailsDialogProps = {
     onDelete: (applicationId: number) => Promise<void>;
     onEdit: (application: Application) => void;
     onAddFollowUp: (application: Application) => void;
-    onSavedResume: (application: Application) => void;
-    onChooseAnotherResume: (application: Application) => void;
     onResumeAnalysis: (application: Application) => void;
 };
 
@@ -64,8 +62,6 @@ function ApplicationDetailsDialog({
     onDelete,
     onEdit,
     onAddFollowUp,
-    onChooseAnotherResume,
-    onSavedResume,
     onResumeAnalysis,
 }: ApplicationDetailsDialogProps) {
     const contentRef = useRef<HTMLDivElement>(null);

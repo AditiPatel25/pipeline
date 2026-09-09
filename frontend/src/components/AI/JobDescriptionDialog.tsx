@@ -9,12 +9,12 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
-import { Textarea } from '@/components/ui/textarea';
 import {
     Field,
     FieldGroup,
     FieldLabel,
 } from '@/components/ui/field';
+import { Textarea } from '@/components/ui/textarea';
 
 type JobDescriptionDialogProps = {
     onExtract: (jobDescription: string) => Promise<void>;

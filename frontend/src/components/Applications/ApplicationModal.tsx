@@ -1,20 +1,20 @@
-import { format } from 'date-fns';
 import { ApplicationData } from '@/types/application';
-import { useState, useEffect } from 'react';
 import { getLabel } from '@/utils/getLabel';
+import { format } from 'date-fns';
+import { useEffect, useState } from 'react';
 
 import {
+    applicationStatusItems,
+    employmentTypeItems,
+    jobSourceItems,
+    workArrangementItems,
+} from '@/constants/application';
+import {
     ApplicationSource,
-    WorkArrangement,
     EmploymentType,
     Status,
+    WorkArrangement,
 } from '@/types/application';
-import {
-    workArrangementItems,
-    jobSourceItems,
-    employmentTypeItems,
-    applicationStatusItems,
-} from '@/constants/application';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -25,12 +25,11 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
-import { Textarea } from '@/components/ui/textarea';
 import {
     Field,
+    FieldDescription,
     FieldGroup,
     FieldLabel,
-    FieldDescription,
 } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import {
@@ -42,14 +41,15 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
 
-import { ChevronDownIcon } from 'lucide-react';
 import { Calendar } from '@/components/ui/calendar';
 import {
     Popover,
     PopoverContent,
     PopoverTrigger,
 } from '@/components/ui/popover';
+import { ChevronDownIcon } from 'lucide-react';
 
 const emptyApplication: ApplicationData = {
     company: '',

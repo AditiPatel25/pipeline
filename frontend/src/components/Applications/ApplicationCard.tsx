@@ -1,12 +1,3 @@
-import type { Application } from '@/types/application';
-import { Badge } from '@/components/ui/badge';
-import {
-    workArrangementLabels,
-    employmentTypeLabels,
-    sourceLabels,
-} from '@/constants/application';
-import { Button } from '../ui/button';
-import { Trash, Pencil } from 'lucide-react';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -18,6 +9,15 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import { Badge } from '@/components/ui/badge';
+import {
+    employmentTypeLabels,
+    sourceLabels,
+    workArrangementLabels,
+} from '@/constants/application';
+import type { Application } from '@/types/application';
+import { Pencil, Trash } from 'lucide-react';
+import { Button } from '../ui/button';
 
 type ApplicationCardProps = {
     application: Application;

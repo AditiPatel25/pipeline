@@ -1,5 +1,5 @@
-import type { Application } from '@/types/application';
 import { Badge } from '@/components/ui/badge';
+import type { Application } from '@/types/application';
 
 type DashboardApplicationCardProps = {
     application: Application;

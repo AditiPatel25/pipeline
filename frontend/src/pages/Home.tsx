@@ -1,18 +1,18 @@
-import { useAuth } from '@/context/AuthContext';
 import {
     getApplicationStatsRequest,
     getRecentApplicationsRequest,
 } from '@/api/application';
+import { getUpcomingFollowUpsRequest } from '@/api/followUp';
+import DashboardApplicationCard from '@/components/Dashboard/DashboardApplicationCard';
+import DashboardFollowUpCard from '@/components/Dashboard/DashboardFollowUpCard';
+import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
+import { useAuth } from '@/context/AuthContext';
+import { Application, ApplicationStats } from '@/types/application';
+import { FollowUp } from '@/types/followUp';
 import { getErrorMessage } from '@/utils/getErrorMessage';
 import { useEffect, useState } from 'react';
-import { ApplicationStats, Application } from '@/types/application';
-import DashboardApplicationCard from '@/components/Dashboard/DashboardApplicationCard';
-import { FollowUp } from '@/types/followUp';
-import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
-import DashboardFollowUpCard from '@/components/Dashboard/DashboardFollowUpCard';
-import { getUpcomingFollowUpsRequest } from '@/api/followUp';
-import { Skeleton } from '@/components/ui/skeleton';
 
 function Home() {
     const { user } = useAuth();

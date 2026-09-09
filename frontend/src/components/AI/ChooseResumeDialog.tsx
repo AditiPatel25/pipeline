@@ -6,7 +6,7 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog';
 import { Application } from '@/types/application';
-import { FileText, Sparkles, History } from 'lucide-react';
+import { FileText, History, Sparkles } from 'lucide-react';
 
 type ChooseResumeDialogProps = {
     onSavedResume: (application: Application) => void;

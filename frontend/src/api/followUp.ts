@@ -1,5 +1,5 @@
-import api from './axiosInstance';
 import type { FollowUpData } from '@/types/followUp';
+import api from './axiosInstance';
 
 export async function getAllFollowUpsRequest() {
     const res = await api.get(`/followUps`);

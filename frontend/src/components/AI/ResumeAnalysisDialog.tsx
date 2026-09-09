@@ -1,6 +1,3 @@
-import { Application } from '@/types/application';
-import { Button } from '../ui/button';
-import { useEffect, useState } from 'react';
 import {
     Dialog,
     DialogClose,
@@ -10,12 +7,15 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
-import { Textarea } from '@/components/ui/textarea';
 import { Field, FieldGroup, FieldLabel } from '@/components/ui/field';
+import { Progress } from '@/components/ui/progress';
+import { Textarea } from '@/components/ui/textarea';
+import { Application } from '@/types/application';
+import { ResumeData } from '@/types/resume';
 import { ResumeMatch } from '@/types/resumeMatch';
 import { FileText, Sparkles } from 'lucide-react';
-import { Progress } from '@/components/ui/progress';
-import { ResumeData } from '@/types/resume';
+import { useEffect, useState } from 'react';
+import { Button } from '../ui/button';
 
 type ResumeAnalysisDialogProps = {
     application: Application | null;

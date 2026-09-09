@@ -1,10 +1,10 @@
-import { useState } from 'react';
-import { useNavigate, useLocation } from 'react-router';
-import { useAuth } from '../context/AuthContext';
-import Register from '../components/Auth/Register';
 import { loginRequest, registerRequest } from '@/api/auth.js';
-import Login from '../components/Auth/Login';
 import { getErrorMessage } from '@/utils/getErrorMessage';
+import { useState } from 'react';
+import { useLocation, useNavigate } from 'react-router';
+import Login from '../components/Auth/Login';
+import Register from '../components/Auth/Register';
+import { useAuth } from '../context/AuthContext';
 
 const emptyForm = {
     identifier: '',

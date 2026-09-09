@@ -1,10 +1,10 @@
 import {
     Sidebar,
     SidebarContent,
-    SidebarGroup,
     SidebarFooter,
-    SidebarGroupLabel,
+    SidebarGroup,
     SidebarGroupContent,
+    SidebarGroupLabel,
     SidebarMenu,
     SidebarMenuButton,
     SidebarMenuItem,
@@ -12,9 +12,9 @@ import {
 import {
     Briefcase,
     CalendarDays,
-    House,
     ChevronUp,
-    FileText
+    FileText,
+    House
 } from 'lucide-react';
 
 import {

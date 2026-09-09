@@ -1,21 +1,20 @@
+import { getApplicationsRequest } from '@/api/application';
 import {
     createFollowUpRequest,
     deleteFollowUpRequest,
     editFollowUpRequest,
     getAllFollowUpsRequest,
 } from '@/api/followUp';
-import { FollowUp, FollowUpData } from '@/types/followUp';
-import { useState, useEffect } from 'react';
-import { getErrorMessage } from '@/utils/getErrorMessage';
-import { Dialog, DialogTrigger } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Plus } from 'lucide-react';
 import FollowUpCard from '@/components/FollowUps/FollowUpCard';
 import FollowUpModal from '@/components/FollowUps/FollowUpModal';
-import { getApplicationsRequest } from '@/api/application';
-import { Application } from '@/types/application';
-import { FollowUpFilter } from '@/types/followUp';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogTrigger } from '@/components/ui/dialog';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Application } from '@/types/application';
+import { FollowUp, FollowUpData, FollowUpFilter } from '@/types/followUp';
+import { getErrorMessage } from '@/utils/getErrorMessage';
+import { Plus } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 function FollowUps() {
     const [followUps, setFollowUps] = useState<FollowUp[]>([]);

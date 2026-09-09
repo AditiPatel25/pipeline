@@ -1,32 +1,32 @@
-import { Button } from '@/components/ui/button';
-import { Plus } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { extractApplicationRequest } from '@/api/ai';
 import {
     createApplicationRequest,
-    deleteApplicationRequest,
-    getApplicationsRequest,
-    editApplicationRequest,
     createResumeMatchRequest,
+    deleteApplicationRequest,
+    editApplicationRequest,
+    getApplicationsRequest,
 } from '@/api/application';
-import ApplicationCard from '@/components/Applications/ApplicationCard';
-import type { Application, ApplicationData } from '@/types/application';
-import { Dialog, DialogTrigger } from '@/components/ui/dialog';
-import ApplicationModal from '@/components/Applications/ApplicationModal';
-import { getErrorMessage } from '@/utils/getErrorMessage';
-import ApplicationToolbar from '@/components/Applications/ApplicationToolbar';
-import ApplicationDetailsDialog from '@/components/Applications/ApplicationDetailsDialog';
-import { FollowUpData } from '@/types/followUp';
 import { createFollowUpRequest } from '@/api/followUp';
-import FollowUpModal from '@/components/FollowUps/FollowUpModal';
-import { Skeleton } from '@/components/ui/skeleton';
-import AddApplicationDialog from '@/components/Applications/AddApplicationDialog';
-import JobDescriptionDialog from '@/components/AI/JobDescriptionDialog';
-import { extractApplicationRequest } from '@/api/ai';
-import ResumeAnalysisDialog from '@/components/AI/ResumeAnalysisDialog';
-import ChooseResumeDialog from '@/components/AI/ChooseResumeDialog';
-import { ResumeData } from '@/types/resume';
 import { getResumeRequest } from '@/api/resume';
+import ChooseResumeDialog from '@/components/AI/ChooseResumeDialog';
+import JobDescriptionDialog from '@/components/AI/JobDescriptionDialog';
+import ResumeAnalysisDialog from '@/components/AI/ResumeAnalysisDialog';
+import AddApplicationDialog from '@/components/Applications/AddApplicationDialog';
+import ApplicationCard from '@/components/Applications/ApplicationCard';
+import ApplicationDetailsDialog from '@/components/Applications/ApplicationDetailsDialog';
+import ApplicationModal from '@/components/Applications/ApplicationModal';
+import ApplicationToolbar from '@/components/Applications/ApplicationToolbar';
+import FollowUpModal from '@/components/FollowUps/FollowUpModal';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogTrigger } from '@/components/ui/dialog';
+import { Skeleton } from '@/components/ui/skeleton';
+import type { Application, ApplicationData } from '@/types/application';
+import { FollowUpData } from '@/types/followUp';
+import { ResumeData } from '@/types/resume';
 import { ResumeSource } from '@/types/resumeMatch';
+import { getErrorMessage } from '@/utils/getErrorMessage';
+import { Plus } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 function Applications() {
     const [applications, setApplications] = useState<Application[]>([]);
@@ -497,8 +497,6 @@ function Applications() {
                     }
                 }}
                 onAddFollowUp={handleAddFollowUp}
-                onChooseAnotherResume={handleAnotherResume}
-                onSavedResume={handleSavedResume}
                 onResumeAnalysis={handleResumeAnalysis}
             />
             <ResumeAnalysisDialog
