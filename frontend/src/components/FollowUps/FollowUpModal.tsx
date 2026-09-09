@@ -43,7 +43,6 @@ import {
     PopoverTrigger,
 } from '@/components/ui/popover';
 import { ChevronDownIcon } from 'lucide-react';
-import { defaultDateLib } from 'react-day-picker';
 import { getErrorMessage } from '@/utils/getErrorMessage';
 
 const emptyFollowUp: FollowUpData = {
