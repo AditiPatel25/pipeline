@@ -96,7 +96,7 @@ model Application {
 model FollowUp {
   id            Int          @id @default(autoincrement())
   applicationId Int
-  application   Application  @relation(fields: [applicationId], references: [id])
+  application   Application  @relation(fields: [applicationId], references: [id], onDelete: Cascade)
   title         String
   type          FollowUpType @default(OTHER)
   dueDate       DateTime

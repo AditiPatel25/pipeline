@@ -37,7 +37,13 @@ async function getApplications(
                     orderBy: {
                         createdAt: 'desc',
                     },
-                    take: 5
+                    take: 5,
+                },
+            },
+            orderBy: {
+                appliedDate: {
+                    sort: 'desc',
+                    nulls: 'last',
                 },
             },
         });
@@ -220,65 +226,6 @@ async function deleteApplication(
         return res.status(200).json({
             success: true,
             message: 'Application deleted',
-        });
-    } catch (e) {
-        next(e);
-    }
-}
-
-async function getApplicationById(
-    req: Request<ApplicationParams>,
-    res: Response,
-    next: NextFunction
-) {
-    try {
-        if (!req.authPayload) {
-            return res.status(401).json({
-                status: 401,
-                error: 'Unauthorized',
-                message: 'User is not logged in',
-            });
-        }
-
-        const id = parseInt(req.params.id);
-        if (isNaN(id)) {
-            return res.status(400).json({
-                status: 400,
-                error: 'Bad Request',
-                message: 'Invalid application ID',
-            });
-        }
-        const application = await prisma.application.findUnique({
-            where: { id: id },
-            include: {
-                followUps: {
-                    orderBy: {
-                        dueDate: 'asc',
-                    },
-                },
-            },
-        });
-
-        if (!application) {
-            return res.status(404).json({
-                status: 404,
-                error: 'Not Found',
-                message: 'Application not found',
-            });
-        }
-
-        if (application.userId !== req.authPayload.userId) {
-            return res.status(403).json({
-                status: 403,
-                error: 'Forbidden',
-                message: 'You can only view your own applications',
-            });
-        }
-
-        return res.status(200).json({
-            success: true,
-            message: 'Application found',
-            application,
         });
     } catch (e) {
         next(e);
@@ -501,67 +448,11 @@ async function getRecentApplications(
     }
 }
 
-async function getResumeMatch(
-    req: Request<ApplicationParams>,
-    res: Response,
-    next: NextFunction
-) {
-    try {
-        if (!req.authPayload) {
-            return res.status(401).json({
-                status: 401,
-                error: 'Unauthorized',
-                message: 'User is not logged in',
-            });
-        }
-
-        const id = parseInt(req.params.id);
-        if (isNaN(id)) {
-            return res.status(400).json({
-                status: 400,
-                error: 'Bad Request',
-                message: 'Invalid application ID',
-            });
-        }
-
-        const application = await prisma.application.findUnique({
-            where: {
-                id,
-                userId: req.authPayload.userId,
-            },
-        });
-
-        if (!application) {
-            return res.status(404).json({
-                status: 404,
-                error: 'Not Found',
-                message: 'Application not found',
-            });
-        }
-
-        const resumeMatch = await prisma.resumeMatch.findFirst({
-            where: {
-                applicationId: id,
-            },
-            orderBy: {
-                createdAt: 'desc',
-            },
-        });
-
-        return res.status(200).json({
-            success: true,
-            message: 'Resume match loaded',
-            resumeMatch,
-        });
-    } catch (e) {
-        next(e);
-    }
-}
-
 export {
-    createApplication, deleteApplication,
-    editApplication, getApplicationById, getApplications, getApplicationStats,
+    createApplication,
+    deleteApplication,
+    editApplication,
+    getApplications,
+    getApplicationStats,
     getRecentApplications,
-    getResumeMatch
 };
-

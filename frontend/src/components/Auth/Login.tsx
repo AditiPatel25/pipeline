@@ -33,7 +33,7 @@ function Login({ formData, handleChange, handleSubmit }: LoginProps) {
                     <Input
                         id="identifier"
                         type="text"
-                        placeholder="abc@gmail.com"
+                        placeholder="username or email"
                         name="identifier"
                         value={formData.identifier}
                         onChange={handleChange}

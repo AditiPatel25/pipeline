@@ -6,7 +6,8 @@
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
         "dev": "nodemon --exec tsx src/server.ts",
-        "start": "node dist/server.js"
+        "start": "node dist/server.js",
+        "knip": "knip"
     },
     "keywords": [],
     "author": "",
@@ -19,9 +20,10 @@
         "@types/express": "^5.0.6",
         "@types/jsonwebtoken": "^9.0.10",
         "@types/multer": "^2.2.0",
-        "@types/node": "^26.2.0",
+        "@types/node": "^26.5.1",
         "@types/passport": "^1.0.17",
         "@types/passport-google-oauth20": "^2.0.17",
+        "knip": "^6.35.1",
         "nodemon": "^3.1.14",
         "tsx": "^4.23.12",
         "typescript": "^7.0.2"

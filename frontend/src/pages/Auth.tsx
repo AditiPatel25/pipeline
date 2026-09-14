@@ -32,7 +32,7 @@ function Auth() {
         }));
     };
 
-    function onClick() {
+    function handleAuthSwitch() {
         setFormData(emptyForm);
         setConfirmPassword('');
         setError('');
@@ -41,7 +41,6 @@ function Auth() {
 
     const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
         e.preventDefault();
-        // setLoading(true);
         if (!isLogin) {
             const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
                 formData.email
@@ -67,8 +66,8 @@ function Auth() {
                 login(data.user);
             } else {
                 const data = await registerRequest({
-                    username: formData.username,
-                    email: formData.email,
+                    username: formData.username.trim(),
+                    email: formData.email.trim(),
                     password: formData.password,
                     name: formData.name,
                 });
@@ -79,7 +78,6 @@ function Auth() {
             setConfirmPassword('');
             navigate('/');
         } catch (err) {
-            getErrorMessage(err);
             setError(getErrorMessage(err))
         }
     };
@@ -117,7 +115,7 @@ function Auth() {
 
             <button
                 type="button"
-                onClick={onClick}
+                onClick={handleAuthSwitch}
                 className="mt-4 text-sm text-muted-foreground hover:text-foreground hover:underline"
             >
                 {isLogin

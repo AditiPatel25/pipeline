@@ -10,10 +10,17 @@ import FollowUpModal from '@/components/FollowUps/FollowUpModal';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogTrigger } from '@/components/ui/dialog';
 import { Skeleton } from '@/components/ui/skeleton';
+import {
+    Empty,
+    EmptyDescription,
+    EmptyHeader,
+    EmptyMedia,
+    EmptyTitle,
+} from '@/components/ui/empty';
 import { Application } from '@/types/application';
 import { FollowUp, FollowUpData, FollowUpFilter } from '@/types/followUp';
 import { getErrorMessage } from '@/utils/getErrorMessage';
-import { Plus } from 'lucide-react';
+import { CalendarCheck, Plus } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 function FollowUps() {
@@ -266,15 +273,43 @@ function FollowUps() {
                     {filteredFollowUps.length === 0 ? (
                         <div className="flex flex-col items-center justify-center py-20 text-center">
                             <h2 className="text-xl font-bold">
-                                {followUps.length === 0
-                                    ? 'You have no follow-ups!'
-                                    : filter === 'UPCOMING'
-                                      ? 'No upcoming follow-ups!'
-                                      : filter === 'OVERDUE'
-                                        ? 'You have no overdue follow-ups!'
-                                        : filter === 'COMPLETED'
-                                          ? 'You have no completed follow-ups!'
-                                          : 'You have no follow-ups!'}
+                                {followUps.length === 0 ? (
+                                    <Empty className="col-span-full py-20">
+                                        <EmptyHeader>
+                                            <EmptyMedia variant="icon">
+                                                <CalendarCheck />
+                                            </EmptyMedia>
+                                            <EmptyTitle>
+                                                No follow-ups yet
+                                            </EmptyTitle>
+                                            <EmptyDescription>
+                                                Keep track of interviews,
+                                                recruiter outreach, and other
+                                                important next steps by adding a
+                                                follow-up.
+                                            </EmptyDescription>
+                                        </EmptyHeader>
+                                    </Empty>
+                                ) : filter === 'UPCOMING' ||
+                                  filter === 'OVERDUE' ||
+                                  filter === 'COMPLETED' ? (
+                                    <Empty className="col-span-full py-20">
+                                        <EmptyHeader>
+                                            <EmptyMedia variant="icon">
+                                                <CalendarCheck />
+                                            </EmptyMedia>
+                                            <EmptyTitle>
+                                                No follow-ups match your filter
+                                            </EmptyTitle>
+                                            <EmptyDescription>
+                                                Try selecting a different filter
+                                                to see your follow-ups.
+                                            </EmptyDescription>
+                                        </EmptyHeader>
+                                    </Empty>
+                                ) : (
+                                    'You have no follow-ups!'
+                                )}
                             </h2>
                         </div>
                     ) : (

@@ -29,6 +29,13 @@ function FollowUpCard({
     onEdit,
     onToggleComplete,
 }: FollowUpCardProps) {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const dueDate = new Date(followUp.dueDate);
+    dueDate.setHours(0, 0, 0, 0);
+
+    const isOverdue = !followUp.completed && dueDate < today;
     return (
         <div
             className={`rounded-xl border border-border bg-card p-3 px-4 shadow-sm transition-all ${
@@ -69,7 +76,7 @@ function FollowUpCard({
                     <p
                         className={`shrink-0 text-sm ${
                             !followUp.completed &&
-                            new Date(followUp.dueDate) < new Date()
+                            isOverdue
                                 ? 'font-medium text-destructive'
                                 : 'text-muted-foreground'
                         }`}

@@ -14,7 +14,7 @@ import {
     CalendarDays,
     ChevronUp,
     FileText,
-    House
+    House,
 } from 'lucide-react';
 
 import {
@@ -26,6 +26,7 @@ import {
 
 import { useAuth } from '@/context/AuthContext';
 import { Link } from 'react-router-dom';
+import { logoutRequest } from '@/api/auth';
 
 const mainItems = [
     {
@@ -52,6 +53,15 @@ const mainItems = [
 
 function AppSidebar() {
     const { user, logout } = useAuth();
+
+    async function handleLogout() {
+        try {
+            await logoutRequest();
+            logout();
+        } catch (err) {
+            // handle error
+        }
+    }
 
     return (
         <Sidebar collapsible="icon">
@@ -110,7 +120,7 @@ function AppSidebar() {
                                 side="top"
                             >
                                 <DropdownMenuItem
-                                    onClick={logout}
+                                    onClick={handleLogout}
                                     className="cursor-pointer text-destructive focus:bg-destructive/10 focus:text-destructive"
                                 >
                                     Log out

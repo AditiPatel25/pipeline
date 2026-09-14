@@ -7,11 +7,14 @@ type DashboardFollowUpCardProps = {
     followUp: FollowUp;
 };
 
-function DashboardFollowUpCard({
-    followUp,
-}: DashboardFollowUpCardProps) {
-    const isOverdue =
-        !followUp.completed && new Date(followUp.dueDate) < new Date();
+function DashboardFollowUpCard({ followUp }: DashboardFollowUpCardProps) {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const dueDate = new Date(followUp.dueDate);
+    dueDate.setHours(0, 0, 0, 0);
+
+    const isOverdue = !followUp.completed && dueDate < today;
 
     return (
         <div
@@ -33,7 +36,10 @@ function DashboardFollowUpCard({
                         </h2>
 
                         <Badge className="shrink-0 text-foreground">
-                            {getLabel(followUpTypeItems, followUp.type)?.toUpperCase()}
+                            {getLabel(
+                                followUpTypeItems,
+                                followUp.type
+                            )?.toUpperCase()}
                         </Badge>
                     </div>
 

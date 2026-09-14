@@ -173,7 +173,7 @@ function ApplicationDetailsDialog({
 
                         {/* notes */}
                         {application.notes && (
-                            <div className="space-y-3 mb-2">
+                            <div className="space-y-3 mb-4">
                                 <h3 className="border-b pb-2 text-sm font-semibold">
                                     Notes
                                 </h3>
@@ -197,11 +197,11 @@ function ApplicationDetailsDialog({
                                     Follow-Ups
                                 </h3>
 
-                                <div className="space-y-2">
+                                <div>
                                     {activeFollowUps.map((followUp) => (
                                         <div
                                             key={followUp.id}
-                                            className="flex items-center justify-between rounded-lg border p-3"
+                                            className="flex items-center justify-between rounded-lg border p-3 my-3"
                                         >
                                             <div>
                                                 <p className="text-sm font-medium mb-1">

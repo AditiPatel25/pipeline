@@ -25,7 +25,7 @@ import {
 } from '@/components/ui/attachment';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
-import { ResumeData } from '@/types/resume';
+import type { ResumeData } from '@/types/resume';
 import { getErrorMessage } from '@/utils/getErrorMessage';
 import { FileText, Trash, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
@@ -53,7 +53,7 @@ function Resume() {
         fetchResume();
     }, []);
 
-    const handleSubmit = async () => {
+    const handleUpload = async () => {
         if (!resumeFile) {
             setError('File cannot be empty');
             return;
@@ -90,6 +90,14 @@ function Resume() {
         if (file) {
             setError('');
             setResumeFile(file);
+        }
+    };
+
+    const clearSelectedFile = () => {
+        setResumeFile(null);
+
+        if (fileInputRef.current) {
+            fileInputRef.current.value = '';
         }
     };
 
@@ -143,7 +151,7 @@ function Resume() {
                             <AttachmentActions>
                                 <AttachmentAction
                                     aria-label="Remove selected resume"
-                                    onClick={() => setResumeFile(null)}
+                                    onClick={clearSelectedFile}
                                 >
                                     <X className="size-4" />
                                 </AttachmentAction>
@@ -152,7 +160,7 @@ function Resume() {
 
                         <Button
                             type="button"
-                            onClick={handleSubmit}
+                            onClick={handleUpload}
                             disabled={uploading}
                         >
                             {uploading ? (

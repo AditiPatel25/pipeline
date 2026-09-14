@@ -81,7 +81,7 @@ function Home() {
 
                 {/* upcoming + recent */}
                 <div className="grid gap-6 lg:grid-cols-2">
-                    {/* Upcoming Deadlines */}
+                    {/* upcoming deadlines */}
                     <section className="rounded-xl border bg-card p-5 shadow-sm">
                         <div className="mb-4 flex items-center justify-between">
                             <Skeleton className="h-5 w-36" />
@@ -111,7 +111,7 @@ function Home() {
                         </div>
                     </section>
 
-                    {/* recent Applications */}
+                    {/* recent applications */}
                     <section className="rounded-xl border bg-card p-5 shadow-sm">
                         <div className="mb-4 flex items-center justify-between">
                             <Skeleton className="h-5 w-40" />

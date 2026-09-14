@@ -10,54 +10,6 @@ type ApplicationParams = {
     id: string;
 };
 
-async function getFollowUpsByApplication(
-    req: Request<ApplicationParams>,
-    res: Response,
-    next: NextFunction
-) {
-    try {
-        if (!req.authPayload) {
-            return res.status(401).json({
-                status: 401,
-                error: 'Unauthorized',
-                message: 'User is not logged in',
-            });
-        }
-
-        const id = parseInt(req.params.id);
-        if (isNaN(id)) {
-            return res.status(400).json({
-                status: 400,
-                error: 'Bad Request',
-                message: 'Invalid application ID',
-            });
-        }
-
-        const followUps = await prisma.followUp.findMany({
-            where: {
-                applicationId: id,
-                application: {
-                    userId: req.authPayload.userId,
-                },
-            },
-            orderBy: {
-                dueDate: 'asc',
-            },
-            include: {
-                application: true,
-            },
-        });
-
-        return res.status(200).json({
-            success: true,
-            message: 'FollowUps loaded',
-            followUps,
-        });
-    } catch (e) {
-        next(e);
-    }
-}
-
 async function getAllFollowUps(
     req: Request<ApplicationParams>,
     res: Response,
@@ -110,6 +62,9 @@ async function getUpcomingFollowUps(
             });
         }
 
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
         const upcomingFollowUps = await prisma.followUp.findMany({
             where: {
                 application: {
@@ -117,7 +72,7 @@ async function getUpcomingFollowUps(
                 },
                 completed: false,
                 dueDate: {
-                    gte: new Date(),
+                    gte: today,
                 },
             },
             take: 3,
@@ -393,6 +348,5 @@ export {
     deleteFollowUp,
     editFollowUp,
     getAllFollowUps,
-    getFollowUpsByApplication,
     getUpcomingFollowUps,
 };

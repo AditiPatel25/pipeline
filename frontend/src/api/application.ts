@@ -7,11 +7,6 @@ export async function getApplicationsRequest() {
     return res.data;
 }
 
-export async function getApplicationByIdRequest(id: number) {
-    const res = await api.get(`/applications/${id}`);
-    return res.data;
-}
-
 export async function createApplicationRequest(data: ApplicationData) {
     const res = await api.post('/applications', data);
     return res.data;
@@ -51,9 +46,4 @@ export async function createResumeMatchRequest(
     });
 
     return res.data.resumeMatch;
-}
-
-export async function getResumeMatchRequest(id: Number) {
-    const res = await api.get(`/applications/${id}/resume-match`);
-    return res.data;
 }

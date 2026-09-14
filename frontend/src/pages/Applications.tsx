@@ -1,4 +1,6 @@
 import { extractApplicationRequest } from '@/api/ai';
+import { createFollowUpRequest } from '@/api/followUp';
+import { getResumeRequest } from '@/api/resume';
 import {
     createApplicationRequest,
     createResumeMatchRequest,
@@ -6,8 +8,7 @@ import {
     editApplicationRequest,
     getApplicationsRequest,
 } from '@/api/application';
-import { createFollowUpRequest } from '@/api/followUp';
-import { getResumeRequest } from '@/api/resume';
+
 import ChooseResumeDialog from '@/components/AI/ChooseResumeDialog';
 import JobDescriptionDialog from '@/components/AI/JobDescriptionDialog';
 import ResumeAnalysisDialog from '@/components/AI/ResumeAnalysisDialog';
@@ -20,12 +21,21 @@ import FollowUpModal from '@/components/FollowUps/FollowUpModal';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogTrigger } from '@/components/ui/dialog';
 import { Skeleton } from '@/components/ui/skeleton';
+import {
+    Empty,
+    EmptyDescription,
+    EmptyHeader,
+    EmptyMedia,
+    EmptyTitle,
+} from '@/components/ui/empty';
+
 import type { Application, ApplicationData } from '@/types/application';
-import { FollowUpData } from '@/types/followUp';
-import { ResumeData } from '@/types/resume';
-import { ResumeSource } from '@/types/resumeMatch';
+import type { FollowUpData } from '@/types/followUp';
+import type { ResumeData } from '@/types/resume';
+import type { ResumeSource } from '@/types/resumeMatch';
+
 import { getErrorMessage } from '@/utils/getErrorMessage';
-import { Plus } from 'lucide-react';
+import { BriefcaseBusiness, Plus } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 function Applications() {
@@ -224,6 +234,7 @@ function Applications() {
 
     const handleManualAdd = () => {
         setError('');
+        setEditingApplication(null);
         setInitialApplication(undefined);
         setAddApplicationOpen(false);
         setApplicationModalOpen(true);
@@ -244,21 +255,22 @@ function Applications() {
         setFollowUpOpen(true);
     };
 
-    const handleSavedResume = (application: Application) => {
+    const handleResumeSource = (
+        application: Application,
+        source: ResumeSource
+    ) => {
         setSelectedApplication(application);
-        setResumeSource('SAVED');
+        setResumeSource(source);
         setResumeAnalysisView('new');
         setChooseResumeOpen(false);
         setResumeAnalysisOpen(true);
     };
 
-    const handleAnotherResume = (application: Application) => {
-        setSelectedApplication(application);
-        setResumeSource('ANOTHER');
-        setResumeAnalysisView('new');
-        setChooseResumeOpen(false);
-        setResumeAnalysisOpen(true);
-    };
+    const handleSavedResume = (application: Application) =>
+        handleResumeSource(application, 'SAVED');
+
+    const handleAnotherResume = (application: Application) =>
+        handleResumeSource(application, 'ANOTHER');
 
     const handleResumeAnalysis = (application: Application) => {
         setSelectedApplication(application);
@@ -298,22 +310,17 @@ function Applications() {
         date ? new Date(date).getTime() : null;
 
     const displayedApplications = [...filteredApplications].sort((a, b) => {
+        const aDate = getTimestamp(a.appliedDate);
+        const bDate = getTimestamp(b.appliedDate);
+
         switch (sortBy) {
             case 'NEWEST':
-                return (
-                    (b.appliedDate ? new Date(b.appliedDate).getTime() : 0) -
-                    (a.appliedDate ? new Date(a.appliedDate).getTime() : 0)
-                );
+                return (bDate ?? 0) - (aDate ?? 0);
 
-            case 'OLDEST': {
-                const aDate = getTimestamp(a.appliedDate);
-                const bDate = getTimestamp(b.appliedDate);
-
+            case 'OLDEST':
                 if (aDate === null) return 1;
                 if (bDate === null) return -1;
-
                 return aDate - bDate;
-            }
 
             case 'COMPANY_ASC':
                 return a.company.localeCompare(b.company);
@@ -325,6 +332,24 @@ function Applications() {
                 return 0;
         }
     });
+
+    const applicationToEdit = editingApplication
+        ? {
+              company: editingApplication.company,
+              position: editingApplication.position,
+              jobUrl: editingApplication.jobUrl,
+              description: editingApplication.description,
+              status: editingApplication.status,
+              appliedDate: editingApplication.appliedDate,
+              source: editingApplication.source,
+              location: editingApplication.location,
+              workArrangement: editingApplication.workArrangement,
+              employmentType: editingApplication.employmentType,
+              notes: editingApplication.notes,
+          }
+        : undefined;
+
+    const modalApplication = initialApplication ?? applicationToEdit;
 
     if (loading) {
         return (
@@ -347,17 +372,17 @@ function Applications() {
                             key={index}
                             className="rounded-xl border border-border bg-card p-5 shadow-sm"
                         >
-                            {/* Company + Status */}
+                            {/* company + status */}
                             <div className="flex items-center justify-between gap-4">
                                 <Skeleton className="h-6 w-32" />
                                 <Skeleton className="h-5 w-20 rounded-full" />
                             </div>
 
-                            {/* Position */}
+                            {/* position */}
                             <Skeleton className="mt-2 h-4 w-40" />
 
-                            {/* Details */}
-                            <div className="mt-4 space-y-2 flex gap-2">
+                            {/* details */}
+                            <div className="mt-4 flex gap-2">
                                 <Skeleton className="h-4 w-20" />
                                 <Skeleton className="h-4 w-20" />
                                 <Skeleton className="h-4 w-20" />
@@ -388,7 +413,7 @@ function Applications() {
                 >
                     <DialogTrigger
                         render={
-                            <Button onClick={() => setEditingApplication(null)}>
+                            <Button>
                                 Add Application <Plus />
                             </Button>
                         }
@@ -412,28 +437,7 @@ function Applications() {
                     onOpenChange={setApplicationModalOpen}
                 >
                     <ApplicationModal
-                        initialApplication={
-                            initialApplication ??
-                            (editingApplication
-                                ? {
-                                      company: editingApplication.company,
-                                      position: editingApplication.position,
-                                      jobUrl: editingApplication.jobUrl,
-                                      description:
-                                          editingApplication.description,
-                                      status: editingApplication.status,
-                                      appliedDate:
-                                          editingApplication.appliedDate,
-                                      source: editingApplication.source,
-                                      location: editingApplication.location,
-                                      workArrangement:
-                                          editingApplication.workArrangement,
-                                      employmentType:
-                                          editingApplication.employmentType,
-                                      notes: editingApplication.notes,
-                                  }
-                                : undefined)
-                        }
+                        initialApplication={modalApplication}
                         handleSubmit={
                             editingApplication
                                 ? (data) =>
@@ -449,7 +453,6 @@ function Applications() {
                             setInitialApplication(undefined);
                         }}
                         isEditing={!!editingApplication}
-                        
                     />
                 </Dialog>
             </div>
@@ -470,9 +473,34 @@ function Applications() {
                     {displayedApplications.length === 0 ? (
                         <div className="col-span-full flex flex-col items-center justify-center py-20 text-center">
                             <h2 className="text-xl font-bold">
-                                {applications.length === 0
-                                    ? 'You have no applications!'
-                                    : 'No applications match your filters.'}
+                                {applications.length === 0 ? (
+                                    <Empty className="col-span-full py-20">
+                                        <EmptyHeader>
+                                            <EmptyMedia variant="icon">
+                                                <BriefcaseBusiness />
+                                            </EmptyMedia>
+                                            <EmptyTitle>
+                                                No follow-ups yet
+                                            </EmptyTitle>
+                                            <EmptyDescription>
+                                                Keep track of interviews,
+                                                recruiter outreach, and other
+                                                important next steps by adding a
+                                                follow-up.
+                                            </EmptyDescription>
+                                        </EmptyHeader>
+                                    </Empty>
+                                ) : (
+                                    <>
+                                        <h2 className="text-xl font-bold">
+                                            No applications match your filters.
+                                        </h2>
+                                        <p className="mt-2 text-sm text-muted-foreground">
+                                            Try adjusting your search or
+                                            filters.
+                                        </p>
+                                    </>
+                                )}
                             </h2>
                         </div>
                     ) : (
