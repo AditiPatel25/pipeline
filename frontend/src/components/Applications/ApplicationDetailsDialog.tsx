@@ -261,24 +261,30 @@ function ApplicationDetailsDialog({
                 </div>
 
                 {/* footer */}
-                <DialogFooter className="shrink-0 border-t pt-4 sm:justify-end">
-                    {application.description && (
-                        <Button onClick={() => onResumeAnalysis(application)}>
-                            Resume Analysis <Sparkles />
+                <DialogFooter className="shrink-0 border-t pt-4 sm:justify-between">
+                    <div className="flex gap-2">
+                        {application.description && (
+                            <Button
+                                onClick={() => onResumeAnalysis(application)}
+                            >
+                                Resume Analysis <Sparkles />
+                            </Button>
+                        )}
+
+                        <Button
+                            variant="outline"
+                            onClick={() => onAddFollowUp(application)}
+                        >
+                            Add Follow-Up
                         </Button>
-                    )}
-                    <Button
-                        variant="outline"
-                        onClick={() => onAddFollowUp(application)}
-                    >
-                        Add Follow-Up
-                    </Button>
-                    <Button
-                        variant="outline"
-                        onClick={() => onEdit(application)}
-                    >
-                        Edit
-                    </Button>
+
+                        <Button
+                            variant="outline"
+                            onClick={() => onEdit(application)}
+                        >
+                            Edit
+                        </Button>
+                    </div>
 
                     <AlertDialog>
                         <AlertDialogTrigger
@@ -289,28 +295,7 @@ function ApplicationDetailsDialog({
                             }
                         />
 
-                        <AlertDialogContent>
-                            <AlertDialogHeader>
-                                <AlertDialogTitle>
-                                    Are you absolutely sure?
-                                </AlertDialogTitle>
-
-                                <AlertDialogDescription>
-                                    This action cannot be undone and will
-                                    permanently delete this application.
-                                </AlertDialogDescription>
-                            </AlertDialogHeader>
-
-                            <AlertDialogFooter>
-                                <AlertDialogCancel>Cancel</AlertDialogCancel>
-
-                                <AlertDialogAction
-                                    onClick={() => onDelete(application.id)}
-                                >
-                                    Continue
-                                </AlertDialogAction>
-                            </AlertDialogFooter>
-                        </AlertDialogContent>
+                        <AlertDialogContent>...</AlertDialogContent>
                     </AlertDialog>
                 </DialogFooter>
             </DialogContent>

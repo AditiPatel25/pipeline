@@ -22,6 +22,8 @@ import { FollowUp, FollowUpData, FollowUpFilter } from '@/types/followUp';
 import { getErrorMessage } from '@/utils/getErrorMessage';
 import { CalendarCheck, Plus } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
+import { motion } from 'motion/react';
 
 function FollowUps() {
     const [followUps, setFollowUps] = useState<FollowUp[]>([]);
@@ -91,9 +93,9 @@ function FollowUps() {
             setFollowUps((followUps) =>
                 followUps.filter((followUp) => followUp.id !== followUpId)
             );
-            // setSelectedApplication(null);
+            toast.success('Follow-up deleted');
         } catch (err) {
-            setError(getErrorMessage(err));
+            toast.error(getErrorMessage(err));
         }
     }
 
@@ -246,6 +248,7 @@ function FollowUps() {
                             setEditingFollowUp(null);
                         }}
                         applications={applications}
+                        open={open}
                     />
                 </Dialog>
             </div>
@@ -272,9 +275,16 @@ function FollowUps() {
                 <main className="mt-6 flex w-full max-w-6xl flex-col gap-3 px-4">
                     {filteredFollowUps.length === 0 ? (
                         <div className="flex flex-col items-center justify-center py-20 text-center">
-                            <h2 className="text-xl font-bold">
-                                {followUps.length === 0 ? (
-                                    <Empty className="col-span-full py-20">
+                            {followUps.length === 0 ? (
+                                <motion.div
+                                    initial={{ opacity: 0, y: 12 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{
+                                        duration: 0.6,
+                                        ease: 'easeOut',
+                                    }}
+                                >
+                                    <Empty>
                                         <EmptyHeader>
                                             <EmptyMedia variant="icon">
                                                 <CalendarCheck />
@@ -290,10 +300,16 @@ function FollowUps() {
                                             </EmptyDescription>
                                         </EmptyHeader>
                                     </Empty>
-                                ) : filter === 'UPCOMING' ||
-                                  filter === 'OVERDUE' ||
-                                  filter === 'COMPLETED' ? (
-                                    <Empty className="col-span-full py-20">
+                                </motion.div>
+                            ) : filter === 'UPCOMING' ||
+                              filter === 'OVERDUE' ||
+                              filter === 'COMPLETED' ? (
+                                <motion.div
+                                    initial={{ opacity: 0, y: 8 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ duration: 0.2 }}
+                                >
+                                    <Empty>
                                         <EmptyHeader>
                                             <EmptyMedia variant="icon">
                                                 <CalendarCheck />
@@ -307,20 +323,29 @@ function FollowUps() {
                                             </EmptyDescription>
                                         </EmptyHeader>
                                     </Empty>
-                                ) : (
-                                    'You have no follow-ups!'
-                                )}
-                            </h2>
+                                </motion.div>
+                            ) : (
+                                'You have no follow-ups!'
+                            )}
                         </div>
                     ) : (
-                        filteredFollowUps.map((followUp) => (
-                            <FollowUpCard
+                        filteredFollowUps.map((followUp, index) => (
+                            <motion.div
                                 key={followUp.id}
-                                followUp={followUp}
-                                onDelete={handleDeleteFollowUp}
-                                onEdit={handleEdit}
-                                onToggleComplete={handleCompleteFollowUp}
-                            />
+                                initial={{ opacity: 0, y: 8 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{
+                                    duration: 0.2,
+                                    delay: index * 0.02,
+                                }}
+                            >
+                                <FollowUpCard
+                                    followUp={followUp}
+                                    onDelete={handleDeleteFollowUp}
+                                    onEdit={handleEdit}
+                                    onToggleComplete={handleCompleteFollowUp}
+                                />
+                            </motion.div>
                         ))
                     )}
                 </main>

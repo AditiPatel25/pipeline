@@ -51,6 +51,7 @@ import {
 } from '@/components/ui/popover';
 import { ChevronDownIcon } from 'lucide-react';
 import { getErrorMessage } from '@/utils/getErrorMessage';
+import { toast } from 'sonner';
 
 const emptyApplication: ApplicationData = {
     company: '',
@@ -71,6 +72,7 @@ type ApplicationModalProps = {
     handleSubmit: (application: ApplicationData) => Promise<void>;
     onSuccess: () => void;
     isEditing?: boolean;
+    open: boolean;
 };
 
 function ApplicationModal({
@@ -78,6 +80,7 @@ function ApplicationModal({
     handleSubmit,
     onSuccess,
     isEditing = false,
+    open
 }: ApplicationModalProps) {
     const [application, setApplication] = useState<ApplicationData>(
         initialApplication ?? emptyApplication
@@ -131,15 +134,19 @@ function ApplicationModal({
 
         try {
             await handleSubmit(application);
+            isEditing
+                ? toast.success('Application updated successfully')
+                : toast.success('Application added');
+            resetForm();
             onSuccess();
         } catch (err) {
-            setError(getErrorMessage(err));
+            toast.error(getErrorMessage(err));
         }
     };
 
     useEffect(() => {
         resetForm();
-    }, [initialApplication]);
+    }, [initialApplication, open]);
 
     return (
         <DialogContent className="flex max-h-[90vh] flex-col sm:max-w-lg">

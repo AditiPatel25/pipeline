@@ -11,6 +11,7 @@ import { useAuth } from '@/context/AuthContext';
 import { Application, ApplicationStats } from '@/types/application';
 import { FollowUp } from '@/types/followUp';
 import { getErrorMessage } from '@/utils/getErrorMessage';
+import { motion } from 'motion/react';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -141,13 +142,23 @@ function Home() {
 
     return (
         <>
-            <p className="text-sm text-muted-foreground">
-                Welcome back, {user?.name || 'User'}
-            </p>
+            <motion.div
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, ease: 'easeOut' }}
+            >
+                <p className="text-sm text-muted-foreground">
+                    Welcome back, {user?.name || 'User'}
+                </p>
 
-            <h1 className="text-2xl font-extrabold my-4">Dashboard</h1>
+                <h1 className="my-4 text-2xl font-extrabold">Dashboard</h1>
+            </motion.div>
             <div className="flex flex-col gap-8">
-                <section>
+                <motion.section
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: 0.1, ease: 'easeOut' }}
+                >
                     {/* applications stats */}
                     <h2 className="text-lg font-semibold">
                         Application Overview
@@ -188,9 +199,14 @@ function Home() {
                             </p>
                         </div>
                     </div>
-                </section>
+                </motion.section>
 
-                <div className="grid gap-6 lg:grid-cols-2">
+                <motion.div
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: 0.2, ease: 'easeOut' }}
+                    className="grid gap-6 lg:grid-cols-2"
+                >
                     <section className="rounded-xl border bg-card p-5 shadow-sm">
                         <div className="mb-4 flex items-center justify-between">
                             <h2 className="font-semibold">
@@ -261,7 +277,7 @@ function Home() {
                             )}
                         </div>
                     </section>
-                </div>
+                </motion.div>
             </div>
         </>
     );

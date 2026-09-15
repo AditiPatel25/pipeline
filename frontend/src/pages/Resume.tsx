@@ -28,7 +28,9 @@ import { Spinner } from '@/components/ui/spinner';
 import type { ResumeData } from '@/types/resume';
 import { getErrorMessage } from '@/utils/getErrorMessage';
 import { FileText, Trash, X } from 'lucide-react';
+import { motion } from 'motion/react';
 import { useEffect, useRef, useState } from 'react';
+import { toast } from 'sonner';
 
 function Resume() {
     const [resume, setResume] = useState<ResumeData | null>(null);
@@ -66,9 +68,10 @@ function Resume() {
             const response = await uploadResumeRequest(resumeFile);
 
             setResume(response.resume);
-            setResumeFile(null);
+            toast.success('Resume uploaded successfully');
+            clearSelectedFile();
         } catch (err) {
-            setError(getErrorMessage(err));
+            toast.error(getErrorMessage(err));
         } finally {
             setUploading(false);
         }
@@ -78,9 +81,10 @@ function Resume() {
         try {
             setError('');
             await deleteResumeRequest();
+            toast.success('Resume deleted');
             setResume(null);
         } catch (err) {
-            setError(getErrorMessage(err));
+            toast.error(getErrorMessage(err));
         }
     };
 
@@ -103,23 +107,47 @@ function Resume() {
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center p-8">
-                <Spinner />
+            <div className="space-y-6 px-4 py-2">
+                <div>
+                    <div className="h-8 w-24 animate-pulse rounded-md bg-muted" />
+                    <div className="mt-2 h-4 w-80 animate-pulse rounded-md bg-muted" />
+                </div>
+
+                <div className="w-full rounded-xl border bg-card p-6 shadow-sm">
+                    <div className="h-5 w-32 animate-pulse rounded-md bg-muted" />
+                    <div className="mt-2 h-4 w-64 animate-pulse rounded-md bg-muted" />
+                    <div className="mt-6 h-16 w-full animate-pulse rounded-lg bg-muted" />
+                </div>
             </div>
         );
     }
 
     return (
         <div className="space-y-6 px-4 py-2">
-            <div>
+            <motion.div
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{
+                    duration: 0.5,
+                    ease: 'easeOut',
+                }}
+            >
                 <h1 className="text-2xl font-extrabold">Resume</h1>
 
                 <p className="mt-1 text-sm text-muted-foreground">
                     Manage your saved resume for use across Pipeline.
                 </p>
-            </div>
-
-            <div className="max-w-6xl rounded-xl border bg-card p-6 shadow-sm">
+            </motion.div>
+            <motion.div
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{
+                    duration: 0.6,
+                    delay: 0.1,
+                    ease: 'easeOut',
+                }}
+                className="w-full rounded-xl border bg-card p-6 shadow-sm"
+            >
                 {resumeFile ? (
                     <div className="space-y-5">
                         <div>
@@ -288,7 +316,7 @@ function Resume() {
                 {error && (
                     <p className="mt-4 text-sm text-destructive">{error}</p>
                 )}
-            </div>
+            </motion.div>
         </div>
     );
 }

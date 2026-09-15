@@ -44,6 +44,7 @@ import {
 } from '@/components/ui/popover';
 import { ChevronDownIcon } from 'lucide-react';
 import { getErrorMessage } from '@/utils/getErrorMessage';
+import { toast } from 'sonner';
 
 const emptyFollowUp: FollowUpData = {
     title: '',
@@ -60,6 +61,7 @@ type FollowUpModalProps = {
     onSuccess: () => void;
     applications: Application[];
     applicationId?: number;
+    open: boolean;
 };
 
 function FollowUpModal({
@@ -68,6 +70,7 @@ function FollowUpModal({
     handleSubmit,
     onSuccess,
     applicationId,
+    open
 }: FollowUpModalProps) {
     const [followUp, setFollowUp] = useState<FollowUpData>(
         initialFollowUp ?? {
@@ -92,6 +95,8 @@ function FollowUpModal({
                 applicationId: applicationId ?? -1,
             }
         );
+
+        setApplicationSearch('');
 
         setFieldErrors({
             application: false,
@@ -137,9 +142,13 @@ function FollowUpModal({
 
         try {
             await handleSubmit(followUp);
+            isEditing
+                ? toast.success('Follow-up updated successfully')
+                : toast.success('Follow-up added');
+            resetForm();
             onSuccess();
         } catch (err) {
-            setError(getErrorMessage(err));
+            toast.error(getErrorMessage(err));
         }
     };
 
@@ -170,7 +179,7 @@ function FollowUpModal({
                 applicationId: applicationId ?? -1,
             }
         );
-    }, [initialFollowUp?.applicationId, applicationId]);
+    }, [initialFollowUp?.applicationId, applicationId, open]);
     return (
         <DialogContent className="flex max-h-[90vh] flex-col sm:max-w-lg">
             <DialogHeader>

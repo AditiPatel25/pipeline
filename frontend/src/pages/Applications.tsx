@@ -37,6 +37,8 @@ import type { ResumeSource } from '@/types/resumeMatch';
 import { getErrorMessage } from '@/utils/getErrorMessage';
 import { BriefcaseBusiness, Plus } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
+import { motion } from 'motion/react';
 
 function Applications() {
     const [applications, setApplications] = useState<Application[]>([]);
@@ -93,7 +95,7 @@ function Applications() {
         try {
             const response = await createApplicationRequest(application);
 
-            setApplications((prev) => [...prev, response.application]);
+            setApplications((prev) => [response.application, ...prev]);
 
             setError('');
         } catch (err) {
@@ -131,8 +133,9 @@ function Applications() {
                 )
             );
             setSelectedApplication(null);
+            toast.success('Application deleted');
         } catch (err) {
-            setError(getErrorMessage(err));
+            toast.error(getErrorMessage(err));
         }
     }
 
@@ -453,6 +456,7 @@ function Applications() {
                             setInitialApplication(undefined);
                         }}
                         isEditing={!!editingApplication}
+                        open={applicationModalOpen}
                     />
                 </Dialog>
             </div>
@@ -474,22 +478,31 @@ function Applications() {
                         <div className="col-span-full flex flex-col items-center justify-center py-20 text-center">
                             <h2 className="text-xl font-bold">
                                 {applications.length === 0 ? (
-                                    <Empty className="col-span-full py-20">
-                                        <EmptyHeader>
-                                            <EmptyMedia variant="icon">
-                                                <BriefcaseBusiness />
-                                            </EmptyMedia>
-                                            <EmptyTitle>
-                                                No follow-ups yet
-                                            </EmptyTitle>
-                                            <EmptyDescription>
-                                                Keep track of interviews,
-                                                recruiter outreach, and other
-                                                important next steps by adding a
-                                                follow-up.
-                                            </EmptyDescription>
-                                        </EmptyHeader>
-                                    </Empty>
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 12 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{
+                                            duration: 0.6,
+                                            ease: 'easeOut',
+                                        }}
+                                        className="col-span-full"
+                                    >
+                                        <Empty className="py-20">
+                                            <EmptyHeader>
+                                                <EmptyMedia variant="icon">
+                                                    <BriefcaseBusiness />
+                                                </EmptyMedia>
+                                                <EmptyTitle>
+                                                    No applications yet
+                                                </EmptyTitle>
+                                                <EmptyDescription>
+                                                    Start tracking your job
+                                                    search by adding your first
+                                                    application.
+                                                </EmptyDescription>
+                                            </EmptyHeader>
+                                        </Empty>
+                                    </motion.div>
                                 ) : (
                                     <>
                                         <h2 className="text-xl font-bold">
@@ -504,14 +517,23 @@ function Applications() {
                             </h2>
                         </div>
                     ) : (
-                        displayedApplications.map((application) => (
-                            <ApplicationCard
+                        displayedApplications.map((application, index) => (
+                            <motion.div
                                 key={application.id}
-                                application={application}
-                                onDelete={handleDeleteApplication}
-                                onEdit={handleEdit}
-                                onSelect={setSelectedApplication}
-                            />
+                                initial={{ opacity: 0, y: 8 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{
+                                    duration: 0.2,
+                                    delay: index * 0.02,
+                                }}
+                            >
+                                <ApplicationCard
+                                    application={application}
+                                    onDelete={handleDeleteApplication}
+                                    onEdit={handleEdit}
+                                    onSelect={setSelectedApplication}
+                                />
+                            </motion.div>
                         ))
                     )}
                 </main>
@@ -555,6 +577,7 @@ function Applications() {
                     }}
                     applications={applications}
                     applicationId={selectedApplication?.id}
+                    open={followUpOpen}
                 />
             </Dialog>
         </>

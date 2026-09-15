@@ -4,6 +4,7 @@ import {
     SidebarTrigger,
 } from '@/components/ui/sidebar';
 import AppSidebar from '@/components/AppSidebar';
+import { Toaster } from '@/components/ui/sonner';
 
 function App() {
     return (
@@ -23,6 +24,7 @@ function App() {
                     <Outlet />
                 </div>
             </main>
+            <Toaster position='top-right'/>
         </SidebarProvider>
     );
 }
