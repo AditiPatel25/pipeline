@@ -18,6 +18,7 @@ function AddApplicationDialog({
 }: AddApplicationDialogProps) {
     return (
         <DialogContent className="sm:max-w-xl">
+            {/* header */}
             <DialogHeader className="text-center">
                 <DialogTitle className="text-xl">
                     Add an Application
@@ -27,6 +28,7 @@ function AddApplicationDialog({
                 </DialogDescription>
             </DialogHeader>
 
+            {/* options - add manually or add via job description extraction */}
             <div className="grid grid-cols-1 gap-4 py-5 sm:grid-cols-2">
                 <Button
                     type="button"

@@ -6,6 +6,7 @@ import Applications from './pages/Applications';
 import ProtectedRoute from './components/ProtectedRoute';
 import FollowUps from './pages/FollowUps';
 import Resume from './pages/Resume';
+import NotFound from './components/NotFound';
 // import Analytics from './pages/Analytics';
 
 const routes = [
@@ -36,15 +37,19 @@ const routes = [
                     {
                         path: '/applications',
                         element: <Applications />,
-                    },    
+                    },
                     {
                         path: '/followUps',
                         element: <FollowUps />,
-                    },       
+                    },
                     {
                         path: '/resume',
                         element: <Resume />,
-                    },           
+                    },
+                    {
+                        path: '*',
+                        element: <NotFound />,
+                    },
                 ],
             },
         ],

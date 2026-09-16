@@ -9,13 +9,13 @@ import {
     getApplicationsRequest,
 } from '@/api/application';
 
-import ChooseResumeDialog from '@/components/AI/ChooseResumeDialog';
-import JobDescriptionDialog from '@/components/AI/JobDescriptionDialog';
-import ResumeAnalysisDialog from '@/components/AI/ResumeAnalysisDialog';
+import ChooseResumeDialog from '@/components/Resume/ChooseResumeDialog';
+import JobDescriptionDialog from '@/components/Resume/JobDescriptionDialog';
+import ResumeAnalysisDialog from '@/components/Resume/ResumeAnalysisDialog';
 import AddApplicationDialog from '@/components/Applications/AddApplicationDialog';
 import ApplicationCard from '@/components/Applications/ApplicationCard';
 import ApplicationDetailsDialog from '@/components/Applications/ApplicationDetailsDialog';
-import ApplicationModal from '@/components/Applications/ApplicationModal';
+import ApplicationFormDialog from '@/components/Applications/ApplicationFormDialog';
 import ApplicationToolbar from '@/components/Applications/ApplicationToolbar';
 import FollowUpModal from '@/components/FollowUps/FollowUpModal';
 import { Button } from '@/components/ui/button';
@@ -41,28 +41,34 @@ import { toast } from 'sonner';
 import { motion } from 'motion/react';
 
 function Applications() {
+    // applications
     const [applications, setApplications] = useState<Application[]>([]);
+    const [error, setError] = useState('');
+    const [loading, setLoading] = useState(true);
+
+    // application dialogs
     const [addApplicationOpen, setAddApplicationOpen] = useState(false);
     const [jobDescriptionOpen, setJobDescriptionOpen] = useState(false);
     const [applicationModalOpen, setApplicationModalOpen] = useState(false);
-    const [resumeAnalysisOpen, setResumeAnalysisOpen] = useState(false);
-    const [chooseResumeOpen, setChooseResumeOpen] = useState(false);
+    const [initialApplication, setInitialApplication] = useState<
+        ApplicationData | undefined
+    >();
+    const [editingApplication, setEditingApplication] =
+        useState<Application | null>(null);
+    const [followUpOpen, setFollowUpOpen] = useState(false);
+
+    // selected application
+    const [selectedApplication, setSelectedApplication] =
+        useState<Application | null>(null);
+
+    // resume analysis
     const [resumeSource, setResumeSource] = useState<ResumeSource | null>(null);
     const [resumeAnalysisView, setResumeAnalysisView] = useState<
         'history' | 'new'
     >('new');
-
-    const [initialApplication, setInitialApplication] = useState<
-        ApplicationData | undefined
-    >();
-    const [error, setError] = useState('');
-    const [loading, setLoading] = useState(true);
-    const [editingApplication, setEditingApplication] =
-        useState<Application | null>(null);
-    const [selectedApplication, setSelectedApplication] =
-        useState<Application | null>(null);
-    const [followUpOpen, setFollowUpOpen] = useState(false);
     const [savedResume, setSavedResume] = useState<ResumeData | null>(null);
+    const [resumeAnalysisOpen, setResumeAnalysisOpen] = useState(false);
+    const [chooseResumeOpen, setChooseResumeOpen] = useState(false);
 
     // application toolbar
     const [search, setSearch] = useState('');
@@ -71,6 +77,23 @@ function Applications() {
         string | null
     >(null);
     const [sortBy, setSortBy] = useState<string | null>('NEWEST');
+
+    const updateApplication = (
+        applicationId: number,
+        update: (application: Application) => Application
+    ) => {
+        setApplications((prev) =>
+            prev.map((application) =>
+                application.id === applicationId
+                    ? update(application)
+                    : application
+            )
+        );
+
+        setSelectedApplication((prev) =>
+            prev?.id === applicationId ? update(prev) : prev
+        );
+    };
 
     useEffect(() => {
         const fetchApplications = async () => {
@@ -114,14 +137,7 @@ function Applications() {
                 application
             );
 
-            setApplications((prev) =>
-                prev.map((app) =>
-                    app.id === applicationId ? response.updatedApplication : app
-                )
-            );
-            setSelectedApplication((prev) =>
-                prev?.id === applicationId ? response.updatedApplication : prev
-            );
+            updateApplication(applicationId, () => response.updatedApplication);
         } catch (err) {
             setError(getErrorMessage(err));
         }
@@ -145,28 +161,10 @@ function Applications() {
         try {
             const response = await createFollowUpRequest(followUp);
 
-            setApplications((prev) =>
-                prev.map((application) =>
-                    application.id === followUp.applicationId
-                        ? {
-                              ...application,
-                              followUps: [
-                                  ...application.followUps,
-                                  response.followUp,
-                              ],
-                          }
-                        : application
-                )
-            );
-
-            setSelectedApplication((prev) =>
-                prev?.id === followUp.applicationId
-                    ? {
-                          ...prev,
-                          followUps: [...prev.followUps, response.followUp],
-                      }
-                    : prev
-            );
+            updateApplication(followUp.applicationId, (application) => ({
+                ...application,
+                followUps: [...application.followUps, response.followUp],
+            }));
 
             setError('');
         } catch (err) {
@@ -214,28 +212,13 @@ function Applications() {
                 resume
             );
 
-            setApplications((prev) =>
-                prev.map((application) =>
-                    application.id === applicationId
-                        ? {
-                              ...application,
-                              resumeMatches: [
-                                  resumeMatch,
-                                  ...application.resumeMatches,
-                              ],
-                          }
-                        : application
-                )
-            );
-
-            setSelectedApplication((prev) =>
-                prev?.id === applicationId
-                    ? {
-                          ...prev,
-                          resumeMatches: [resumeMatch, ...prev.resumeMatches],
-                      }
-                    : prev
-            );
+            updateApplication(applicationId, (application) => ({
+                ...application,
+                resumeMatches: [
+                    resumeMatch,
+                    ...(application.resumeMatches ?? []),
+                ],
+            }));
 
             setError('');
 
@@ -421,6 +404,7 @@ function Applications() {
         <>
             <div className="flex items-center justify-between px-4">
                 <h1 className="text-2xl font-extrabold">Applications</h1>
+                {/* choose method of adding application dialog*/}
                 <Dialog
                     open={addApplicationOpen}
                     onOpenChange={setAddApplicationOpen}
@@ -438,19 +422,19 @@ function Applications() {
                         onJobDescription={handleAIAdd}
                     />
                 </Dialog>
-
+                {/* analyze resume via job description dialog */}
                 <Dialog
                     open={jobDescriptionOpen}
                     onOpenChange={setJobDescriptionOpen}
                 >
                     <JobDescriptionDialog onExtract={handleExtract} />
                 </Dialog>
-
+                {/* add application manually dialog */}
                 <Dialog
                     open={applicationModalOpen}
                     onOpenChange={setApplicationModalOpen}
                 >
-                    <ApplicationModal
+                    <ApplicationFormDialog
                         initialApplication={modalApplication}
                         handleSubmit={
                             editingApplication
@@ -471,6 +455,7 @@ function Applications() {
                     />
                 </Dialog>
             </div>
+            {/* application toolbar */}
             <ApplicationToolbar
                 search={search}
                 onSearchChange={setSearch}
@@ -549,6 +534,7 @@ function Applications() {
                     )}
                 </main>
             </div>
+            {/* detailed application dialog */}
             <ApplicationDetailsDialog
                 application={selectedApplication}
                 open={selectedApplication !== null}
@@ -562,6 +548,7 @@ function Applications() {
                 onAddFollowUp={handleAddFollowUp}
                 onResumeAnalysis={handleResumeAnalysis}
             />
+            {/* resume analysis dialog */}
             <ResumeAnalysisDialog
                 application={selectedApplication}
                 open={resumeAnalysisOpen}
@@ -571,6 +558,7 @@ function Applications() {
                 savedResume={savedResume}
                 initialView={resumeAnalysisView}
             />
+            {/* choose saved or new resume to analyze dialog */}
             <Dialog open={chooseResumeOpen} onOpenChange={setChooseResumeOpen}>
                 <ChooseResumeDialog
                     onSavedResume={handleSavedResume}
@@ -579,6 +567,7 @@ function Applications() {
                     onPreviousAnalyses={handlePreviousAnalyses}
                 />
             </Dialog>
+            {/* add follow up dialog */}
             <Dialog open={followUpOpen} onOpenChange={setFollowUpOpen}>
                 <FollowUpModal
                     initialFollowUp={undefined}

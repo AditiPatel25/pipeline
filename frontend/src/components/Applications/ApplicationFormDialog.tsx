@@ -68,7 +68,7 @@ const emptyApplication: ApplicationData = {
     notes: '',
 };
 
-type ApplicationModalProps = {
+type ApplicationFormDialogProps = {
     initialApplication?: ApplicationData;
     handleSubmit: (application: ApplicationData) => Promise<void>;
     onSuccess: () => void;
@@ -76,13 +76,13 @@ type ApplicationModalProps = {
     open: boolean;
 };
 
-function ApplicationModal({
+function ApplicationFormDialog({
     initialApplication,
     handleSubmit,
     onSuccess,
     isEditing = false,
     open,
-}: ApplicationModalProps) {
+}: ApplicationFormDialogProps) {
     const [application, setApplication] = useState<ApplicationData>(
         initialApplication ?? emptyApplication
     );
@@ -155,6 +155,7 @@ function ApplicationModal({
 
     return (
         <DialogContent className="flex max-h-[90vh] flex-col sm:max-w-lg">
+            {/* header */}
             <DialogHeader>
                 <DialogTitle>
                     {isEditing ? 'Edit application' : 'Add application'}
@@ -169,6 +170,8 @@ function ApplicationModal({
                     {error}
                 </div>
             )}
+
+            {/* add/edit application form */}
             <form className="flex min-h-0 flex-1 flex-col" onSubmit={onSubmit}>
                 <div className="flex-1 overflow-y-auto pr-6 pb-4">
                     <FieldGroup className="px-2">
@@ -493,7 +496,8 @@ function ApplicationModal({
                         </Field>
                     </FieldGroup>
                 </div>
-
+                
+                {/* footer */}
                 <DialogFooter className="sm:justify-around">
                     <DialogClose
                         render={
@@ -524,4 +528,4 @@ function ApplicationModal({
     );
 }
 
-export default ApplicationModal;
+export default ApplicationFormDialog;

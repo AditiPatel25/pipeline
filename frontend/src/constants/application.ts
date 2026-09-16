@@ -54,3 +54,13 @@ export const sourceLabels = {
     CAREER_FAIR: 'Career fair',
     OTHER: 'Other',
 };
+
+export const statusStyles = {
+    APPLIED: 'bg-status-applied',
+    SCREENING: 'bg-status-screening',
+    INTERVIEW: 'bg-status-interview',
+    OFFER: 'bg-status-offer',
+    REJECTED: 'bg-status-rejected',
+    WITHDRAWN: 'bg-status-withdrawn',
+    GHOSTED: 'bg-status-ghosted',
+};

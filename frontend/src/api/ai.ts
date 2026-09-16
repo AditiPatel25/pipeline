@@ -1,6 +1,7 @@
 import { ApplicationExtraction } from '@/types/application';
 import api from './axiosInstance';
 
+// extracts application details from job description
 export async function extractApplicationRequest(
     jobDescription: string
 ): Promise<ApplicationExtraction> {

@@ -14,6 +14,7 @@ import {
     employmentTypeLabels,
     sourceLabels,
     workArrangementLabels,
+    statusStyles
 } from '@/constants/application';
 import type { Application } from '@/types/application';
 import { Pencil, Trash } from 'lucide-react';
@@ -24,16 +25,6 @@ type ApplicationCardProps = {
     onDelete: (applicationId: number) => Promise<void>;
     onEdit: (application: Application) => void;
     onSelect: (application: Application) => void;
-};
-
-const statusStyles = {
-    APPLIED: 'bg-status-applied',
-    SCREENING: 'bg-status-screening',
-    INTERVIEW: 'bg-status-interview',
-    OFFER: 'bg-status-offer',
-    REJECTED: 'bg-status-rejected',
-    WITHDRAWN: 'bg-status-withdrawn',
-    GHOSTED: 'bg-status-ghosted',
 };
 
 function ApplicationCard({
@@ -95,8 +86,7 @@ function ApplicationCard({
                 </div>
             </button>
 
-            {/* footer */}
-
+            {/* footer - edit and delete application */}
             <div className="mt-5 flex items-center justify-between gap-4 border-t border-border pt-4 text-xs text-muted-foreground">
                 <div>
                     {application.appliedDate && (

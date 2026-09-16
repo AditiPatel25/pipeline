@@ -26,20 +26,11 @@ import { Button } from '@/components/ui/button';
 
 import { Sparkles } from 'lucide-react';
 
-const statusStyles = {
-    APPLIED: 'bg-status-applied',
-    SCREENING: 'bg-status-screening',
-    INTERVIEW: 'bg-status-interview',
-    OFFER: 'bg-status-offer',
-    REJECTED: 'bg-status-rejected',
-    WITHDRAWN: 'bg-status-withdrawn',
-    GHOSTED: 'bg-status-ghosted',
-};
-
 import {
     employmentTypeLabels,
     sourceLabels,
     workArrangementLabels,
+    statusStyles
 } from '@/constants/application';
 
 import { Badge } from '@/components/ui/badge';
@@ -66,6 +57,7 @@ function ApplicationDetailsDialog({
 }: ApplicationDetailsDialogProps) {
     const contentRef = useRef<HTMLDivElement>(null);
 
+    // application starts at top of page
     useEffect(() => {
         if (open) {
             setTimeout(() => {
@@ -106,8 +98,7 @@ function ApplicationDetailsDialog({
                     </div>
                 </DialogHeader>
 
-                {/* scrollable content */}
-                {/* application details */}
+                {/* scrollable content - application details */}
                 <div
                     ref={contentRef}
                     className="min-h-0 flex-1 overflow-y-auto pr-6"
@@ -163,7 +154,7 @@ function ApplicationDetailsDialog({
 
                         {/* job description */}
                         {application.description && (
-                            <div className="space-y-3 mb-2">
+                            <div className="space-y-3 mb-3">
                                 <h3 className="border-b pb-2 text-sm font-semibold">
                                     Job Description
                                 </h3>
@@ -195,7 +186,7 @@ function ApplicationDetailsDialog({
 
                         {/* follow-ups */}
                         {activeFollowUps.length > 0 && (
-                            <div className="space-y-3">
+                            <div className="space-y-3 mb-4">
                                 <h3 className="border-b pb-2 text-sm font-semibold">
                                     Follow-Ups
                                 </h3>

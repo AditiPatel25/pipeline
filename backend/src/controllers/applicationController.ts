@@ -161,7 +161,17 @@ async function createApplication(
                 userId: req.authPayload.userId,
             },
             include: {
-                followUps: true,
+                followUps: {
+                    orderBy: {
+                        dueDate: 'asc',
+                    },
+                },
+                resumeMatches: {
+                    orderBy: {
+                        createdAt: 'desc',
+                    },
+                    take: 5,
+                },
             },
         });
 
@@ -356,7 +366,17 @@ async function editApplication(
                 notes,
             },
             include: {
-                followUps: true,
+                followUps: {
+                    orderBy: {
+                        dueDate: 'asc',
+                    },
+                },
+                resumeMatches: {
+                    orderBy: {
+                        createdAt: 'desc',
+                    },
+                    take: 5,
+                },
             },
         });
 
