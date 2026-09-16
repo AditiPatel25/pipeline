@@ -93,7 +93,6 @@ function FollowUps() {
             setFollowUps((followUps) =>
                 followUps.filter((followUp) => followUp.id !== followUpId)
             );
-            toast.success('Follow-up deleted');
         } catch (err) {
             toast.error(getErrorMessage(err));
         }

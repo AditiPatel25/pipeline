@@ -76,9 +76,12 @@ function ApplicationDetailsDialog({
 
     if (!application) return null;
 
-    const activeFollowUps = (application.followUps ?? []).filter(
-        (followUp) => !followUp.completed
-    );
+    const activeFollowUps = application.followUps
+        .filter((followUp) => !followUp.completed)
+        .sort(
+            (a, b) =>
+                new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime()
+        );
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="flex max-h-[90vh] flex-col gap-0 sm:max-w-2xl">
@@ -190,8 +193,8 @@ function ApplicationDetailsDialog({
                             </p>
                         )}
 
-                        {/* follow-ups*/}
-                        {application.followUps.length > 0 && (
+                        {/* follow-ups */}
+                        {activeFollowUps.length > 0 && (
                             <div className="space-y-3">
                                 <h3 className="border-b pb-2 text-sm font-semibold">
                                     Follow-Ups
@@ -201,10 +204,10 @@ function ApplicationDetailsDialog({
                                     {activeFollowUps.map((followUp) => (
                                         <div
                                             key={followUp.id}
-                                            className="flex items-center justify-between rounded-lg border p-3 my-3"
+                                            className="my-3 flex items-center justify-between rounded-lg border p-3"
                                         >
                                             <div>
-                                                <p className="text-sm font-medium mb-1">
+                                                <p className="mb-1 text-sm font-medium">
                                                     {followUp.title}
                                                 </p>
                                                 <p className="text-xs text-muted-foreground">
@@ -215,7 +218,14 @@ function ApplicationDetailsDialog({
                                                 </p>
                                             </div>
 
-                                            <p className="text-sm text-muted-foreground">
+                                            <p
+                                                className={`text-sm ${
+                                                    new Date(followUp.dueDate) <
+                                                    new Date()
+                                                        ? 'text-destructive'
+                                                        : 'text-muted-foreground'
+                                                }`}
+                                            >
                                                 {new Date(
                                                     followUp.dueDate
                                                 ).toLocaleDateString('en-US', {
@@ -294,8 +304,25 @@ function ApplicationDetailsDialog({
                                 </Button>
                             }
                         />
-
-                        <AlertDialogContent>...</AlertDialogContent>
+                        <AlertDialogContent>
+                            <AlertDialogHeader>
+                                <AlertDialogTitle>
+                                    Are you absolutely sure?
+                                </AlertDialogTitle>
+                                <AlertDialogDescription>
+                                    This action cannot be undone and will
+                                    permanently delete this application.
+                                </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogAction
+                                    onClick={() => onDelete(application.id)}
+                                >
+                                    Delete
+                                </AlertDialogAction>
+                            </AlertDialogFooter>
+                        </AlertDialogContent>
                     </AlertDialog>
                 </DialogFooter>
             </DialogContent>

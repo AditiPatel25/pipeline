@@ -45,6 +45,7 @@ import {
 import { ChevronDownIcon } from 'lucide-react';
 import { getErrorMessage } from '@/utils/getErrorMessage';
 import { toast } from 'sonner';
+import { Spinner } from '../ui/spinner';
 
 const emptyFollowUp: FollowUpData = {
     title: '',
@@ -70,7 +71,7 @@ function FollowUpModal({
     handleSubmit,
     onSuccess,
     applicationId,
-    open
+    open,
 }: FollowUpModalProps) {
     const [followUp, setFollowUp] = useState<FollowUpData>(
         initialFollowUp ?? {
@@ -87,6 +88,7 @@ function FollowUpModal({
         title: false,
         application: false,
     });
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const resetForm = () => {
         setFollowUp(
@@ -141,6 +143,7 @@ function FollowUpModal({
         }
 
         try {
+            setIsSubmitting(true);
             await handleSubmit(followUp);
             isEditing
                 ? toast.success('Follow-up updated successfully')
@@ -149,6 +152,8 @@ function FollowUpModal({
             onSuccess();
         } catch (err) {
             toast.error(getErrorMessage(err));
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -409,8 +414,17 @@ function FollowUpModal({
                             </Button>
                         }
                     />
-                    <Button type="submit">
-                        {isEditing ? 'Save changes' : 'Save'}
+                    <Button type="submit" disabled={isSubmitting}>
+                        {isSubmitting ? (
+                            <>
+                                <Spinner />
+                                {isEditing ? 'Saving...' : 'Adding...'}
+                            </>
+                        ) : isEditing ? (
+                            'Save changes'
+                        ) : (
+                            'Save'
+                        )}
                     </Button>
                 </DialogFooter>
             </form>

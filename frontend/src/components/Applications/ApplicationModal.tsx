@@ -52,6 +52,7 @@ import {
 import { ChevronDownIcon } from 'lucide-react';
 import { getErrorMessage } from '@/utils/getErrorMessage';
 import { toast } from 'sonner';
+import { Spinner } from '../ui/spinner';
 
 const emptyApplication: ApplicationData = {
     company: '',
@@ -80,7 +81,7 @@ function ApplicationModal({
     handleSubmit,
     onSuccess,
     isEditing = false,
-    open
+    open,
 }: ApplicationModalProps) {
     const [application, setApplication] = useState<ApplicationData>(
         initialApplication ?? emptyApplication
@@ -91,6 +92,7 @@ function ApplicationModal({
         company: false,
         position: false,
     });
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const resetForm = () => {
         setApplication(initialApplication ?? emptyApplication);
@@ -133,6 +135,7 @@ function ApplicationModal({
         }
 
         try {
+            setIsSubmitting(true);
             await handleSubmit(application);
             isEditing
                 ? toast.success('Application updated successfully')
@@ -141,6 +144,8 @@ function ApplicationModal({
             onSuccess();
         } catch (err) {
             toast.error(getErrorMessage(err));
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -501,8 +506,17 @@ function ApplicationModal({
                             </Button>
                         }
                     />
-                    <Button type="submit">
-                        {isEditing ? 'Save changes' : 'Save'}
+                    <Button type="submit" disabled={isSubmitting}>
+                        {isSubmitting ? (
+                            <>
+                                <Spinner />
+                                {isEditing ? 'Saving...' : 'Adding...'}
+                            </>
+                        ) : isEditing ? (
+                            'Save changes'
+                        ) : (
+                            'Save'
+                        )}
                     </Button>
                 </DialogFooter>
             </form>

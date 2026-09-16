@@ -355,6 +355,9 @@ async function editApplication(
                 employmentType,
                 notes,
             },
+            include: {
+                followUps: true,
+            },
         });
 
         return res.status(200).json({

@@ -70,7 +70,7 @@ function Applications() {
     const [workArrangementFilter, setWorkArrangementFilter] = useState<
         string | null
     >(null);
-    const [sortBy, setSortBy] = useState<string | null>(null);
+    const [sortBy, setSortBy] = useState<string | null>('NEWEST');
 
     useEffect(() => {
         const fetchApplications = async () => {
@@ -119,6 +119,9 @@ function Applications() {
                     app.id === applicationId ? response.updatedApplication : app
                 )
             );
+            setSelectedApplication((prev) =>
+                prev?.id === applicationId ? response.updatedApplication : prev
+            );
         } catch (err) {
             setError(getErrorMessage(err));
         }
@@ -133,7 +136,6 @@ function Applications() {
                 )
             );
             setSelectedApplication(null);
-            toast.success('Application deleted');
         } catch (err) {
             toast.error(getErrorMessage(err));
         }
@@ -155,6 +157,15 @@ function Applications() {
                           }
                         : application
                 )
+            );
+
+            setSelectedApplication((prev) =>
+                prev?.id === followUp.applicationId
+                    ? {
+                          ...prev,
+                          followUps: [...prev.followUps, response.followUp],
+                      }
+                    : prev
             );
 
             setError('');

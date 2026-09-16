@@ -81,7 +81,6 @@ function Resume() {
         try {
             setError('');
             await deleteResumeRequest();
-            toast.success('Resume deleted');
             setResume(null);
         } catch (err) {
             toast.error(getErrorMessage(err));
