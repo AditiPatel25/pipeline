@@ -76,8 +76,6 @@ function ResumeAnalysisDialog({
                 resume
             );
 
-            console.log('Resume match result:', result);
-
             setSelectedMatch(result);
             setView('result');
         } finally {
@@ -85,19 +83,7 @@ function ResumeAnalysisDialog({
         }
     };
 
-    const handleAnalyzeAgain = () => {
-        setSelectedMatch(null);
-        setResume('');
-        setView('new');
-    };
-
     const handleOpenChange = (isOpen: boolean) => {
-        if (!isOpen) {
-            setResume('');
-            setSelectedMatch(null);
-            setLoading(false);
-        }
-
         onOpenChange(isOpen);
     };
 
@@ -106,16 +92,10 @@ function ResumeAnalysisDialog({
         setView('result');
     };
 
-    const handleStartNewAnalysis = () => {
-        setSelectedMatch(null);
-        setResume('');
-        setView('new');
-    };
-
     return (
         <Dialog open={open} onOpenChange={handleOpenChange}>
             <DialogContent className="flex max-h-[90vh] flex-col overflow-hidden sm:max-w-2xl">
-                {/* HISTORY */}
+                {/* history / previous analyses */}
                 {view === 'history' && (
                     <>
                         <DialogHeader>
@@ -184,7 +164,7 @@ function ResumeAnalysisDialog({
                     </>
                 )}
 
-                {/* NEW ANALYSIS */}
+                {/* new analysis */}
                 {view === 'new' && (
                     <>
                         <DialogHeader className="pb-2">
@@ -301,7 +281,7 @@ function ResumeAnalysisDialog({
                     </>
                 )}
 
-                {/* RESULT */}
+                {/* result */}
                 {view === 'result' && selectedMatch && (
                     <>
                         <DialogHeader>

@@ -35,7 +35,6 @@ import { toast } from 'sonner';
 function Resume() {
     const [resume, setResume] = useState<ResumeData | null>(null);
     const [resumeFile, setResumeFile] = useState<File | null>(null);
-    const [error, setError] = useState('');
     const [loading, setLoading] = useState(true);
     const [uploading, setUploading] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -46,7 +45,7 @@ function Resume() {
                 const response = await getResumeRequest();
                 setResume(response.resume);
             } catch (err) {
-                setError(getErrorMessage(err));
+                toast.error(getErrorMessage(err));
             } finally {
                 setLoading(false);
             }
@@ -55,14 +54,12 @@ function Resume() {
         fetchResume();
     }, []);
 
+    // upload selected resume / update saved one
     const handleUpload = async () => {
         if (!resumeFile) {
-            setError('File cannot be empty');
             return;
         }
-
         try {
-            setError('');
             setUploading(true);
 
             const response = await uploadResumeRequest(resumeFile);
@@ -77,9 +74,9 @@ function Resume() {
         }
     };
 
+    // delete saved resume
     const handleDeleteResume = async () => {
         try {
-            setError('');
             await deleteResumeRequest();
             setResume(null);
         } catch (err) {
@@ -87,15 +84,16 @@ function Resume() {
         }
     };
 
+    // store selected file
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
 
         if (file) {
-            setError('');
             setResumeFile(file);
         }
     };
 
+    // clear selected file
     const clearSelectedFile = () => {
         setResumeFile(null);
 
@@ -147,6 +145,7 @@ function Resume() {
                 }}
                 className="w-full rounded-xl border bg-card p-6 shadow-sm"
             >
+                {/* selected resume is ready to upload */}
                 {resumeFile ? (
                     <div className="space-y-5">
                         <div>
@@ -200,7 +199,8 @@ function Resume() {
                             )}
                         </Button>
                     </div>
-                ) : resume ? (
+                ) : resume ? ( 
+                    /* saved resume */
                     <div className="space-y-5">
                         <div>
                             <h2 className="text-base font-semibold">
@@ -276,6 +276,7 @@ function Resume() {
                         </Button>
                     </div>
                 ) : (
+                    /* no saved resume */
                     <div className="flex min-h-90 flex-col items-center justify-center text-center">
                         <div className="mb-5 flex size-16 items-center justify-center rounded-2xl bg-muted">
                             <FileText className="size-8 text-muted-foreground" />
@@ -311,10 +312,6 @@ function Resume() {
                     className="hidden"
                     onChange={handleFileChange}
                 />
-
-                {error && (
-                    <p className="mt-4 text-sm text-destructive">{error}</p>
-                )}
             </motion.div>
         </div>
     );

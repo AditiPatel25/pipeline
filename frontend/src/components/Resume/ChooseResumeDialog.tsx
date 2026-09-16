@@ -25,6 +25,7 @@ function ChooseResumeDialog({
 
     return (
         <DialogContent className="sm:max-w-xl">
+            {/* choose between saved resume or new resume */}
             <DialogHeader className="text-center">
                 <DialogTitle className="text-xl">Choose a Resume</DialogTitle>
 
@@ -71,6 +72,8 @@ function ChooseResumeDialog({
                     </div>
                 </Button>
             </div>
+            
+            {/* show previous analyses button if they exist */}
             {application?.resumeMatches?.length > 0 && (
                 <>
                     <div className="my-2 border-t" />

@@ -90,7 +90,8 @@ function FollowUpCard({
                         )}
                     </p>
                 </div>
-
+                
+                {/* edit + delete buttons */}
                 <div className="flex justify-between mt-4 items-center">
                     <p className="text-sm text-muted-foreground">
                         {followUp.application.company} —{' '}

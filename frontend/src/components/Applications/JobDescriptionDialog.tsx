@@ -9,20 +9,16 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
-import {
-    Field,
-    FieldGroup,
-    FieldLabel,
-} from '@/components/ui/field';
+import { Field, FieldGroup, FieldLabel } from '@/components/ui/field';
 import { Textarea } from '@/components/ui/textarea';
+import { getErrorMessage } from '@/utils/getErrorMessage';
+import { toast } from 'sonner';
 
 type JobDescriptionDialogProps = {
     onExtract: (jobDescription: string) => Promise<void>;
 };
 
-function JobDescriptionDialog({
-    onExtract,
-}: JobDescriptionDialogProps) {
+function JobDescriptionDialog({ onExtract }: JobDescriptionDialogProps) {
     const [jobDescription, setJobDescription] = useState('');
     const [loading, setLoading] = useState(false);
 
@@ -34,7 +30,9 @@ function JobDescriptionDialog({
         try {
             setLoading(true);
             await onExtract(jobDescription);
-            setJobDescription('')
+            setJobDescription('');
+        } catch (err) {
+            toast.error(getErrorMessage(err));
         } finally {
             setLoading(false);
         }
@@ -42,6 +40,7 @@ function JobDescriptionDialog({
 
     return (
         <DialogContent className="flex max-h-[90vh] flex-col sm:max-w-lg">
+            {/* add job description to extract application information */}
             <DialogHeader>
                 <DialogTitle>Add Job Description</DialogTitle>
                 <DialogDescription>

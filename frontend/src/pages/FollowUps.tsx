@@ -27,7 +27,6 @@ import { motion } from 'motion/react';
 
 function FollowUps() {
     const [followUps, setFollowUps] = useState<FollowUp[]>([]);
-    const [error, setError] = useState('');
     const [loading, setLoading] = useState(true);
     const [open, setOpen] = useState(false);
     const [editingFollowUp, setEditingFollowUp] = useState<FollowUp | null>(
@@ -47,7 +46,7 @@ function FollowUps() {
                 setFollowUps(followUpsResponse.followUps);
                 setApplications(applicationsResponse.applications);
             } catch (err) {
-                setError(getErrorMessage(err));
+                toast.error(getErrorMessage(err));
             } finally {
                 setLoading(false);
             }
@@ -55,19 +54,18 @@ function FollowUps() {
         fetchFollowUps();
     }, []);
 
+    // create follow up
     const handleCreateFollowUp = async (followUp: FollowUpData) => {
         try {
             const response = await createFollowUpRequest(followUp);
 
             setFollowUps((prev) => [...prev, response.followUp]);
-
-            setError('');
         } catch (err) {
-            setError(getErrorMessage(err));
             throw err;
         }
     };
 
+    // edit follow up
     const handleEditFollowUp = async (
         followUpId: number,
         followUp: FollowUpData
@@ -83,10 +81,11 @@ function FollowUps() {
                 )
             );
         } catch (err) {
-            setError(getErrorMessage(err));
+            throw err;
         }
     };
 
+    // delete follow up
     async function handleDeleteFollowUp(followUpId: number) {
         try {
             await deleteFollowUpRequest(followUpId);
@@ -98,6 +97,7 @@ function FollowUps() {
         }
     }
 
+    // complete follow up
     const handleCompleteFollowUp = async (
         followUpId: number,
         completed: boolean
@@ -128,7 +128,7 @@ function FollowUps() {
                 )
             );
 
-            setError(getErrorMessage(err));
+            toast.error(getErrorMessage(err));
         }
     };
 
@@ -142,6 +142,7 @@ function FollowUps() {
         setOpen(true);
     };
 
+    // filter follow ups based on: all, upcoming, overdue, completed
     const filteredFollowUps = followUps
         .filter((followUp) => {
             const today = new Date();
@@ -211,6 +212,7 @@ function FollowUps() {
         <>
             <div className="flex items-center justify-between px-4 pt-2">
                 <h1 className="text-2xl font-extrabold">Follow-Ups</h1>
+                {/* add follow up button triggers dialog */}
                 <Dialog open={open} onOpenChange={setOpen}>
                     <DialogTrigger
                         render={
@@ -251,6 +253,8 @@ function FollowUps() {
                     />
                 </Dialog>
             </div>
+
+            {/* filter follow ups */}
             <div className="mx-4 mt-6 flex gap-2 border-b border-border pb-3">
                 {(
                     [
@@ -270,6 +274,8 @@ function FollowUps() {
                     </Button>
                 ))}
             </div>
+
+            {/* follow ups */}
             <div className="flex w-full justify-center">
                 <main className="mt-6 flex w-full max-w-6xl flex-col gap-3 px-4">
                     {filteredFollowUps.length === 0 ? (

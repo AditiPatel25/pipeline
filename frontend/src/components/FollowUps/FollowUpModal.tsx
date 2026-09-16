@@ -184,9 +184,18 @@ function FollowUpModal({
                 applicationId: applicationId ?? -1,
             }
         );
-    }, [initialFollowUp?.applicationId, applicationId, open]);
+        setApplicationSearch('');
+        setFieldErrors({
+            application: false,
+            dueDate: false,
+            title: false,
+        });
+        setError('');
+    }, [initialFollowUp, applicationId, open]);
+
     return (
         <DialogContent className="flex max-h-[90vh] flex-col sm:max-w-lg">
+            {/* header */}
             <DialogHeader>
                 <DialogTitle>
                     {isEditing ? 'Edit follow-up' : 'Add follow-up'}
@@ -200,6 +209,8 @@ function FollowUpModal({
                     {error}
                 </div>
             )}
+
+            {/* follow up form */}
             <form className="flex min-h-0 flex-1 flex-col" onSubmit={onSubmit}>
                 <div className="flex-1 overflow-y-auto pr-6 pb-4">
                     <FieldGroup className="px-2">
@@ -208,7 +219,7 @@ function FollowUpModal({
                             {isApplicationSpecific ? (
                                 <div className="rounded-md border bg-muted/50 px-3 py-2 text-sm">
                                     {selectedApplication
-                                        ? `${selectedApplication.company} — ${selectedApplication.position}`
+                                        ? `${selectedApplication.company} - ${selectedApplication.position}`
                                         : 'Application not found'}
                                 </div>
                             ) : (
@@ -217,7 +228,7 @@ function FollowUpModal({
                                     itemToStringValue={(
                                         application: Application
                                     ) =>
-                                        `${application.company} — ${application.position}`
+                                        `${application.company} - ${application.position}`
                                     }
                                     onValueChange={(selectedValue) => {
                                         const value =
@@ -270,7 +281,7 @@ function FollowUpModal({
                                                     key={application.id}
                                                     value={`${application.company} - ${application.position}`}
                                                 >
-                                                    {application.company} —{' '}
+                                                    {application.company} -{' '}
                                                     {application.position}
                                                 </ComboboxItem>
                                             )}
@@ -401,7 +412,8 @@ function FollowUpModal({
                         </Field>
                     </FieldGroup>
                 </div>
-
+                
+                {/* footer */}
                 <DialogFooter className="sm:justify-around">
                     <DialogClose
                         render={

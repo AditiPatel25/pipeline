@@ -14,6 +14,7 @@ import { getErrorMessage } from '@/utils/getErrorMessage';
 import { motion } from 'motion/react';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 
 function Home() {
     const { user } = useAuth();
@@ -23,7 +24,6 @@ function Home() {
         []
     );
     const [upcomingDeadlines, setUpcomingDeadlines] = useState<FollowUp[]>([]);
-    const [error, setError] = useState('');
     const [loading, setLoading] = useState(true);
     const activeApplications =
         (applicationStats?.stats.SCREENING ?? 0) +
@@ -45,7 +45,7 @@ function Home() {
                 setRecentApplications(recentResponse.recentApplications);
                 setUpcomingDeadlines(deadlinesResponse.upcomingFollowUps);
             } catch (err) {
-                setError(getErrorMessage(err));
+                toast.error(getErrorMessage(err));
             } finally {
                 setLoading(false);
             }
@@ -142,6 +142,7 @@ function Home() {
 
     return (
         <>
+            {/* header */}
             <motion.div
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -207,6 +208,7 @@ function Home() {
                     transition={{ duration: 0.6, delay: 0.2, ease: 'easeOut' }}
                     className="grid gap-6 lg:grid-cols-2"
                 >
+                    {/* upcoming follow ups */}
                     <section className="rounded-xl border bg-card p-5 shadow-sm">
                         <div className="mb-4 flex items-center justify-between">
                             <h2 className="font-semibold">
@@ -241,6 +243,8 @@ function Home() {
                             )}
                         </div>
                     </section>
+
+                    {/* recently submitted applications */}
                     <section className="rounded-xl border bg-card p-5 shadow-sm">
                         <div className="mb-4 flex items-center justify-between">
                             <h2 className="font-semibold">

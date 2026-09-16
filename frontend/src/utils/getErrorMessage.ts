@@ -1,7 +1,14 @@
-import axios from "axios";
+import axios from 'axios';
 
 // utils/getErrorMessage.ts
+
 export function getErrorMessage(err: unknown): string {
-    if (axios.isAxiosError(err)) return err.response?.data?.message || 'Something went wrong.';
+    if (axios.isAxiosError(err)) {
+        return (
+            err.response?.data?.message ||
+            'Something went wrong.'
+        );
+    }
+
     return 'Something went wrong.';
 }

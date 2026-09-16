@@ -92,8 +92,6 @@ function AppSidebar() {
                         </SidebarMenu>
                     </SidebarGroupContent>
                 </SidebarGroup>
-
-                {/* insights */}
             </SidebarContent>
 
             {/* user section */}

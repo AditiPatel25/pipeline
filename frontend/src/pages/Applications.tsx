@@ -10,7 +10,7 @@ import {
 } from '@/api/application';
 
 import ChooseResumeDialog from '@/components/Resume/ChooseResumeDialog';
-import JobDescriptionDialog from '@/components/Resume/JobDescriptionDialog';
+import JobDescriptionDialog from '@/components/Applications/JobDescriptionDialog';
 import ResumeAnalysisDialog from '@/components/Resume/ResumeAnalysisDialog';
 import AddApplicationDialog from '@/components/Applications/AddApplicationDialog';
 import ApplicationCard from '@/components/Applications/ApplicationCard';
@@ -39,11 +39,11 @@ import { BriefcaseBusiness, Plus } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { motion } from 'motion/react';
+import { getTimestamp } from '@/utils/getTimeStamp';
 
 function Applications() {
     // applications
     const [applications, setApplications] = useState<Application[]>([]);
-    const [error, setError] = useState('');
     const [loading, setLoading] = useState(true);
 
     // application dialogs
@@ -78,6 +78,7 @@ function Applications() {
     >(null);
     const [sortBy, setSortBy] = useState<string | null>('NEWEST');
 
+    // helper function to update/refresh applications after editing
     const updateApplication = (
         applicationId: number,
         update: (application: Application) => Application
@@ -106,7 +107,7 @@ function Applications() {
                 setApplications(applicationsResponse.applications);
                 setSavedResume(resumeResponse.resume);
             } catch (err) {
-                setError(getErrorMessage(err));
+                toast.error(getErrorMessage(err));
             } finally {
                 setLoading(false);
             }
@@ -114,19 +115,18 @@ function Applications() {
         fetchApplications();
     }, []);
 
+    // creates application
     const handleCreateApplication = async (application: ApplicationData) => {
         try {
             const response = await createApplicationRequest(application);
 
             setApplications((prev) => [response.application, ...prev]);
-
-            setError('');
         } catch (err) {
-            setError(getErrorMessage(err));
             throw err;
         }
     };
 
+    // edit application
     const handleEditApplication = async (
         applicationId: number,
         application: ApplicationData
@@ -139,10 +139,11 @@ function Applications() {
 
             updateApplication(applicationId, () => response.updatedApplication);
         } catch (err) {
-            setError(getErrorMessage(err));
+            throw err;
         }
     };
 
+    // delete application
     async function handleDeleteApplication(applicationId: number) {
         try {
             await deleteApplicationRequest(applicationId);
@@ -157,6 +158,7 @@ function Applications() {
         }
     }
 
+    // create follow up inside currently selected application
     const handleCreateFollowUp = async (followUp: FollowUpData) => {
         try {
             const response = await createFollowUpRequest(followUp);
@@ -165,14 +167,12 @@ function Applications() {
                 ...application,
                 followUps: [...application.followUps, response.followUp],
             }));
-
-            setError('');
         } catch (err) {
-            setError(getErrorMessage(err));
             throw err;
         }
     };
 
+    // extract application info from job description
     const handleExtract = async (jobDescription: string) => {
         try {
             const extractedInfo =
@@ -195,11 +195,11 @@ function Applications() {
             setJobDescriptionOpen(false);
             setApplicationModalOpen(true);
         } catch (err) {
-            setError(getErrorMessage(err));
             throw err;
         }
     };
 
+    // create resume analysis, comparing resume to application
     const handleCreateResumeMatch = async (
         applicationId: number,
         resumeSource: ResumeSource,
@@ -220,17 +220,13 @@ function Applications() {
                 ],
             }));
 
-            setError('');
-
             return resumeMatch;
         } catch (err) {
-            setError(getErrorMessage(err));
             throw err;
         }
     };
 
     const handleManualAdd = () => {
-        setError('');
         setEditingApplication(null);
         setInitialApplication(undefined);
         setAddApplicationOpen(false);
@@ -288,6 +284,7 @@ function Applications() {
         setSortBy('NEWEST');
     };
 
+    // filters applications based on search, job status, or work arrangement
     const filteredApplications = applications.filter((application) => {
         const matchesSearch =
             application.company.toLowerCase().includes(search.toLowerCase()) ||
@@ -303,9 +300,7 @@ function Applications() {
         return matchesSearch && matchesStatus && matchesWorkArrangement;
     });
 
-    const getTimestamp = (date: string | undefined) =>
-        date ? new Date(date).getTime() : null;
-
+    // sort applications by newest, oldest, alphabetically
     const displayedApplications = [...filteredApplications].sort((a, b) => {
         const aDate = getTimestamp(a.appliedDate);
         const bDate = getTimestamp(b.appliedDate);
@@ -472,45 +467,42 @@ function Applications() {
                 <main className="mt-6 grid w-full grid-cols-1 gap-4 px-4 md:grid-cols-2 xl:grid-cols-3">
                     {displayedApplications.length === 0 ? (
                         <div className="col-span-full flex flex-col items-center justify-center py-20 text-center">
-                            <h2 className="text-xl font-bold">
-                                {applications.length === 0 ? (
-                                    <motion.div
-                                        initial={{ opacity: 0, y: 12 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        transition={{
-                                            duration: 0.6,
-                                            ease: 'easeOut',
-                                        }}
-                                        className="col-span-full"
-                                    >
-                                        <Empty className="py-20">
-                                            <EmptyHeader>
-                                                <EmptyMedia variant="icon">
-                                                    <BriefcaseBusiness />
-                                                </EmptyMedia>
-                                                <EmptyTitle>
-                                                    No applications yet
-                                                </EmptyTitle>
-                                                <EmptyDescription>
-                                                    Start tracking your job
-                                                    search by adding your first
-                                                    application.
-                                                </EmptyDescription>
-                                            </EmptyHeader>
-                                        </Empty>
-                                    </motion.div>
-                                ) : (
-                                    <>
-                                        <h2 className="text-xl font-bold">
-                                            No applications match your filters.
-                                        </h2>
-                                        <p className="mt-2 text-sm text-muted-foreground">
-                                            Try adjusting your search or
-                                            filters.
-                                        </p>
-                                    </>
-                                )}
-                            </h2>
+                            {applications.length === 0 ? (
+                                <motion.div
+                                    initial={{ opacity: 0, y: 12 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{
+                                        duration: 0.6,
+                                        ease: 'easeOut',
+                                    }}
+                                    className="col-span-full"
+                                >
+                                    <Empty className="py-20">
+                                        <EmptyHeader>
+                                            <EmptyMedia variant="icon">
+                                                <BriefcaseBusiness />
+                                            </EmptyMedia>
+                                            <EmptyTitle>
+                                                No applications yet
+                                            </EmptyTitle>
+                                            <EmptyDescription>
+                                                Start tracking your job search
+                                                by adding your first
+                                                application.
+                                            </EmptyDescription>
+                                        </EmptyHeader>
+                                    </Empty>
+                                </motion.div>
+                            ) : (
+                                <>
+                                    <h2 className="text-xl font-bold">
+                                        No applications match your filters.
+                                    </h2>
+                                    <p className="mt-2 text-sm text-muted-foreground">
+                                        Try adjusting your search or filters.
+                                    </p>
+                                </>
+                            )}
                         </div>
                     ) : (
                         displayedApplications.map((application, index) => (
