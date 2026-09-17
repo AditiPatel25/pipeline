@@ -17,8 +17,8 @@ function issueAuthCookie(res: Response, userId: number) {
     res.cookie('token', token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-        maxAge: 30 * 24 * 60 * 60 * 1000
+        sameSite: 'none',
+        maxAge: 30 * 24 * 60 * 60 * 1000,
     });
 }
 
@@ -203,4 +203,3 @@ async function googleCallback(req: Request, res: Response, next: NextFunction) {
     )(req, res, next);
 }
 export { getCurrentUser, googleCallback, login, logout, register };
-
