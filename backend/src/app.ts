@@ -1,6 +1,6 @@
 import express from 'express';
 import cors from 'cors';
-import type { Request, Response, NextFunction } from "express";
+import type { Request, Response, NextFunction } from 'express';
 import cookieParser from 'cookie-parser';
 import './config/passport.js';
 
@@ -10,25 +10,30 @@ import followUpRouter from './routes/followUpRouter.js';
 import aiRouter from './routes/aiRouter.js';
 import resumeRouter from './routes/resumeRouter.js';
 
+const allowedOrigins = [
+    'http://localhost:5173',
+    'https://pipeline-khaki-delta.vercel.app',
+];
+
 const app = express();
 app.use(
     cors({
-        origin: process.env.CLIENT_URL,
+        origin: allowedOrigins,
         credentials: true,
     })
 );
 app.use(express.json());
 app.use(cookieParser());
 
-app.get("/", (req, res) => {
-    res.json({ message: "Hello" });
+app.get('/', (req, res) => {
+    res.json({ message: 'Hello' });
 });
 
 app.use('/api/auth', authRouter);
 app.use('/api/applications', applicationRouter);
 app.use('/api/followUps', followUpRouter);
 app.use('/api/ai', aiRouter);
-app.use('/api/resume', resumeRouter)
+app.use('/api/resume', resumeRouter);
 
 // no route matched
 app.use((req, res) => {
