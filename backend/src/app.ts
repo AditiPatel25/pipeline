@@ -12,7 +12,7 @@ import resumeRouter from './routes/resumeRouter.js';
 
 const allowedOrigins = [
     'http://localhost:5173',
-    'https://pipeline-khaki-delta.vercel.app',
+    'https://pipeline-five-livid.vercel.app'
 ];
 
 const app = express();
