@@ -39,7 +39,7 @@ import { BriefcaseBusiness, Plus } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { motion } from 'motion/react';
-import { getTimestamp } from '@/utils/getTimeStamp';
+import { getTimestamp } from '@/utils/getTimestamp';
 
 function Applications() {
     // applications
