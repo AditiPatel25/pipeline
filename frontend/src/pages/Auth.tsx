@@ -20,12 +20,24 @@ function Auth() {
     const isLogin = location.pathname === '/auth/login';
     const [confirmPassword, setConfirmPassword] = useState('');
     const [error, setError] = useState('');
+    const [fieldErrors, setFieldErrors] = useState({
+        identifier: false,
+        username: false,
+        password: false,
+        email: false,
+        name: false,
+        confirmPassword: false,
+    });
 
     const { login } = useAuth();
     const navigate = useNavigate();
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setError('');
+        setFieldErrors((prev) => ({
+            ...prev,
+            [e.target.name]: false,
+        }));
         setFormData((prev) => ({
             ...prev,
             [e.target.name]: e.target.value,
@@ -36,22 +48,54 @@ function Auth() {
         setFormData(emptyForm);
         setConfirmPassword('');
         setError('');
+        setFieldErrors({
+            identifier: false,
+            username: false,
+            password: false,
+            email: false,
+            name: false,
+            confirmPassword: false,
+        });
         navigate(isLogin ? '/auth/register' : '/auth/login');
     }
 
     const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
         e.preventDefault();
+        const errors = {
+            identifier: isLogin && !formData.identifier.trim(),
+            username: !isLogin && !formData.username.trim(),
+            password: !formData.password,
+            email: !isLogin && !formData.email.trim(),
+            name: !isLogin && !formData.name.trim(),
+            confirmPassword: !isLogin && !confirmPassword,
+        };
+
+        setFieldErrors(errors);
+        setError('');
+        if (Object.values(errors).some(Boolean)) {
+            return;
+        }
+
         if (!isLogin) {
             const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
                 formData.email
             );
 
             if (!isValidEmail) {
+                setFieldErrors((prev) => ({
+                    ...prev,
+                    email: true,
+                }));
                 setError('Please enter a valid email address');
                 return;
             }
 
             if (formData.password !== confirmPassword) {
+                setFieldErrors((prev) => ({
+                    ...prev,
+                    password: true,
+                    confirmPassword: true
+                }));
                 setError('Passwords do not match');
                 return;
             }
@@ -78,30 +122,29 @@ function Auth() {
             setConfirmPassword('');
             navigate('/');
         } catch (err) {
-            setError(getErrorMessage(err))
+            setError(getErrorMessage(err));
         }
     };
-
     const handleConfirmPasswordChange = (
         e: React.ChangeEvent<HTMLInputElement>
     ) => {
         setError('');
+        setFieldErrors((prev) => ({
+            ...prev,
+            confirmPassword: false,
+        }));
         setConfirmPassword(e.target.value);
     };
 
     return (
         <div className="flex min-h-screen flex-col items-center justify-center px-4">
-            {error && (
-                <div className="mb-4 w-full max-w-md rounded-md border border-red-400/20 bg-red-400/10 px-3 py-2 text-sm text-red-300">
-                    {error}
-                </div>
-            )}
-
             {isLogin ? (
                 <Login
                     formData={formData}
                     handleChange={handleChange}
                     handleSubmit={handleSubmit}
+                    fieldErrors={fieldErrors}
+                    error={error}
                 />
             ) : (
                 <Register
@@ -110,6 +153,8 @@ function Auth() {
                     handleChange={handleChange}
                     handleConfirmPasswordChange={handleConfirmPasswordChange}
                     handleSubmit={handleSubmit}
+                    fieldErrors={fieldErrors}
+                    error={error}
                 />
             )}
 

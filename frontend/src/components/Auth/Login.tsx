@@ -9,20 +9,35 @@ type LoginProps = {
     };
     handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
     handleSubmit: (e: React.SubmitEvent<HTMLFormElement>) => void;
+    fieldErrors: {
+        identifier: boolean;
+        password: boolean;
+    };
+    error: string;
 };
 
-function Login({ formData, handleChange, handleSubmit }: LoginProps) {
+function Login({
+    formData,
+    handleChange,
+    handleSubmit,
+    fieldErrors,
+    error,
+}: LoginProps) {
     return (
         <form onSubmit={handleSubmit} className="w-full max-w-md">
             <div className="mb-8">
-                <h2 className="font-heading text-2xl font-semibold">
-                    Login
-                </h2>
+                <h2 className="font-heading text-2xl font-semibold">Login</h2>
 
                 <p className="mt-2 text-sm text-muted-foreground">
                     Welcome back!
                 </p>
             </div>
+
+            {(Object.values(fieldErrors).some(Boolean) || error) && (
+                <div className="mb-4 w-full max-w-md rounded-md border border-red-400/20 bg-red-400/10 px-3 py-2 text-sm text-red-300">
+                    {error || 'Please fill in all required fields.'}
+                </div>
+            )}
 
             <div className="grid gap-4">
                 <Field>
@@ -38,7 +53,9 @@ function Login({ formData, handleChange, handleSubmit }: LoginProps) {
                         value={formData.identifier}
                         onChange={handleChange}
                         autoComplete="username"
-                        required
+                        className={
+                            fieldErrors.identifier ? 'border-destructive' : ''
+                        }
                     />
                 </Field>
 
@@ -52,7 +69,9 @@ function Login({ formData, handleChange, handleSubmit }: LoginProps) {
                         value={formData.password}
                         onChange={handleChange}
                         autoComplete="current-password"
-                        required
+                        className={
+                            fieldErrors.password ? 'border-destructive' : ''
+                        }
                     />
                 </Field>
 

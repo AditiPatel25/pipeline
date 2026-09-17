@@ -15,6 +15,14 @@ type RegisterProps = {
         e: React.ChangeEvent<HTMLInputElement>
     ) => void;
     handleSubmit: (e: React.SubmitEvent<HTMLFormElement>) => void;
+    fieldErrors: {
+        email: boolean;
+        username: boolean;
+        name: boolean;
+        confirmPassword: boolean;
+        password: boolean;
+    };
+    error: string;
 };
 
 function Register({
@@ -23,6 +31,8 @@ function Register({
     handleChange,
     handleConfirmPasswordChange,
     handleSubmit,
+    fieldErrors,
+    error,
 }: RegisterProps) {
     return (
         <form onSubmit={handleSubmit} className="w-full max-w-md">
@@ -36,6 +46,12 @@ function Register({
                 </p>
             </div>
 
+            {(Object.values(fieldErrors).some(Boolean) || error) && (
+                <div className="mb-4 w-full max-w-md rounded-md border border-red-400/20 bg-red-400/10 px-3 py-2 text-sm text-red-300">
+                    {error || 'Please fill in all required fields.'}
+                </div>
+            )}
+
             <div className="grid gap-4">
                 <Field>
                     <FieldLabel htmlFor="name">Display Name</FieldLabel>
@@ -46,7 +62,7 @@ function Register({
                         value={formData.name}
                         placeholder="John Doe"
                         onChange={handleChange}
-                        required
+                        className={fieldErrors.name ? 'border-destructive' : ''}
                     />
                 </Field>
 
@@ -54,13 +70,14 @@ function Register({
                     <FieldLabel htmlFor="email">Email</FieldLabel>
                     <Input
                         id="email"
-                        type="email"
                         placeholder="abc@gmail.com"
                         name="email"
                         value={formData.email}
                         onChange={handleChange}
                         autoComplete="email"
-                        required
+                        className={
+                            fieldErrors.email ? 'border-destructive' : ''
+                        }
                     />
                 </Field>
 
@@ -73,7 +90,9 @@ function Register({
                         onChange={handleChange}
                         placeholder="johndoe"
                         autoComplete="username"
-                        required
+                        className={
+                            fieldErrors.username ? 'border-destructive' : ''
+                        }
                     />
                 </Field>
 
@@ -86,7 +105,9 @@ function Register({
                         value={formData.password}
                         onChange={handleChange}
                         autoComplete="new-password"
-                        required
+                        className={
+                            fieldErrors.password ? 'border-destructive' : ''
+                        }
                     />
                 </Field>
 
@@ -102,7 +123,11 @@ function Register({
                         value={confirmPassword}
                         onChange={handleConfirmPasswordChange}
                         autoComplete="new-password"
-                        required
+                        className={
+                            fieldErrors.confirmPassword
+                                ? 'border-destructive'
+                                : ''
+                        }
                     />
                 </Field>
 
